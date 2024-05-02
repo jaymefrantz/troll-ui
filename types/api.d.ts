@@ -11,7 +11,7 @@ interface Polaroid {
 interface Marker {
   id: string
   title: string
-  link: string
+  link?: string
   polaroids: string[]
   position: {
     lat: number

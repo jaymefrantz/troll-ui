@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.ENV === "dev" ? "dev" : "prod"}`
+
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
@@ -20,6 +22,11 @@ const currentDir = dirname(fileURLToPath(import.meta.url))
 export default defineNuxtConfig({
   devtools: { enabled: true },
   alias: { "@": currentDir },
+  runtimeConfig: {
+    public: {
+      CLOUDINARY
+    }
+  },
   modules: [
     "@vueuse/nuxt",
   ],

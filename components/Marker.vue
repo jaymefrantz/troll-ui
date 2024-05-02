@@ -12,7 +12,7 @@
   const marker = defineProps<{
     id: string
     title: string
-    link: string
+    link?: string
     polaroids: string[]
     position: {
       lat: number

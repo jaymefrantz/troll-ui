@@ -11,31 +11,32 @@
 
   const zoomedMarkers = computed(() => {
     if(map.value === null) return []
-    return getZoomedMarkers(map.value.level, data.value.markers)
+    const polaroids = data.value.markers.filter(marker => marker.level === "polaroid").map(({ id }) => id)
+
+    return getZoomedMarkers(map.value.level, data.value.markers).map(marker => {
+      if(marker.level !== "polaroid") {
+        marker.count = marker.polaroids.filter(id => polaroids.includes(id)).length
+      }
+      return marker
+    })
   })
 
   function markerClick(marker: Marker) {
-    console.log(marker.id);
-    
-    //map.value.overlay.polaroidClicked(marker.polaroids[0])
-    
-    // if (level.value !== "polaroid" && link.value !== undefined) {
-    //   useRouter().push({ path: link.value, query: useRoute().query })
-    //   store.overlay.hideLabel(marker)
-    // } else if (level.value === "polaroid") {
-    //   store.overlay.polaroidClicked(polaroidIds.value[0])
-    // }
+    if (map.value.level !== "polaroid" && marker.link !== undefined) {
+      //useRouter().push({ path: link.value, query: useRoute().query })
+      map.value.overlay.hideLabel(marker)
+    } else if (map.value.level === "polaroid") {
+      map.value.overlay.polaroidClicked(marker.id)
+    }
   }
 
   function markerMouseOut(marker: Marker) {
-    //console.log("markerMouseOut?", marker);
     clearTimeout(timeoutId)
     marker.gmapMarker.marker.setZIndex(10)
     if (marker.level !== "polaroid") {
-      //console.log(map.value.overlay);
       map.value.overlay.hideLabel(marker)
     } else {
-      //store.overlay.removePreview(polaroidIds.value[0])
+      map.value.overlay.removePreview(marker.id)
     }
   }
 
@@ -45,10 +46,9 @@
     if (marker.level !== "polaroid" && marker.title !== "") {
       map.value.overlay.showLabel(marker)
     } else if (marker.level === "polaroid") {
-      // timeoutId = setTimeout(() => {
-      //   const id = polaroidIds.value[0]
-      //   store.overlay.addPolaroid({ id, image: `${useRuntimeConfig().public.CLOUDINARY}/polaroids/${id}.jpg`, position: position.value })
-      // }, 250)
+      timeoutId = setTimeout(() => {
+        map.value.overlay.addPolaroid({ id: marker.id, image: `${useRuntimeConfig().public.CLOUDINARY}/polaroids/${marker.id}.jpg`, position: marker.position })
+      }, 250)
     }
   }
 </script>
