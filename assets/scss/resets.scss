@@ -1,0 +1,54 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  height: 100%;
+}
+
+button {
+  margin: 0;
+  //padding: 0;
+  //background: none;
+  //border: 0;
+}
+
+ul, ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+button[disabled], input[disabled] {
+  cursor: default;
+}
+
+button, input[type="button"], input[type="reset"], input[type="submit"] {
+  cursor: pointer;
+  overflow: visible;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1rem;
+  font-weight: normal;
+  margin: 0;
+  line-height: 1.15;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav,
+section {
+  display: block;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+}

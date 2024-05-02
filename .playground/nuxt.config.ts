@@ -1,3 +1,8 @@
 export default defineNuxtConfig({
-  extends: ['..']
+  extends: ['..'],
+  runtimeConfig: {
+    public: {
+      ...process.env
+    }
+  }
 })

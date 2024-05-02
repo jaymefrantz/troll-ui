@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { myLayer } = useAppConfig()
+const { myLayer } = useAppConfig();
 </script>
 
 <template>
@@ -8,3 +8,9 @@ const { myLayer } = useAppConfig()
     <pre>{{ myLayer }}</pre>
   </div>
 </template>
+<style lang="scss">
+// body {
+//   @include tmp;
+//   background: $yellow;
+// }
+</style>

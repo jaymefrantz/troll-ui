@@ -1,0 +1,103 @@
+@use "sass:math";
+
+@mixin tmp {
+  border: 10px solid yellow; //tmp
+}
+
+$yellow: blue; //tmp
+
+@function process-viewport($setting) {
+  @if (nth($setting, 2) == up) {
+    @return unquote("(min-width: " + nth($setting, 1) + ")");
+  } @else if (nth($setting, 2) == down) {
+    @return unquote("(max-width: " + (nth($setting, 1) - 0.01rem) + ")");
+  } @else {
+    @return unquote(
+      "(min-width: " + nth($setting, 1) + ") and ( max-width: " +
+        (nth($setting, 3) - 0.01rem) + ")"
+    );
+  }
+}
+
+@mixin viewport($settings...) {
+  $viewport-built: "";
+  $viewport-has: false;
+  @each $setting in $settings {
+    @if ($viewport-has) {
+      $viewport-built: $viewport-built + " , " + process-viewport($setting);
+    } @else {
+      $viewport-built: process-viewport($setting);
+    }
+    $viewport-has: true;
+  }
+  @media #{$viewport-built} {
+    @content;
+  }
+}
+
+@function em($pxAmount) {
+  @return math.div($pxAmount, 16) * 1em;
+}
+
+@function rem($pxAmount) {
+  @return math.div($pxAmount, 16) * 1rem;
+}
+
+@mixin placeholder {
+  ::-webkit-input-placeholder {
+    @content;
+  }
+  ::-moz-placeholder {
+    @content;
+  }
+  :-ms-input-placeholder {
+    @content;
+  }
+  :-moz-placeholder {
+    @content;
+  }
+}
+
+@mixin center-margin-wrap($width, $position: relative) {
+  margin-left: auto;
+  margin-right: auto;
+  position: $position;
+  max-width: $width;
+}
+
+@function strip-unit($value) {
+  @return math.div($value, ($value * 0 + 1));
+}
+
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace +
+      str-replace(
+        str-slice($string, $index + str-length($search)),
+        $search,
+        $replace
+      );
+  }
+
+  @return $string;
+}
+
+// .test {
+//   @include viewport ( 10em to 20em, 30em to 40em ) {
+//     background-color: purple
+//   }
+//   @include viewport ( 30em to 40em ) {
+//     background-color: blue
+//   }
+//   @include viewport ( 50em down ) {
+//     background-color: yellow;
+//   }
+//   @include viewport ( 50em up ) {
+//     background-color: green;
+//   }
+//   @include viewport ( 50em up, 20em down, 30em to 40em ) {
+//     background-color: red;
+//   }
+// }
