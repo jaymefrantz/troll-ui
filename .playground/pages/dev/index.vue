@@ -34,7 +34,7 @@
     clearTimeout(timeoutId)
     marker.gmapMarker.marker.setZIndex(10)
     if (marker.level !== "polaroid") {
-      map.value.overlay.hideLabel(marker)
+       map.value.overlay.hideLabel(marker)
     } else {
       map.value.overlay.removePreview(marker.id)
     }

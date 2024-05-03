@@ -19,12 +19,12 @@
       lng: number
     }
     level: string
-    icon: string
-    hoverIcon: string
+    icon?: string
+    hoverIcon?: string
     count?: number
   }>()
 
-  const { position, level, polaroids: polaroidIds, link, title, count, icon, hoverIcon } = toRefs(marker)
+  const { position, level, polaroids: polaroidIds, link, title, count } = toRefs(marker)
   const hovered = ref(false)
 
   const label = computed(() => {
@@ -53,7 +53,13 @@
   }
 
   const markerOptions = computed(() => {
-    return { position: position.value, clickable: true, icon: { url: !hovered.value ? icon.value : hoverIcon.value, ...iconOptions }, ...label.value }
+    let obj = { position: position.value, clickable: true, ...label.value }
+    const icon = !hovered.value ? marker.icon : marker.hoverIcon
+    if(icon !== undefined) {
+      obj.icon = { url: icon, ...iconOptions } 
+    }
+    
+    return obj
   })
 
   function handleEvent(name: string) {
@@ -66,9 +72,9 @@
 #marker-location-label {
     position: absolute;
     background: white;
-    padding: 8px;
+    padding: 0.4rem;
     border: 2px solid #e3e3e3;
-    transform: translateY(-40px) translateX(16px);
+    //transform: translateY(-40px) translateX(16px);
     white-space: nowrap;
     //color: $grey;
     border-radius: 6px;

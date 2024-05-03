@@ -21,15 +21,12 @@
 <script setup lang="ts">
   import { useBreakpoints } from '@vueuse/core'
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
-  //import { mapOptions, mobileBreakpoint, zoomLevels, initOverlay } from "@/utils/gmap"
   const breakpoints = useBreakpoints({ map: 821 })
   const isMobile = breakpoints?.smallerOrEqual("map") ?? false
   const { map } = useAppConfig()
   const gmap = ref(null)
-  // console.log("map", map);
   const center = { lat: 41.495, lng: -71.712 }
   const options = { ...mapOptions, ...map }
-  const zoom = ref(2)
   const zoomInHidden = computed(() => zoom.value >= mapOptions.maxZoom)
   const zoomOutHidden = computed(() => zoom.value <= (isMobile ? 1 : 2))
   const level = ref("country")
@@ -37,6 +34,11 @@
   const overlay = ref<null | google.maps.OverlayView>(null)
   const labelOverlay = ref<null | google.maps.OverlayView>(null)
   const ready = ref(false)
+
+  const water = map.styles.find(({ featureType }) => featureType === "water")
+  if(water !== undefined) {
+    options.backgroundColor = water.stylers[0].color
+  }
 
   const emit = defineEmits<{
     (e: "ready"): void
@@ -53,6 +55,8 @@
     initialZoom: 2
   })
 
+  const zoom = ref(props.initialZoom)
+
   watch(
     () => gmap.value?.ready,
     value => {
@@ -61,8 +65,54 @@
       emit("ready")
       overlay.value = initOverlay(google, gmap.value.map)
       labelOverlay.value = initLabelOverlay(google, gmap.value.map)
+
+
+      useResizeObserver(
+        gmap.value.$el,
+        useDebounceFn(() => {
+          fitbounds()
+        }, 250)
+      )
     }
   )
+
+  function fitbounds() {
+    let now = new Date()
+    let minutes = now.getMinutes()
+    let seconds = now.getSeconds()
+    let formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+    if (props.markers === undefined || props.markers?.length === 0) return
+
+    fitBoundsLastCalled.value = new Date()
+
+    if (props.markers.length > 1) {
+      const bounds = new google.maps.LatLngBounds()
+      for (let marker of props.markers) {
+        bounds.extend(marker.position)
+      }
+
+      now = new Date()
+      minutes = now.getMinutes()
+      seconds = now.getSeconds()
+      formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+
+      gmap.value?.map?.fitBounds(bounds)
+    } else if (props.markers.length !== 0) {
+      const [ marker ] = props.markers
+
+      if (level.value === "country") {
+        gmap.value?.map?.setZoom(2)
+      } else if (level.value === "polaroid") {
+        gmap.value?.map?.setZoom(14)
+      } else {
+        gmap.value?.map?.setZoom(zoomLevels[getNextLevel(marker)] - 1)
+      }
+
+      gmap.value?.map?.setCenter(marker.position)
+    }
+  }
+
+
 
   function setZoom(shift: number) {
     gmap.value?.map.setZoom(zoom.value + shift)
@@ -93,18 +143,14 @@
     level,
     overlay,
     labelOverlay,
+    fitbounds,
   })
 </script>
 
 <style lang="scss" scoped>
-  /*
-    zoom buttons
-    location thing
-  */
   #gmap {
     position: relative;
-    padding-top: 800px;
-    //padding-top: clamp(25rem, 50vw, rem(675)); //todo: aspect ratio
+    padding-top: var(--height, clamp(25rem, 50vw, rem(675)));
   }
 
   :deep(.mapdiv) {
