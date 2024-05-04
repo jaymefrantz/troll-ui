@@ -217,6 +217,7 @@ function initOverlay(google, map) {
       this.positionPreview(id)
     }
     removePreview(id: string, hardRemove = false) {
+      if (this.previews[id] === undefined) return
       //, hardRemove = false
       //hard remove should be used on like after filters?
 

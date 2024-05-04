@@ -1,8 +1,8 @@
 <template lang="pug">
-  <GoogleMap :zoom="initialZoom" :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, minZoom: isMobile ? 1 : 2}" @zoom_changed="zoomChanged">
+  <GoogleMap :zoom="initialZoom" :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, minZoom: isMobile ? 1 : 2}" @zoom_changed="zoomChanged" @idle="handleIdle">
     <Marker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
   </GoogleMap>
-  ul.zoom-control-list
+  ul(v-if="loaded").zoom-control-list
     li
       button(type="button" @click="setZoom(1)" :disabled="zoomInHidden").zoom-control-button
         span.sr-only Zoom in
@@ -29,11 +29,12 @@
   const options = { ...mapOptions, ...map }
   const zoomInHidden = computed(() => zoom.value >= mapOptions.maxZoom)
   const zoomOutHidden = computed(() => zoom.value <= (isMobile ? 1 : 2))
-  const level = ref("country")
   const fitBoundsLastCalled = ref<null | Date>(null)
   const overlay = ref<null | google.maps.OverlayView>(null)
   const labelOverlay = ref<null | google.maps.OverlayView>(null)
   const ready = ref(false)
+  const hasIdled = ref(false)
+  const loaded = ref(false)
 
   const water = map.styles.find(({ featureType }) => featureType === "water")
   if(water !== undefined) {
@@ -51,11 +52,14 @@
   const props = withDefaults(defineProps<{
     initialZoom?: number
     markers: Marker[]
+    initialLevel?: string
   }>(), {
-    initialZoom: 2
+    initialZoom: 2,
+    initialLevel: "country",
   })
 
   const zoom = ref(props.initialZoom)
+  const level = ref(props.initialLevel)
 
   watch(
     () => gmap.value?.ready,
@@ -112,7 +116,11 @@
     }
   }
 
-
+  function handleIdle() {
+    if(!hasIdled.value) {
+      hasIdled.value = true
+    }
+  }
 
   function setZoom(shift: number) {
     gmap.value?.map.setZoom(zoom.value + shift)
@@ -144,13 +152,17 @@
     overlay,
     labelOverlay,
     fitbounds,
+    ready,
+    hasIdled,
+    options,
+    loaded,
   })
 </script>
 
 <style lang="scss" scoped>
   #gmap {
     position: relative;
-    padding-top: var(--height, clamp(25rem, 50vw, rem(675)));
+    padding-top: var(--height);
   }
 
   :deep(.mapdiv) {
