@@ -5,3 +5,4 @@ $medium-large-viewport: 50rem;
 $large-viewport: 60rem;
 $extra-large-viewport: rem(1280);
 $page-inner-wrap: rem(1920);
+$center-margin-wraps: (medium, $medium-viewport), (medium-large, $medium-large-viewport), (large, $large-viewport), (extra-large, $extra-large-viewport);

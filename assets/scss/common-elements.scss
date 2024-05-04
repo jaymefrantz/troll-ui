@@ -1,3 +1,9 @@
+:root {
+  // @each $name, $size in $center-margin-wraps {
+  //   --#{ $name }-viewport: #{$size};
+  // }
+}
+
 html, body, #__nuxt, #__layout, .content-wrap {
   min-height: 100vh;
 }
@@ -8,6 +14,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body *:focus-visible {
+  outline: -webkit-focus-ring-color none 0;
+  outline: var(--focus-weight) dotted var(--focus-color);
+  outline-offset: var(--focus-offset);
+  color: var(--focus-color) !important;
+}
+
 //.page-wrap
 #__nuxt {
   position: relative;
@@ -15,7 +28,6 @@ body {
   min-width: $small-viewport;
   display: flex;
   flex-direction: column;
-  background-color: white;
   margin: 0 auto;
 }
 
@@ -51,4 +63,10 @@ body {
   display: block;
   overflow: hidden;
   position: relative;
+}
+
+@each $name, $size in $center-margin-wraps {
+  .#{ $name }-center-margin-wrap {
+    --wrap-size: #{$size};
+  }
 }

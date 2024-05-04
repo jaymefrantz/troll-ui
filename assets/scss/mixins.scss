@@ -1,11 +1,5 @@
 @use "sass:math";
 
-@mixin tmp {
-  border: 10px solid yellow; //tmp
-}
-
-$yellow: blue; //tmp
-
 @function process-viewport($setting) {
   @if (nth($setting, 2) == up) {
     @return unquote("(min-width: " + nth($setting, 1) + ")");
@@ -56,13 +50,6 @@ $yellow: blue; //tmp
   :-moz-placeholder {
     @content;
   }
-}
-
-@mixin center-margin-wrap($width, $position: relative) {
-  margin-left: auto;
-  margin-right: auto;
-  position: $position;
-  max-width: $width;
 }
 
 @function strip-unit($value) {
