@@ -40,7 +40,10 @@ const zoomLevels = {
   city: 7,
 }
 
-function getNextLevel({ level, title }: Marker) {
+function getNextLevel(marker: Marker) {
+  if (marker === null) return "country"
+  const { level, title } = marker
+
   if (level === "country") {
     if (title === "United States" || title === "Canada") {
       return "state"
