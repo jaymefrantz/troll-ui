@@ -1,5 +1,3 @@
-//import cssBreakpoints from "~/assets/scss/exports/breakpoints.module.scss" //jlf
-
 interface LatLng {
   lat: number
   lng: number

@@ -15,8 +15,7 @@ export default defineNuxtConfig({
         scss: {
           additionalData: `
             @use "sass:math";
-            @import "@/assets/scss/mixins.scss"; 
-            @import "@/assets/scss/viewports.scss"; 
+            @import "@/assets/scss/global.scss"; 
           `,
         },
       },

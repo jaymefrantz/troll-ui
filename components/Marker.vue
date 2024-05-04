@@ -68,79 +68,81 @@
 </script>
 
 <style lang="scss">
-//marker-location-label
-#marker-location-label {
+  #marker-location-label {
+    --size: var(--marker-size, 32px);
+    --offset-y: calc((var(--size) * -1) - 8px);
+    --offset-x: 20px;
     position: absolute;
-    background: white;
-    padding: 0.4rem;
-    border: 2px solid #e3e3e3;
-    //transform: translateY(-40px) translateX(16px);
-    white-space: nowrap;
-    //color: $grey;
-    border-radius: 6px;
     visibility: hidden;
     opacity: 0;
-    font-size: 1.2em;
-    // transition: all 0.1s ease-in-out;
+    white-space: nowrap;
+    background: var(--background, white);
+    padding: var(--padding, 0.4rem);
+    border: var(--border, 2px solid #e3e3e3);
+    translate: calc(var(--offset-x) - 4px) var(--offset-y);
+    color: var(--color, $grey);
+    font-size: --var(--font-size, 1.2em);
+    transition: translate $fast ease-in-out, opacity $medium-fast ease-in-out;
 
     &.shown {
       opacity: 1;
       visibility: visible;
-      transform: translateY(-40px) translateX(20px);
+      translate: var(--offset-x) var(--offset-y);
     }
   }
 
   .marker-preview-container {
-    transform: translate(10px, -75px);
+    --offset-y: -75px;
+    --offset-x: 34px;
     opacity: 0;
     position: absolute;
-    box-shadow: 0.1rem 0.3rem 0 rgb(0 0 0 / 8%), -0.125rem -0.125rem 0 rgb(0 0 0 / 5%), 0.4rem 0.15rem 0 rgb(0 0 0 / 5%);
     pointer-events: none;
-    //transition: opacity $medium-fast ease-in-out, transform $medium-fast ease-in-out;
+    transition: opacity $medium-fast ease-in-out, translate $medium-fast ease-in-out;
+    translate: var(--offset-x) var(--offset-y);
+
+    &:not(.shown):not(.leave) {
+      translate: 10px var(--offset-y);
+    }
 
     &.shown {
       opacity: 1;
-      transform: translate(34px, -75px);
       pointer-events: all;
 
       &:before {
-        transform: translateY(-50%) translateX(-1.65em);
+        transform: translateY(-50%) translateX(-1.625em);
       }
     }
 
     &.leave {
-      //transition-duration: 0s !important;
-      //transition: opacity $fast !important;
+      transition-duration: 0s !important;
+      transition: opacity $fast !important;
       opacity: 0 !important;
-      transform: translate(34px, -75px) !important;
       // border: 2px solid red;
     }
 
     &:before {
       content: "";
-      font-size: 0.55rem;
       display: block;
       position: absolute;
-      color: #fff;
       width: 0;
       height: 0;
       border-style: solid;
-      border-width: 1.875em 1.625em 1.875em 0;
       border-color: transparent currentColor transparent transparent;
       transform: translateY(-50%) translateX(0);
       top: 50%;
       z-index: 0;
-      //transition: transform 0.15s ease-out $medium-fast;
-      filter: drop-shadow(0.1em 0.3em 0 rgba(0, 0, 0, 0.08)) drop-shadow(-0.125em -0.125em 0 rgba(0, 0, 0, 0.05)) drop-shadow(0.4em 0.15em 0 rgba(0, 0, 0, 0.05));
+      transition: transform 0.15s ease-out $medium-fast;
+      border-width: var(--arrow-width, 1.875em 1.625em 1.875em 0);
+      font-size: var(--arrow-size, 0.55rem);
+      color: var(--arrow-color, #fff);
     }
   }
   .marker-preview {
-    width: 140px;
     z-index: 10;
-    border-radius: 3px;
-    background-color: white;
-    padding: 6px;
     position: relative;
+    width: var(--preview-width, 140px);
+    background-color: var(--preview-background, white);
+    padding: var(--preview-padding, 6px);
   }
   .close-preview-button {
     --focus-offset: 2px;
@@ -153,7 +155,7 @@
     border: 0;
 
     &:after {
-      content: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" fill="rgb(22, 27, 34)" viewBox="0 0 24 24"><path d="M14.1945,12.07,20.8417,5.423A1.4367,1.4367,0,1,0,18.81,3.3912L12,10.2012l-6.81-6.81A1.4367,1.4367,0,0,0,3.1583,5.423L9.8055,12.07,3.1583,18.7173A1.4367,1.4367,0,1,0,5.19,20.7491l6.81-6.81,6.81,6.81a1.4367,1.4367,0,1,0,2.0318-2.0318Z"/></svg>');
+      content: var(--x-icon, url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" fill="rgb(22, 27, 34)" viewBox="0 0 24 24"><path d="M14.1945,12.07,20.8417,5.423A1.4367,1.4367,0,1,0,18.81,3.3912L12,10.2012l-6.81-6.81A1.4367,1.4367,0,0,0,3.1583,5.423L9.8055,12.07,3.1583,18.7173A1.4367,1.4367,0,1,0,5.19,20.7491l6.81-6.81,6.81,6.81a1.4367,1.4367,0,1,0,2.0318-2.0318Z"/></svg>'));
       display: block;
       width: 1.15rem;
       margin-left: auto;
@@ -161,11 +163,10 @@
   }
   .marker-preview-image-wrap {
     position: relative;
-    border-radius: 2px;
-    overflow: hidden;
+
     img {
       width: 100%;
-      //aspect-ratio: 128/103;
+      aspect-ratio: 128/103;
     }
   }
 </style>

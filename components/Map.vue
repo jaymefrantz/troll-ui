@@ -28,7 +28,7 @@
   const center = { lat: 41.495, lng: -71.712 }
   const options = { ...mapOptions, ...map }
   const zoomInHidden = computed(() => zoom.value >= mapOptions.maxZoom)
-  const zoomOutHidden = computed(() => zoom.value <= (isMobile ? 1 : 2))
+  const zoomOutHidden = computed(() => zoom.value <= (isMobile.value ? 1 : 2))
   const fitBoundsLastCalled = ref<null | Date>(null)
   const overlay = ref<null | google.maps.OverlayView>(null)
   const labelOverlay = ref<null | google.maps.OverlayView>(null)
@@ -43,6 +43,7 @@
 
   const emit = defineEmits<{
     (e: "ready"): void
+    (e: "loaded"): void
     (e: "zoomChanged", { zoom, level }: { zoom: number, level: string }): void
     (e: "markerClick", marker: Marker): void
     (e: "markerMouseOver", marker: Marker): void
@@ -50,8 +51,9 @@
   }>()
 
   const props = withDefaults(defineProps<{
-    initialZoom?: number
     markers: Marker[]
+    ready: boolean
+    initialZoom?: number
     initialLevel?: string
   }>(), {
     initialZoom: 2,
@@ -78,6 +80,23 @@
         }, 250)
       )
     }
+  )
+
+  const watchProp = computed(() => {
+    return JSON.stringify({ ready: props.ready, hasIdled: hasIdled.value, mapReady: ready.value })
+  })
+
+  watch(
+    () => watchProp.value,
+    useDebounceFn(async json => {
+      if (loaded.value) return
+
+      if (ready.value && props.ready) fitbounds()
+      if (hasIdled.value && ready.value && props.ready) {
+        loaded.value = true
+        emit("loaded")
+      }
+    }, 10)
   )
 
   function fitbounds() {
@@ -153,9 +172,7 @@
     labelOverlay,
     fitbounds,
     ready,
-    hasIdled,
     options,
-    loaded,
   })
 </script>
 
@@ -168,22 +185,19 @@
   :deep(.mapdiv) {
     position: absolute !important;
     inset: 0;
-    //transition: opacity $slow;
+    transition: opacity $slow;
   }
 
   .zoom-control-list {
     position: absolute;
-    bottom: 1.5rem;
     z-index: 100;
-    right: 1rem;
     display: flex;
-    // left: 1rem;
-    padding: 0.2rem 0;
-    box-shadow: 0.15rem 0.225rem 0 rgb(0 0 0 / 10%);
-    background-color: white;
-    border-radius: 1.75rem;
-    border: 1px solid #f7f7f7;
-    //color: $grey;
+    bottom: var(--position-y, 1.5rem);
+    right: var(--position-x, 1rem);
+    padding: var(--list-padding, 0.2rem 0);
+    background-color: var(--background, white);
+    border: var(--border, 1px solid #{$lightest-grey});
+    font-size: var(--size, clamp(0.7rem, 1.35vw, 0.9rem));
 
     @include viewport($medium-viewport up) {
       flex-direction: column;
@@ -192,61 +206,58 @@
     & > li {
       @include viewport($medium-viewport down) {
         &:first-child {
-          padding-right: 0.35rem;
+          padding-right: 0.35em;
         }
 
         &:last-child {
-          padding-left: 0.35rem;
-          //border-left: 2px solid $lightest-grey;
+          padding-left: 0.35em;
+          border-left: var(--divider, 2px solid #{$lightest-grey});
         }
       }
 
       @include viewport($medium-viewport up) {
-        margin: 0.25rem 0;
+        margin: 0.25em 0;
 
         &:last-child {
           //border-top: 2px solid $lightest-grey;
+          &:before {
+            content: "";
+            display: block;
+            border-top: var(--divider, 2px solid #{$lightest-grey});
+            margin: 0 5px;
+            transform: translateY(-2px);
+          }
         }
       }
 
-      &:last-child {
-        // &:before {
-        //   content: "";
-        //   display: block;
-        //   border-top: 2px solid $lightest-grey;
-        //   margin: 0 5px;
-        //   transform: translateY(-2px);
-        // }
-      }
     }
   }
   
   .zoom-control-button {
     background: transparent;
     border: none;
-
-    font-size: clamp(0.7rem, 1.35vw, 0.9rem);
-    //color: $grey;
-    //transition: color $medium;
+    font-size: 1em;
+    color: var(--color, $grey);
+    transition: color $medium;
     --focus-offset: -0.35em;
 
     @include viewport($medium-viewport down) {
-      padding: 0.5em 1.15em;
+      padding: var(--mobile-button-padding, 0.5em 1.15em);
     }
 
     @include viewport($medium-viewport up) {
-      padding: 0.35em 0.65em;
+      padding: var(--desktop-button-padding, 0.35em 0.65em);
     }
 
     &[disabled] {
       opacity: 0.35;
     }
     &:hover {
-      //color: $dark-grey;
+      color: var(--hover-color, #{$dark-grey});
     }
     svg {
-      width: 2em;
-      height: 2em;
+      width: var(--icon-size, 2em);
+      height: var(--icon-size, 2em);
     }
   }
 
