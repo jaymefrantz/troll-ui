@@ -19,10 +19,8 @@
 </template>
 
 <script setup lang="ts">
-  import { useBreakpoints } from '@vueuse/core'
+  const isMobile = useBreakpoints()?.smallerOrEqual("map") ?? false
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
-  const breakpoints = useBreakpoints({ map: 821 })
-  const isMobile = breakpoints?.smallerOrEqual("map") ?? false
   const { map } = useAppConfig()
   const gmap = ref(null)
   const center = { lat: 41.495, lng: -71.712 }
