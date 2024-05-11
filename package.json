@@ -16,6 +16,7 @@
     "@vueuse/nuxt": "^10.9.0",
     "eslint": "^8.28.0",
     "nuxt": "^3.6.2",
+    "nuxt-icon": "^0.6.10",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0",
     "typescript": "^4.9.3"

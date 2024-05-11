@@ -29,6 +29,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@vueuse/nuxt",
+    "nuxt-icon",
   ],
   css: [
     join(currentDir, './assets/scss/resets.scss'),
