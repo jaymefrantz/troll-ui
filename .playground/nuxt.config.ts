@@ -7,9 +7,17 @@ export default defineNuxtConfig({
   },
   alias: {
     "~": "./",
+    "@": "./",
+    "trollUI": "@"
   },
   css: ["~/assets/scss/common-elements.scss"],
   vite: {
+    // resolve: {
+    //   alias: {
+    //     // '@': join(currentDir, './'),
+    //     "trollUI": "@",
+    //   },
+    // },
     css: {
       preprocessorOptions: {
         scss: {

@@ -4,19 +4,20 @@ div(style="position: relative;")
 </template>
 
 <script setup lang="ts">
-	import icon from "./assets/svg/map-marker.svg?url"
-	import hoverIcon from "./assets/svg/map-marker-hover.svg?url"
-	const { data } = await useAsyncData("playground", () => $fetch(`${useRuntimeConfig().public.API}/polaroid/random`))
+	import icon from "@/assets/svg/map-marker.svg?url"
+	import hoverIcon from "@/assets/svg/map-marker-hover.svg?url"
+	const { data } = useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)
 	const map = ref(null)
+	const markers = ref(data.value.markers)
 	// const initialLevel = "polaroid"
 	// const initialZoom = zoomLevels[initialLevel] + 1
 	let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
 		
 	const zoomedMarkers = computed(() => {
 		if(map.value === null) return []
-		const polaroids = data.value.markers.filter(marker => marker.level === "polaroid").map(({ id }) => id)
+		const polaroids = markers.value.filter(marker => marker.level === "polaroid").map(({ id }) => id)
 
-		return getZoomedMarkers(map.value.level, data.value.markers).map(marker => {
+		return getZoomedMarkers(map.value.level, markers.value).map(marker => {
 			if(marker.level !== "polaroid") {
 				marker.count = marker.polaroids.filter(id => polaroids.includes(id)).length
 			}
@@ -24,10 +25,13 @@ div(style="position: relative;")
 		})
 	})
 
-	function markerClick(marker: Marker) {
-		if (map.value.level !== "polaroid" && marker.link !== undefined) {
-			//useRouter().push({ path: link.value, query: useRoute().query })
+	async function markerClick(marker: Marker) {
+		if (map.value.level !== "polaroid") {
 			map.value.overlay.hideLabel(marker)
+			markers.value = data.value.markers.filter(({ polaroids }) => polaroids.find(id => marker.polaroids.includes(id)))
+			map.value.level = getNextLevel(marker)
+			await wait(100)
+			map.value.fitbounds()
 		} else if (map.value.level === "polaroid") {
 			map.value.overlay.polaroidClicked(marker.id)
 		}

@@ -1,5 +1,5 @@
 
-import map from "./assets/js/map.ts"
+import map from "@/assets/js/map.ts"
 
 export default defineAppConfig({
   myLayer: {
