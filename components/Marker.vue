@@ -21,15 +21,15 @@
     level: string
     icon?: string
     hoverIcon?: string
-    count?: number
+    label?: number
   }>()
 
-  const { position, level, polaroids: polaroidIds, link, title, count } = toRefs(marker)
+  const { position, level, polaroids: polaroidIds, link, title } = toRefs(marker)
   const hovered = ref(false)
 
   const label = computed(() => {
     let size = "14px"
-    let polaroidCount = count?.value ?? polaroidIds.value.length
+    let polaroidCount = marker?.label ?? polaroidIds.value.length
 
     if (polaroidCount >= 100) {
       size = "10px"

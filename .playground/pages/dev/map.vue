@@ -6,13 +6,11 @@ div(style="position: relative;")
 <script setup lang="ts">
 	import icon from "@/assets/svg/map-marker.svg?url"
 	import hoverIcon from "@/assets/svg/map-marker-hover.svg?url"
-	const { data } = useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)
+	const { data } = await useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)
 	const map = ref(null)
 	const markers = ref(data.value.markers)
-	// const initialLevel = "polaroid"
-	// const initialZoom = zoomLevels[initialLevel] + 1
 	let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
-		
+	
 	const zoomedMarkers = computed(() => {
 		if(map.value === null) return []
 		const polaroids = markers.value.filter(marker => marker.level === "polaroid").map(({ id }) => id)

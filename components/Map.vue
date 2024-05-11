@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-  const isMobile = useBreakpoints()?.smallerOrEqual("map") ?? false
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
   const { map } = useAppConfig()
+  const isMobile = useBreakpoints()?.smallerOrEqual("map") ?? false
   const gmap = ref(null)
   const center = { lat: 41.495, lng: -71.712 }
   const options = { ...mapOptions, ...map }
