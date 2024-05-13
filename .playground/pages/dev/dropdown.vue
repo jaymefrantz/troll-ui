@@ -1,9 +1,20 @@
 <template lang="pug">
-<Dropdown :options="options" label="year"/>
+ul.dropdowns
+  li
+    clientOnly
+      p selected year: {{ yearDropdown.value }}
+    <Dropdown class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" iconSize="1.35em" />
+  li
+    clientOnly
+      p selected cheese: {{ cheeseDropdown.value }}
+    <Dropdown class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" override="SmellyCheese" label="Cheese" iconSize="1.35em" />
 </template>
 
 <script setup lang="ts">
-  const options = [
+  const yearDropdown = ref(null)
+  const cheeseDropdown = ref(null)
+
+  const yearOptions = [
     { label: "Any year", value: "" },
     { label: "2024", value: "2024" },
     { label: "2023", value: "2023" },
@@ -19,37 +30,84 @@
     { label: "2013", value: "2013" },
   ]
 
+  const cheeses = ["Queso", "Feta", "Cottage Cheese", "Cheddar", "Pepper Jack", "Mozzarella", "Smelly Cheese", "Pecorino", "Parmesan"].map(cheese => ({ label: cheese, value: cheese.split(" ").join("") }))
+  
 </script>
 
 <style lang="scss">
+  .dropdowns {
+    & > li {
+      & + li {
+        padding-top: 2em;
+        margin-top: 3em;
+        border-top: var(--border);
+      }
+    }
+  }
+
+  .custom-dropdown {
+    --dropdown-border: var(--border);
+    --dropdown-background: var(--site-background);
+    --dropdown-color: var(--grey-200);
+    --dropdown-border-radius: 0.2rem;
+    --trigger-font-weight: 500;
+    --focus-outline-color: var(--primary);
+    --trigger-hover-color: var(--grey-200);
+    --scrollbar-color: var(--grey-600);
+    --option-color: var(--grey-200);
+    --option-selected-background: var(--primary);
+    --option-hover-background: var(--grey-800);
+    --focus-offset: 0.05rem;
+    
+    //background-color: var(--grey-800);
+  }
+
+  .year-dropdown {
+    width: 8.25em;
+  }
+
+  .cheese-dropdown {
+    width: 12em;
+  }
+
+  .default-label {
+    --label-size: 0.875em;
+    font-weight: 600;
+    text-transform: uppercase;
+    //margin-left: 1em; //tt style
+  }
 
 .dropdown-inner-wrap::-webkit-scrollbar-thumb {
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 .dropdown-outer-wrap {
-  border-radius: 1em;
-  border: 1px solid #f7f7f7;
-  box-shadow: 0.15rem 0.225rem 0 rgb(0 0 0 / 10%);
+  border-radius: var(--border-radius);
+  border: var(--border);
+  
+  &:after {
+    background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(#18181b, 1) 100%) !important;
+  }
 }
 
 .dropdown-trigger, .dropdown-mobile-select-container {
-  box-shadow: 0.15rem 0.225rem 0 rgb(0 0 0 / 10%);
-  border-radius: 1.75rem;
-  border: 1px solid #f7f7f7;
+  transition: background-color $medium;
 
+  &:hover {
+    background-color: var(--grey-800);
+  }
 }
 
-.dropdown-select-input {
-  border-radius: 1.75rem;
-}
-//--option-hover-background: $lightest-magenta
-// --option-selected-background: map-get($magenta, shadow)
-//need font weight
-.dropdown-mobile-select-container {
-  padding-right: 2rem;
-  padding-left: 0.25rem;
-}
+// .dropdown-select-input {
+//   border-radius: 1.75rem;
+// }
+// //--option-hover-background: $lightest-magenta
+// // --option-selected-background: map-get($magenta, shadow)
+// //need font weight
+// .dropdown-mobile-select-container {
+//   padding-right: 2rem;
+//   padding-left: 0.25rem;
+// }
 
 .dropdown-list > li {
   border-radius: 0.2em; 

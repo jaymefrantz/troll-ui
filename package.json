@@ -23,11 +23,13 @@
   },
   "dependencies": {
     "@iconify/json": "^2.2.204",
+    "@nuxtjs/google-fonts": "^3.2.0",
     "@types/google.maps": "^3.55.7",
     "@vueuse/components": "^10.9.0",
     "@vueuse/core": "^10.9.0",
     "sass": "^1.75.0",
     "sass-loader": "^14.2.1",
+    "vite-svg-loader": "^5.1.0",
     "vue3-google-map": "^0.20.0"
   }
 }

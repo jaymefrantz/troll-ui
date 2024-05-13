@@ -22,6 +22,7 @@
     icon?: string
     hoverIcon?: string
     label?: number
+    iconOptions?: google.maps.Icon
   }>()
 
   const { position, level, polaroids: polaroidIds, link, title } = toRefs(marker)
@@ -50,6 +51,7 @@
     labelOrigin: new google.maps.Point(18, 19),
     scaledSize: new google.maps.Size(36, 48),
     optimized: false,
+    ...marker.iconOptions
   }
 
   const markerOptions = computed(() => {

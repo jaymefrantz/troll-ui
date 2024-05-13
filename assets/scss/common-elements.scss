@@ -2,6 +2,8 @@
   // @each $name, $size in $center-margin-wraps {
   //   --#{ $name }-viewport: #{$size};
   // }
+  --focus-weight: 2px;
+  --focus-offset: calc(0.5 * var(--focus-weight));
 }
 
 html, body, #__nuxt, #__layout, .content-wrap {
@@ -12,11 +14,17 @@ body {
   margin: 0;
   min-height: 100%;
   -webkit-font-smoothing: antialiased;
+  font-size: clamp(var(--font-min, 1rem), var(--font-scaler, 2.4vw), var(--font-min, 1.2rem));
+  background-color: var(--site-background);
+  color: var(--site-color);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight);
+  overflow-x: hidden;
 }
 
 body *:focus-visible {
   outline: -webkit-focus-ring-color none 0;
-  outline: var(--focus-weight) dotted var(--focus-color);
+  outline: var(--focus-weight) dotted var(--focus-outline-color);
   outline-offset: var(--focus-offset);
   color: var(--focus-color) !important;
 }

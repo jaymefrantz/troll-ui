@@ -235,6 +235,9 @@ div(ref="container").custom-dropdown
 		isEnd.value = bottom.value
 	}
 
+	defineExpose({
+    value: selectedValue,
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -274,6 +277,7 @@ div(ref="container").custom-dropdown
 
   .dropdown-arrow {
     width: v-bind(iconSize);
+		height: v-bind(iconSize);
     margin-left: var(--arrow-left, 0.5em);
     display: block;
     transition: transform 0.275s ease-in-out;
@@ -290,6 +294,7 @@ div(ref="container").custom-dropdown
   .dropdown-mobile-select-container {
     position: relative;
     color: var(--dropdown-color, $grey);
+		background-color: var(--dropdown-background, $grey);
 
     .dropdown-arrow {
       position: absolute;
@@ -317,6 +322,8 @@ div(ref="container").custom-dropdown
     font-family: var(--trigger-font, arial);
 		font-size: var(--trigger-font-size, 0.85em);
     letter-spacing: 0.075em;
+		background-color: transparent;
+		color: var(--dropdown-color, $grey);
   }
 
   .dropdown-list {
@@ -342,14 +349,13 @@ div(ref="container").custom-dropdown
 
 	//jlf this can maybe be abstracted out?
 	.default-label {
-    font-size: 0.825em; 
-    margin-left: 1em;
+    font-size: var(--label-size, 0.825em); 
     margin-bottom: 0.5em;
     display: block;
   }
 
 	.dropdown-trigger, .dropdown-mobile-select-container {
-    background-color: var(--dropdown-color, white);
+    background-color: var(--dropdown-background, white);
 		border: var(--dropdown-border, 1px solid $grey);
     color: var(--dropdown-color, $grey);
     text-align: left;
@@ -360,7 +366,9 @@ div(ref="container").custom-dropdown
     transition: color $fast;
     justify-content: space-between;
 		font-family: var(--trigger-font, arial);
+		font-weight: var(--trigger-font-weight, inherit);
 		font-size: var(--trigger-font-size, 0.85em);
+		border-radius: var(--dropdown-border-radius, 1.75rem);
   }
 
 	.dropdown-option {

@@ -1,0 +1,31 @@
+@import "design/colors.scss"; //this shouldn't happen, but vite additionalData might not be working?
+
+:root {
+  --primary: #{$purple};
+  --near-black: #{$near-black};
+  --near-white: #{$near-white};
+  --side-padding: clamp(1rem, 4.2vw, 2rem);
+  --font-max: 1.2rem;
+  --font-min: 1rem;
+  --font-scaler: 2.4vw;
+  --font-family: 'Noto Sans', sans-serif;
+  --font-weight: 300;
+  --focus-offset: 5px;
+
+  //need font family
+  //focus things
+  @each $weight, $color in $grey {
+    --grey-#{ $weight }: #{$color};
+  }
+
+  --site-color: #{$near-white};
+  --site-background: #18181b;
+  --border: 1px solid var(--grey-800);
+  --border-radius: 0.5rem;
+}
+
+h1 {
+  font-size: 3em;
+  font-weight: 500;
+  margin-bottom: 0.875em;
+}

@@ -10,6 +10,12 @@ div(style="position: relative;")
 	const map = ref(null)
 	const markers = ref(data.value.markers)
 	let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
+
+	/*
+		size: new google.maps.Size(48, 100),
+		anchor: new google.maps.Point(0, 70),
+		scaledSize: new google.maps.Size(34, 70)
+	*/	
 	
 	const zoomedMarkers = computed(() => {
 		if(map.value === null) return []
