@@ -48,18 +48,17 @@ ul.dropdowns
   .custom-dropdown {
     --dropdown-border: var(--border);
     --dropdown-background: var(--site-background);
-    --dropdown-color: var(--grey-200);
+    --dropdown-color: var(--dark-200);
     --dropdown-border-radius: 0.2rem;
     --trigger-font-weight: 500;
-    --focus-outline-color: var(--primary);
-    --trigger-hover-color: var(--grey-200);
-    --scrollbar-color: var(--grey-600);
-    --option-color: var(--grey-200);
+    --trigger-hover-color: var(--dark-200);
+    --scrollbar-color: var(--dark-600);
+    --option-color: var(--dark-200);
     --option-selected-background: var(--primary);
-    --option-hover-background: var(--grey-800);
+    --option-hover-background: var(--dark-800);
     --focus-offset: 0.05rem;
     
-    //background-color: var(--grey-800);
+    //background-color: var(--dark-800);
   }
 
   .year-dropdown {
@@ -84,6 +83,13 @@ ul.dropdowns
 .dropdown-outer-wrap {
   border-radius: var(--border-radius);
   border: var(--border);
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    translate: 0 -0.5em;
+    //scale: 0.98;
+  }
   
   &:after {
     background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(#18181b, 1) 100%) !important;
@@ -94,7 +100,7 @@ ul.dropdowns
   transition: background-color $medium;
 
   &:hover {
-    background-color: var(--grey-800);
+    background-color: var(--dark-800);
   }
 }
 

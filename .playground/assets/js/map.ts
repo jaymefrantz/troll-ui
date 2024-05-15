@@ -1,10 +1,207 @@
+// const styles = [
+//   {
+//     "featureType": "all",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#177499"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "all",
+//     "elementType": "labels.text.stroke",
+//     "stylers": [
+//       {
+//         color
+//       },
+//       {
+//         "lightness": 3
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "administrative",
+//     "elementType": "geometry.fill",
+//     "stylers": [
+//       {
+//         color
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "administrative",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#144b53"
+//       },
+//       {
+//         "lightness": 4
+//       },
+//       {
+//         "weight": 1.4
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "landscape",
+//     "elementType": "all",
+//     "stylers": [
+//       {
+//         "color": "#08304b"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#0c4152"
+//       },
+//       {
+//         "lightness": 5
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway",
+//     "elementType": "geometry.fill",
+//     "stylers": [
+//       {
+//         color
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#0b434f"
+//       },
+//       {
+//         "lightness": 15
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.arterial",
+//     "elementType": "geometry.fill",
+//     "stylers": [
+//       {
+//         color
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.arterial",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#0b3d51"
+//       },
+//       {
+//         "lightness": 6
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.local",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         color
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "transit",
+//     "elementType": "all",
+//     "stylers": [
+//       {
+//         "color": "#146474"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "water",
+//     "elementType": "all",
+//     "stylers": [
+//       {
+//         "color": "#021019"
+//       }
+//     ]
+//   }
+// ]
+
+const color = "#18181b"
+
 const styles = [
   {
-    "featureType": "water",
-    "elementType": "geometry",
+    "featureType": "all",
+    "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#c9e5f7"
+        "saturation": 36
+      },
+      {
+        color
+      },
+      {
+        "lightness": 40
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "visibility": "on"
+      },
+      {
+        color
+      },
+      {
+        "lightness": 6
+      }
+    ]
+  },
+  {
+    "featureType": "all",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        color
+      },
+      {
+        "lightness": 10
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        color
+      },
+      {
+        "lightness": 7
+      },
+      {
+        "weight": 1.2
       }
     ]
   },
@@ -13,10 +210,22 @@ const styles = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#f5f5f5"
+        color
       },
       {
-        "lightness": 20
+        "lightness": 10
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        color
+      },
+      {
+        "lightness": 11
       }
     ]
   },
@@ -25,10 +234,10 @@ const styles = [
     "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#ffffff"
+        color
       },
       {
-        "lightness": 17
+        "lightness": 7
       }
     ]
   },
@@ -37,10 +246,10 @@ const styles = [
     "elementType": "geometry.stroke",
     "stylers": [
       {
-        "color": "#ffffff"
+        color
       },
       {
-        "lightness": 29
+        "lightness": 19
       },
       {
         "weight": 0.2
@@ -52,10 +261,10 @@ const styles = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#ffffff"
+        color
       },
       {
-        "lightness": 18
+        "lightness": 8
       }
     ]
   },
@@ -64,58 +273,10 @@ const styles = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#ffffff"
+        color
       },
       {
-        "lightness": 16
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      },
-      {
-        "lightness": 21
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "on"
-      },
-      {
-        "color": "#ffffff"
-      },
-      {
-        "lightness": 16
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "saturation": 36
-      },
-      {
-        "color": "#333333"
-      },
-      {
-        "lightness": 40
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
+        "lightness": 6
       }
     ]
   },
@@ -124,42 +285,25 @@ const styles = [
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#f2f2f2"
+        color
       },
       {
-        "lightness": 19
+        "lightness": 9
       }
     ]
   },
   {
-    "featureType": "administrative",
-    "elementType": "geometry.fill",
+    "featureType": "water",
+    "elementType": "geometry",
     "stylers": [
       {
-        "color": "#fefefe"
+        color
       },
       {
-        "lightness": 20
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#fefefe"
-      },
-      {
-        "lightness": 17
-      },
-      {
-        "weight": 1.2
+        "lightness": 7
       }
     ]
   }
 ]
 
-const backgroundColor = styles[0].stylers[0].color
-
-export default { styles, backgroundColor }
+export default { styles }

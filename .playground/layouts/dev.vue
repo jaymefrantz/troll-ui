@@ -43,12 +43,11 @@
   .breadcrumbs {
     display: flex;
     align-items: center;
-    --focus-outline-color: var(--primary);
-    --focus-color: var(--grey-200);
+    --focus-color: var(--dark-200);
     --focus-offset: 0.2rem;
 
     a {
-      color: var(--grey-400);
+      color: var(--dark-400);
       text-decoration: none;
       transition: color $medium;
 

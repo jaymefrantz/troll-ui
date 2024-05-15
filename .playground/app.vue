@@ -20,7 +20,7 @@
 <style lang="scss" scoped>
   header {
     padding: 1em var(--side-padding);
-    border-bottom: 1px solid var(--grey-800)
+    border-bottom: 1px solid var(--dark-800)
   }
 
   #logo {

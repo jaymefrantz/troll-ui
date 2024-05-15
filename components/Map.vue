@@ -250,7 +250,8 @@
     &[disabled] {
       opacity: 0.35;
     }
-    &:hover {
+    
+    &:not([disabled]):hover {
       color: var(--hover-color, #{$dark-grey});
     }
     svg {

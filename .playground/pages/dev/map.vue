@@ -1,22 +1,20 @@
 <template lang="pug">
-div(style="position: relative;")
-	<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, hoverIcon }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+//- pre {{ markers.filter(({ level }) => level === "polaroid").map(({ title }) => title) }}
+button(type="button" @click="refresh").refresh-button 
+	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
+	span refresh
+div.map-container
+	<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 </template>
 
 <script setup lang="ts">
 	import icon from "@/assets/svg/map-marker.svg?url"
-	import hoverIcon from "@/assets/svg/map-marker-hover.svg?url"
-	const { data } = await useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)
+	const { data, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)	
 	const map = ref(null)
 	const markers = ref(data.value.markers)
 	let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
 
-	/*
-		size: new google.maps.Size(48, 100),
-		anchor: new google.maps.Point(0, 70),
-		scaledSize: new google.maps.Size(34, 70)
-	*/	
-	
+
 	const zoomedMarkers = computed(() => {
 		if(map.value === null) return []
 		const polaroids = markers.value.filter(marker => marker.level === "polaroid").map(({ id }) => id)
@@ -62,31 +60,117 @@ div(style="position: relative;")
 			}, 250)
 		}
 	}
+
+	watch(() => data.value.markers, async(value) => {
+		map.value.overlay.removeAllPreviews()
+		await wait(10)
+		markers.value = value
+		map.value.level = "country"
+		// map.value.zoom = 2
+		map.value.gmap.map.setZoom(2)
+		//map.value.fitbounds()
+	})
 </script>
 
 <style lang="scss">
-	.zoom-control-list {
-		box-shadow: 0.15rem 0.225rem 0 rgb(0 0 0 / 10%);
-		border-radius: 1.75rem;
+	.map-container {
+		padding: 0.5rem;
+		border: 1px solid var(--primary);
+		border-radius: 0.35rem;
+		position: relative;
 	}
 
-	#marker-location-label {
-		border-radius: 6px;
+	#gmap {
+    border-radius: 0.35rem;
+    overflow: hidden;
 	}
 
-	.marker-preview-container {
-		box-shadow: 0.1rem 0.3rem 0 rgb(0 0 0 / 8%), -0.125rem -0.125rem 0 rgb(0 0 0 / 5%), 0.4rem 0.15rem 0 rgb(0 0 0 / 5%);
-		&:before {
-			filter: drop-shadow(0.1em 0.3em 0 rgba(0, 0, 0, 0.08)) drop-shadow(-0.125em -0.125em 0 rgba(0, 0, 0, 0.05)) drop-shadow(0.4em 0.15em 0 rgba(0, 0, 0, 0.05));
+	.refresh-button {
+		margin-bottom: 2em;
+		margin-left: 0.5em;
+		margin-top: 0.5em;
+		padding: 0.875em 1em;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    font-size: 0.875em;
+    color: var(--dark-200);
+    transition: background-color $medium-fast;
+    display: inline-block;
+		background: transparent;
+
+		.icon {
+			margin-right: 0.5em;
+			transition: all $medium-fast;
+		}
+
+		&:hover {
+			background-color: var(--dark-800);
+
+			.icon {
+				color: var(--primary);
+				rotate: 90deg;
+			}
 		}
 	}
 
-	.marker-preview {
-		border-radius: 3px;
-	}
+
+
+	// .marker-preview-container {
+	// 	box-shadow: 0.1rem 0.3rem 0 rgb(0 0 0 / 8%), -0.125rem -0.125rem 0 rgb(0 0 0 / 5%), 0.4rem 0.15rem 0 rgb(0 0 0 / 5%);
+	// 	&:before {
+	// 		filter: drop-shadow(0.1em 0.3em 0 rgba(0, 0, 0, 0.08)) drop-shadow(-0.125em -0.125em 0 rgba(0, 0, 0, 0.05)) drop-shadow(0.4em 0.15em 0 rgba(0, 0, 0, 0.05));
+	// 	}
+	// }
+
 
 	.marker-preview-image-wrap {
-		border-radius: 2px;
+		border-radius: 1px;
 		overflow: hidden;
+	}
+
+	.marker-preview {
+		border-radius: 0.25rem;
+	}
+
+	#marker-location-label {
+		border-radius: 4px;
+		--background: #111;
+		--padding: 0.4rem 0.6rem;
+		--color: var(--dark-400);
+		--border: 1px solid var(--primary);
+	}
+
+	.marker-preview-container {
+		--arrow-color: #111;
+		--preview-background: #111;
+		--preview-padding: 0.4rem 0.6rem;
+		--offset-x: 18px;
+		--arrow-size: 0;
+		border: 1px solid var(--primary);
+    border-radius: 0.15rem;
+	}
+
+	.zoom-control-list {
+		--position-y: 1.85rem;
+		--position-x: 1.25rem;
+		--background: #111;
+		--color: #d4d4d8;
+		--divider: 1px solid var(--dark-600);
+		--hover-color: white;
+		border-radius: 0.35rem;
+
+		& > li {
+			position: relative;
+
+			// &:last-child:after {
+			// 	content: "";
+			// 	position: absolute;
+			// 	top: -1px;
+			// 	display: block;
+			// 	border-top: 1px solid var(--dark-400);
+			// 	right: 6px;
+    	// 	left: 6px;
+			// }
+		}
 	}
 </style>

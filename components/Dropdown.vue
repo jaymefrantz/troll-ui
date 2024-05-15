@@ -4,7 +4,7 @@ div(ref="container").custom-dropdown
 	div.dropdown-mobile-select-container
 		select(v-model="selectedValue" @change="selectChanged"  ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
 			option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
-		<Icon :size="iconSize" :name="icon" class="dropdown-arrow"/>
+		<Icon :size="iconSize.toString()" :name="icon" class="dropdown-arrow"/>
 	button(type="button" ref="dropdownTrigger" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
 		@keydown.down.exact.prevent="goDown" 
 		@keydown.up.exact.prevent="goUp" 
@@ -19,29 +19,30 @@ div(ref="container").custom-dropdown
 	).dropdown-trigger
 		span.dropdown-trigger-label {{selectedLabel}}
 		<Icon :name="icon" class="dropdown-arrow"/>
-	div(v-show="expanded" :class="{ 'end': isEnd }" ref="outer").dropdown-outer-wrap
-		div(ref="inner").dropdown-inner-wrap
-			ul(:id="id" role="listbox" v-scroll="[dropdownScroll, { 'throttle' : 200 }]" ref="dropdownList").dropdown-list
-				li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
-					:aria-posinset="index + 1" 
-					:aria-setsize="dropdownOptions.length + 1" 
-					:aria-selected="option.value === selectedValue ? 'true' : 'false'"
-					@keydown.space.exact.prevent="spaceHit"
-					@click="selectOption(option)"
-					@keydown.enter.exact.prevent="selectOption(option)"
-					@keydown.escape.exact.prevent="closeDropdown"
-					@keydown.alt.up.exact.prevent="closeDropdown" 
-					@keydown.alt.down.exact.prevent="closeDropdown"
-					@keydown.tab.exact="closeDropdown"
-					@keydown.shift.tab.exact="closeDropdown" 
-					@keydown.up.exact.prevent="goUp"
-					@keydown.down.exact.prevent="goDown"
-					@keydown.home.exact.prevent="selectFirst" 
-					@keydown.end.exact.prevent="selectLast"
-					@keydown="keydown"
-				)
-					span.option-label {{option.label}}
-					span(:aria-hidden="option.value === selectedValue ? 'false' : 'true'").sr-only , Selected
+	transition(name="dropdown-outer-wrap")
+		div(v-show="expanded" :class="{ 'end': isEnd }" ref="outer").dropdown-outer-wrap
+			div(ref="inner").dropdown-inner-wrap
+				ul(:id="id" role="listbox" v-scroll="[dropdownScroll, { 'throttle' : 200 }]" ref="dropdownList").dropdown-list
+					li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
+						:aria-posinset="index + 1" 
+						:aria-setsize="dropdownOptions.length + 1" 
+						:aria-selected="option.value === selectedValue ? 'true' : 'false'"
+						@keydown.space.exact.prevent="spaceHit"
+						@click="selectOption(option)"
+						@keydown.enter.exact.prevent="selectOption(option)"
+						@keydown.escape.exact.prevent="closeDropdown"
+						@keydown.alt.up.exact.prevent="closeDropdown" 
+						@keydown.alt.down.exact.prevent="closeDropdown"
+						@keydown.tab.exact="closeDropdown"
+						@keydown.shift.tab.exact="closeDropdown" 
+						@keydown.up.exact.prevent="goUp"
+						@keydown.down.exact.prevent="goDown"
+						@keydown.home.exact.prevent="selectFirst" 
+						@keydown.end.exact.prevent="selectLast"
+						@keydown="keydown"
+					)
+						span.option-label {{option.label}}
+						span(:aria-hidden="option.value === selectedValue ? 'false' : 'true'").sr-only , Selected
 </template>
 
 <script setup lang="ts">
@@ -384,7 +385,7 @@ div(ref="container").custom-dropdown
     left: 0;
     width: 100%;
     z-index: 20;
-    transition: all $fastest ease-in-out;
+    transition: all $fast ease-in-out;
     margin-top: 0.5em;
 
 

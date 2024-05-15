@@ -1,7 +1,7 @@
 <template lang="pug">
   nuxt-link(:to="to").nav-link
     div.icon-container
-      <Icon class="icon" :size="24" :name="`material-symbols-light:${icon}`"/>
+      <Icon class="icon" size="24" :name="`material-symbols-light:${icon}`"/>
     span.text {{ label }}
 </template>
 
@@ -24,19 +24,14 @@
     border: var(--border);
     border-radius: var(--border-radius);
     font-size: 1.25em;
-    color: var(--grey-200);
+    color: var(--dark-200);
     text-decoration: none;
     width: 100%;
     transition: background-color $medium-fast;
     display: block;
-    --focus-outline-color: var(--primary);
-
-    // &:focus-visible {
-    //   border-color: var(--primary);
-    // }
 
     &:hover {
-      background-color: var(--grey-800);
+      background-color: var(--dark-800);
 
       .icon-container {
         border-color: var(--primary);
@@ -55,7 +50,7 @@
     color: var(--near-white);
     transition: all $fast;
     border-radius: 100%;
-    border: 1px solid var(--grey-600);
+    border: 1px solid var(--dark-600);
     overflow: hidden;
     height: 2.5rem;
     width: 2.5rem;
@@ -65,7 +60,7 @@
 
     &:before {
       content: "";
-      background-color: var(--grey-800);
+      background-color: var(--dark-800);
       opacity: 0.15;
       position: absolute;
       inset: 0;

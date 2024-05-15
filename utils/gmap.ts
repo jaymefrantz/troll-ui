@@ -231,6 +231,11 @@ function initOverlay(google, map) {
         //}, 50)
       }
     }
+    removeAllPreviews() {
+      Object.keys(this.previews).forEach(id => {
+        this.removePreview(id, true)
+      })
+    }
     positionPreview(id: string) {
       const { position, $el } = this.previews[id]
       const gMapPosition = new google.maps.LatLng(position)

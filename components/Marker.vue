@@ -9,7 +9,7 @@
     (e: "emit", { name, marker }: {name: string, marker: Marker}): void
   }>()
 
-  const marker = defineProps<{
+  const marker = withDefaults(defineProps<{
     id: string
     title: string
     link?: string
@@ -22,10 +22,13 @@
     icon?: string
     hoverIcon?: string
     label?: number
+    color?: string
     iconOptions?: google.maps.Icon
-  }>()
+  }>(), {
+    color: "#6d6f73"
+  })
 
-  const { position, level, polaroids: polaroidIds, link, title } = toRefs(marker)
+  const { position, level, polaroids: polaroidIds, link, title, color } = toRefs(marker)
   const hovered = ref(false)
 
   const label = computed(() => {
@@ -39,7 +42,7 @@
     }
 
     if (level.value !== "polaroid") {
-      return { label: { text: polaroidCount.toString(), fontSize: size, fontWeight: "bold", color: "#6d6f73" } }
+      return { label: { text: polaroidCount.toString(), fontSize: size, fontWeight: "bold", color: color.value } }
     } else {
       return {} //hopefully this is ok
     }
@@ -51,12 +54,23 @@
     labelOrigin: new google.maps.Point(18, 19),
     scaledSize: new google.maps.Size(36, 48),
     optimized: false,
-    ...marker.iconOptions
   }
+
+  // if(marker.iconOptions?.size) {
+  //   iconOptions.size = new google.maps.Size(marker.iconOptions.size[0], marker.iconOptions.size[1])
+  // }
+
+  // if(marker.iconOptions?.anchor) {
+  //   iconOptions.anchor = new google.maps.Point(marker.iconOptions.anchor[0], marker.iconOptions.anchor[1])
+  // }
+
+  // if(marker.iconOptions?.scaledSize) {
+  //   iconOptions.scaledSize = new google.maps.Size(marker.iconOptions.scaledSize[0], marker.iconOptions.scaledSize[1])
+  // }
 
   const markerOptions = computed(() => {
     let obj = { position: position.value, clickable: true, ...label.value }
-    const icon = !hovered.value ? marker.icon : marker.hoverIcon
+    const icon = hovered.value && marker.hoverIcon !== undefined ? marker.hoverIcon : marker.icon
     if(icon !== undefined) {
       obj.icon = { url: icon, ...iconOptions } 
     }
@@ -83,7 +97,7 @@
     border: var(--border, 2px solid #e3e3e3);
     translate: calc(var(--offset-x) - 4px) var(--offset-y);
     color: var(--color, $grey);
-    font-size: --var(--font-size, 1.2em);
+    font-size: var(--font-size, 1em);
     transition: translate $fast ease-in-out, opacity $medium-fast ease-in-out;
 
     &.shown {

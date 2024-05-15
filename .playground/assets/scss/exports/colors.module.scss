@@ -1,0 +1,5 @@
+@import "../design/colors.scss"; //this shouldn't happen, but vite additionalData might not be working?
+
+:export {
+  primary: $primary;
+}
