@@ -35,7 +35,7 @@
   }
 
   useHead({
-    title: `${title.value} Demo / Troll UI`,
+    title: computed(() => `${title.value} Demo / Troll UI`),
   })
 </script>
 
@@ -70,7 +70,6 @@
   }
 
   .nav-link-list {
-    display: flex;
     padding: 0;
     margin: 4em 0 2em;
 
@@ -78,6 +77,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1.2em;
 
       & > li {
         width: 50%;
@@ -88,7 +88,7 @@
       display: flex;
       align-items: center;
       max-width: 30rem;
-      width: 100%;
+      width: 50%;
 
       &.previous {
         margin-right: auto;

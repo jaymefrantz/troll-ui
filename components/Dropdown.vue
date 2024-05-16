@@ -84,12 +84,12 @@ div(ref="container").custom-dropdown
 			options: Option[]
 			label?: string
 			icon?: string
-			iconSize?: string
+			iconSize?: string,
 		}>(),
 		{
 			label: "",
 			icon: "material-symbols:keyboard-arrow-down-rounded",
-			iconSize: "1.25em"
+			iconSize: "1.25em",
 		}
 	)
 
@@ -238,6 +238,7 @@ div(ref="container").custom-dropdown
 
 	defineExpose({
     value: selectedValue,
+		props
   })
 </script>
 
@@ -346,13 +347,6 @@ div(ref="container").custom-dropdown
         color: var(--option-hover-color, white);
       }
     }
-  }
-
-	//jlf this can maybe be abstracted out?
-	.default-label {
-    font-size: var(--label-size, 0.825em); 
-    margin-bottom: 0.5em;
-    display: block;
   }
 
 	.dropdown-trigger, .dropdown-mobile-select-container {

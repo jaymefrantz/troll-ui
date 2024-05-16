@@ -171,6 +171,7 @@
     fitbounds,
     ready,
     options,
+    props,
   })
 </script>
 

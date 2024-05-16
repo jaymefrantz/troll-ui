@@ -5,6 +5,7 @@ button(type="button" @click="refresh").refresh-button
 	span refresh
 div.map-container
 	<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+<Props :props="props" />
 </template>
 
 <script setup lang="ts">
@@ -66,10 +67,10 @@ div.map-container
 		await wait(10)
 		markers.value = value
 		map.value.level = "country"
-		// map.value.zoom = 2
 		map.value.gmap.map.setZoom(2)
-		//map.value.fitbounds()
 	})
+
+	const props = computed(() => Object.keys(map.value?.props ?? {}))
 </script>
 
 <style lang="scss">

@@ -8,6 +8,7 @@ ul.dropdowns
     clientOnly
       p selected cheese: {{ cheeseDropdown.value }}
     <Dropdown class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" override="SmellyCheese" label="Cheese" iconSize="1.35em" />
+<Props :props="props" />
 </template>
 
 <script setup lang="ts">
@@ -31,7 +32,33 @@ ul.dropdowns
   ]
 
   const cheeses = ["Queso", "Feta", "Cottage Cheese", "Cheddar", "Pepper Jack", "Mozzarella", "Smelly Cheese", "Pecorino", "Parmesan"].map(cheese => ({ label: cheese, value: cheese.split(" ").join("") }))
-  
+  const props = computed(() => Object.keys(yearDropdown.value?.props ?? {}))
+  const cssVars = [
+    "--trigger-padding",
+    "--trigger-font",
+    "--trigger-font-weight",
+    "--trigger-hover-color",
+    "--trigger-font-size",
+    "--arrow-left",
+    "--dropdown-color",
+    "--dropdown-background",
+    "--dropdown-container-padding-right",
+    "--dropdown-height",
+    "--option-color",
+    "--option-size",
+    "--option-padding",
+    "--option-margin",
+    "--option-selected-background",
+    "--option-hover-background",
+    "--option-hover-color",
+    "--dropdown-border",
+    "--dropdown-border-radius",
+    "--dropdown-outer-padding",
+    "--dropdown-inner-padding",
+    "--scollbar-width",
+    "--scrollbar-color"
+  ]
+
 </script>
 
 <style lang="scss">
@@ -69,40 +96,34 @@ ul.dropdowns
     width: 12em;
   }
 
-  .default-label {
-    --label-size: 0.875em;
-    font-weight: 600;
-    text-transform: uppercase;
-    //margin-left: 1em; //tt style
+
+  .dropdown-inner-wrap::-webkit-scrollbar-thumb {
+    border-radius: 5px;
   }
 
-.dropdown-inner-wrap::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-}
+  .dropdown-outer-wrap {
+    border-radius: var(--border-radius);
+    border: var(--border);
 
-.dropdown-outer-wrap {
-  border-radius: var(--border-radius);
-  border: var(--border);
-
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-    translate: 0 -0.5em;
-    //scale: 0.98;
+    &-enter-from,
+    &-leave-to {
+      opacity: 0;
+      translate: 0 -0.5em;
+      //scale: 0.98;
+    }
+    
+    &:after {
+      background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(#18181b, 1) 100%) !important;
+    }
   }
-  
-  &:after {
-    background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(#18181b, 1) 100%) !important;
-  }
-}
 
-.dropdown-trigger, .dropdown-mobile-select-container {
-  transition: background-color $medium;
+  .dropdown-trigger, .dropdown-mobile-select-container {
+    transition: background-color $medium;
 
-  &:hover {
-    background-color: var(--dark-800);
+    &:hover {
+      background-color: var(--dark-800);
+    }
   }
-}
 
 // .dropdown-select-input {
 //   border-radius: 1.75rem;

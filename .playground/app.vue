@@ -19,12 +19,16 @@
 
 <style lang="scss" scoped>
   header {
-    padding: 1em var(--side-padding);
-    border-bottom: 1px solid var(--dark-800)
+    padding: 0 var(--side-padding);
+
+    .extra-large-center-margin-wrap {
+      padding: 1em 0;
+      border-bottom: 1px solid var(--dark-800);
+    }
   }
 
   #logo {
-    height: 1.5rem;
+    height: 1.65rem;
   }
 
   #main {

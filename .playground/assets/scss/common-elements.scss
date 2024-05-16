@@ -31,3 +31,19 @@ h1 {
   font-weight: 500;
   margin-bottom: 0.875em;
 }
+
+.default-label {
+  --label-size: 0.875em;
+  font-size: var(--label-size, 0.825em); 
+  margin-bottom: 0.5em;
+  display: block;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  color: var(--primary);
+  font-weight: 400;
+  margin-bottom: 0.25em;
+}
