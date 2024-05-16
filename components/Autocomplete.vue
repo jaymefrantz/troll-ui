@@ -11,15 +11,17 @@ div(ref="container").autocomplete-container
       @keydown.up.exact.prevent="goUp"
       @keydown.down.exact.prevent="goDown"
       @keydown.escape.exact.prevent="escaped"
+      @keydown.enter.exact.prevent="enterPressed"
       @keydown="keydown"
       autocomplete="off"
       :placeholder="placeholder"
     ).autocomplete-input
+    button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
   transition(name="autocomplete-outer-wrap")
     div(v-show="!hideResults && hasResults").autocomplete-outer-wrap
       div.autocomplete-inner-wrap
         ul.autocomplete-results-list
-          li(v-for="(result, index) in results ?? []" :key="result" @click="selected(result)" ref="resultListItems" :class="{ 'focused': index === focusedIndex }")
+          li(v-for="(result, index) in results ?? []" :key="result" @click="selected(index)" ref="resultListItems" :class="{ 'focused': index === focusedIndex }")
             <component v-bind="items[index]" :is="itemComponent"/>
 </template>
 
@@ -34,11 +36,13 @@ div(ref="container").autocomplete-container
       label?: string
       override?: string
       icon?: string
+      closeIcon?: string
       itemComponent: Object
       items: []
     }>(),
     {
       placeholder: "Search Google maps",
+      closeIcon: "material-symbols-light:close-rounded",
       label: "",
       override: "",
       options: [],
@@ -48,7 +52,7 @@ div(ref="container").autocomplete-container
 
   const emit = defineEmits<{
     (e: "typed", value: string): void
-    (e: "selected", value: { id: string; name: string } | null): void
+    (e: "selected", value: string | null): void
   }>()
 
   const { placeholder, options, label, override, items } = toRefs(props)
@@ -70,8 +74,8 @@ div(ref="container").autocomplete-container
     - when focused it needs to open if there's results
     - end on scroll
     - make sure the selected item is in view
-    - enter
     - close button
+    - search icon
   */
   onClickOutside(container, () => {
     if(!hideResults.value && hasResults.value) {
@@ -112,7 +116,6 @@ div(ref="container").autocomplete-container
 
   async function keydown({ target }: Event) {
     await wait(1)
-    
 
     if (!wasReservedKey.value) {
       if (query.value !== "") {
@@ -145,12 +148,20 @@ div(ref="container").autocomplete-container
     focusedIndex.value = focusedIndex.value > 0 ? focusedIndex.value - 1 : results.value.length - 1
   }
 
-  function selected(name: string) {
+  function selected(index: number) {
     wasReservedKey.value = true
-    query.value = name
+    query.value = items.value[index].text
     hideResults.value = true
     focusedIndex.value = -1
-    emit("selected", name)
+    emit("selected", results.value[index])
+  }
+
+  function enterPressed() {
+    wasReservedKey.value = true
+    
+    if (focusedIndex.value !== -1) {
+      selected(focusedIndex.value)
+    }
   }
 
   watch(focusedIndex, index => {
@@ -163,6 +174,12 @@ div(ref="container").autocomplete-container
       hideResults.value = false
       focusedIndex.value = items.value.findIndex(({ text }) => text === query.value)
     }
+  }
+
+  function close() {
+    query.value = ""
+    hideResults.value = true
+    emit("selected", null)
   }
 
   async function blured() {
