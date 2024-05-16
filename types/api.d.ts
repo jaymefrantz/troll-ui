@@ -19,3 +19,8 @@ interface Marker {
   }
   level: string
 }
+
+interface Icon {
+  name: string
+  size: string
+}

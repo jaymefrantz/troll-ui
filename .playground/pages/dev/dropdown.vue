@@ -1,13 +1,13 @@
 <template lang="pug">
 ul.dropdowns
   li
+    <Dropdown class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
     clientOnly
       p selected year: {{ yearDropdown.value }}
-    <Dropdown class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" iconSize="1.35em" />
   li
+    <Dropdown class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" override="SmellyCheese" label="Cheese"/>
     clientOnly
       p selected cheese: {{ cheeseDropdown.value }}
-    <Dropdown class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" override="SmellyCheese" label="Cheese" iconSize="1.35em" />
 <Props :props="props" />
 </template>
 

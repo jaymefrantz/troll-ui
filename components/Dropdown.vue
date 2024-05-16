@@ -4,7 +4,7 @@ div(ref="container").custom-dropdown
 	div.dropdown-mobile-select-container
 		select(v-model="selectedValue" @change="selectChanged"  ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
 			option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
-		<Icon :size="iconSize.toString()" :name="icon" class="dropdown-arrow"/>
+		<Icon :size="icon.size.toString()" :name="icon.name" class="dropdown-arrow"/>
 	button(type="button" ref="dropdownTrigger" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
 		@keydown.down.exact.prevent="goDown" 
 		@keydown.up.exact.prevent="goUp" 
@@ -18,7 +18,7 @@ div(ref="container").custom-dropdown
 		@keydown="keydown"
 	).dropdown-trigger
 		span.dropdown-trigger-label {{selectedLabel}}
-		<Icon :name="icon" class="dropdown-arrow"/>
+		<Icon :name="icon.name" :size="icon.size.toString()" class="dropdown-arrow"/>
 	transition(name="dropdown-outer-wrap")
 		div(v-show="expanded" :class="{ 'end': isEnd }" ref="outer").dropdown-outer-wrap
 			div(ref="inner").dropdown-inner-wrap
@@ -66,7 +66,6 @@ div(ref="container").custom-dropdown
 	const listItemOptions = ref<null | HTMLLIElement[]>(null)
 	const { arrivedState } = useScroll(dropdownList)
 	const { bottom } = toRefs(arrivedState)
-
 	onClickOutside(container, () => expanded.value = false)
 
 	const emit = defineEmits<{
@@ -78,20 +77,25 @@ div(ref="container").custom-dropdown
 		value: string
 	}
 
+	const defaultIcon = {
+		name: "material-symbols:keyboard-arrow-down-rounded",
+		size: "1.25em",
+	}
+
 	const props = withDefaults(
 		defineProps<{
 			override?: string
 			options: Option[]
 			label?: string
-			icon?: string
-			iconSize?: string,
+			icon?: Icon
 		}>(),
 		{
-			label: "",
-			icon: "material-symbols:keyboard-arrow-down-rounded",
-			iconSize: "1.25em",
+			label: ""
 		}
 	)
+
+	const icon = useIconDefaults(props?.icon, defaultIcon)
+	const iconSize = computed(() => icon.size)
 
 	const { override, options: dropdownOptions, label } = toRefs(props)
 	selectedValue.value = props?.override ?? dropdownOptions.value[0].value	
