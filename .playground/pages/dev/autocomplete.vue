@@ -1,25 +1,18 @@
 <template lang="pug">
-<Autocomplete ref="autocomplete" v-bind="{ itemComponent, items, label: 'Movies', placeholder: 'Search movies', options: movies.map(({ title }) => title) }" />
-<Props :props="props" />
+<Autocomplete ref="autocomplete" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
+//- <Props :props="props" />
+//- pre {{movies, null, "  "}}
 div.options-container
   p.subtitle Sample options
   ul.options-list
-    li(v-for="movie in useObjectSort(movies, 'title')" :key="movie.id") {{ movie.title }}
+    //- li(v-for="movie in useObjectSort(movies, 'title')" :key="movie.id") {{ movie.title }}
 </template>
 
 <script setup lang="ts">
   const autocomplete = ref(null)
   const { data: movies } = await useFetch("https://api.sampleapis.com/movies/comedy")
-
-  const movieObj = movies.value.reduce((obj, movie) => ({ ...obj, [movie.title.toLowerCase()]: { ...movie, text: movie.title } }), {})
-
-  const props = computed(() => Object.keys(autocomplete.value?.props ?? {}))
   const itemComponent = resolveComponent("AutocompleteItem")
-  const items = computed(() => {
-    return autocomplete.value?.results.map(name => movieObj[name]) ?? []
-  })
-  
-  
+  const props = computed(() => Object.keys(autocomplete.value?.props ?? {}))
 </script>
 
 <style lang="scss">
