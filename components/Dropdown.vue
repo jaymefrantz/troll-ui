@@ -19,30 +19,29 @@ div(ref="container").custom-dropdown
 	).dropdown-trigger
 		span.dropdown-trigger-label {{selectedLabel}}
 		<Icon :name="icon.name" :size="icon.size.toString()" class="dropdown-arrow"/>
-	transition(name="dropdown-outer-wrap")
-		div(v-show="expanded" :class="{ 'end': isEnd }" ref="outer").dropdown-outer-wrap
-			div(ref="inner").dropdown-inner-wrap
-				ul(:id="id" role="listbox" v-scroll="[dropdownScroll, { 'throttle' : 200 }]" ref="dropdownList").dropdown-list
-					li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
-						:aria-posinset="index + 1" 
-						:aria-setsize="dropdownOptions.length + 1" 
-						:aria-selected="option.value === selectedValue ? 'true' : 'false'"
-						@keydown.space.exact.prevent="spaceHit"
-						@click="selectOption(option)"
-						@keydown.enter.exact.prevent="selectOption(option)"
-						@keydown.escape.exact.prevent="closeDropdown"
-						@keydown.alt.up.exact.prevent="closeDropdown" 
-						@keydown.alt.down.exact.prevent="closeDropdown"
-						@keydown.tab.exact="closeDropdown"
-						@keydown.shift.tab.exact="closeDropdown" 
-						@keydown.up.exact.prevent="goUp"
-						@keydown.down.exact.prevent="goDown"
-						@keydown.home.exact.prevent="selectFirst" 
-						@keydown.end.exact.prevent="selectLast"
-						@keydown="keydown"
-					)
-						span.option-label {{option.label}}
-						span(:aria-hidden="option.value === selectedValue ? 'false' : 'true'").sr-only , Selected
+	<DropdownWrap :expanded="expanded" :isEnd="isEnd">
+		ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
+			li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
+				:aria-posinset="index + 1" 
+				:aria-setsize="dropdownOptions.length + 1" 
+				:aria-selected="option.value === selectedValue ? 'true' : 'false'"
+				@keydown.space.exact.prevent="spaceHit"
+				@click="selectOption(option)"
+				@keydown.enter.exact.prevent="selectOption(option)"
+				@keydown.escape.exact.prevent="closeDropdown"
+				@keydown.alt.up.exact.prevent="closeDropdown" 
+				@keydown.alt.down.exact.prevent="closeDropdown"
+				@keydown.tab.exact="closeDropdown"
+				@keydown.shift.tab.exact="closeDropdown" 
+				@keydown.up.exact.prevent="goUp"
+				@keydown.down.exact.prevent="goDown"
+				@keydown.home.exact.prevent="selectFirst" 
+				@keydown.end.exact.prevent="selectLast"
+				@keydown="keydown"
+			)
+				span.option-label {{option.label}}
+				span(:aria-hidden="option.value === selectedValue ? 'false' : 'true'").sr-only , Selected
+	</DropdownWrap>
 </template>
 
 <script setup lang="ts">
@@ -64,9 +63,13 @@ div(ref="container").custom-dropdown
 	const dropdownTrigger = ref<null | HTMLButtonElement>(null)
 	const dropdownList = ref<null | HTMLUListElement>(null)
 	const listItemOptions = ref<null | HTMLLIElement[]>(null)
-	const { arrivedState } = useScroll(dropdownList)
+	const { arrivedState, y } = useScroll(dropdownList, { 'throttle' : 200 })
 	const { bottom } = toRefs(arrivedState)
 	onClickOutside(container, () => expanded.value = false)
+
+	watch(y, () => {
+		isEnd.value = bottom.value;
+	})
 
 	const emit = defineEmits<{
 		(e: "change", value: string): void
@@ -236,10 +239,6 @@ div(ref="container").custom-dropdown
 		wasReservedKey.value = false
 	}
 
-	const dropdownScroll = (e: Event) => {
-		isEnd.value = bottom.value
-	}
-
 	defineExpose({
     value: selectedValue,
 		props
@@ -374,45 +373,10 @@ div(ref="container").custom-dropdown
 		font-size: var(--option-size, 0.9em);
     color: var(--option-color, $grey);
 	}
-
-	.dropdown-outer-wrap {
-    background-color: var(--dropdown-background, white);
-    padding: var(--dropdown-outer-padding, 0.5em 0.35em);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    z-index: 20;
-    transition: all $fast ease-in-out;
-    margin-top: 0.5em;
-
-
-    &:after {
-      content: "";
-      position: absolute;
-      bottom: 0.25em;
-      left: 0.5em;
-      width: calc(100% - 1.5em);
-      height: 2.5em;
-      background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-      transition: opacity 0.15s;
-      opacity: 1;
-      pointer-events: none;
-    }
-
-    &.end:after {
-      opacity: 0;
-    }
-  }
-
+	
 	.dropdown-inner-wrap {
-		padding: var(--dropdown-inner-padding, 0.35rem 0.35rem 0.25rem 0);
-
     & > ul {
-      overflow-y: auto;
-
       & > li {
-        cursor: pointer;
         color: var(--option-color, $grey);
 
         &:first-child {

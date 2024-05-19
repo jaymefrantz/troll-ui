@@ -22,5 +22,5 @@ interface Marker {
 
 interface Icon {
   name: string
-  size: string
+  size?: string
 }

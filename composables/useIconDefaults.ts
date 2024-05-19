@@ -1,6 +1,8 @@
 export function useIconDefaults(icon: any, defaultIcon: Icon) {
+  let size = icon?.size ?? defaultIcon.size
+
   return {
     name: icon?.name ?? defaultIcon.name,
-    size: icon?.size ?? defaultIcon.size,
+    size: size ?? "20",
   }
 }

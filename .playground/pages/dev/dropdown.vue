@@ -84,6 +84,7 @@ ul.dropdowns
     --option-selected-background: var(--primary);
     --option-hover-background: var(--dark-800);
     --focus-offset: 0.05rem;
+    --dropdown-gradient: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(24, 24, 27, 1) 100%);
     
     //background-color: var(--dark-800);
   }
@@ -101,21 +102,6 @@ ul.dropdowns
     border-radius: 5px;
   }
 
-  .dropdown-outer-wrap {
-    border-radius: var(--border-radius);
-    border: var(--border);
-
-    &-enter-from,
-    &-leave-to {
-      opacity: 0;
-      translate: 0 -0.5em;
-      //scale: 0.98;
-    }
-    
-    &:after {
-      background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(#18181b, 1) 100%) !important;
-    }
-  }
 
   .dropdown-trigger, .dropdown-mobile-select-container {
     transition: background-color $medium;
