@@ -206,8 +206,6 @@ div(ref="container").autocomplete-container
     )
 }
 
-
-
   function focused() {
     if(hasResults.value) {
       hideResults.value = false

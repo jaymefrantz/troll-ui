@@ -1,7 +1,10 @@
 <template lang="pug">
 <Autocomplete ref="autocomplete" @selected="movie = $event" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
-//- <Props :props="props" />
-pre {{movie, null, "  "}}
+div.movie-card
+  img(:src="movie.posterURL" :alt="movie.title")
+  h2 {{ movie.title }}
+<Props :props="props" />
+//-pre {{movie, null, "  "}}
 div.options-container
   p.subtitle Sample options
   ul.options-list
@@ -34,6 +37,29 @@ div.options-container
 
   .autocomplete-results-list > li {
     border-radius: 0.2em; 
+  }
+
+  .movie-card {
+    display: inline-flex;
+    margin-top: 2em;
+    padding: 0.375em;
+    border: 1px solid var(--primary);
+    min-width: 36rem;
+    border-radius: var(--border-radius);
+
+    img {
+      height: 6em;
+      width: 6em;
+      object-fit: cover;
+      object-position: bottom;
+      border-radius: 0.05rem;
+    }
+
+    h2 {
+      padding-top: 1.25em;
+      padding-left: 1em;
+      font-size: 1em;
+    }
   }
 
   * + .options-container {
