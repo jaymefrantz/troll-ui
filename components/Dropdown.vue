@@ -332,13 +332,8 @@ div(ref="container").custom-dropdown
   }
 
   .dropdown-list {
-    max-height: var(--dropdown-height, 10rem);
-
     & > li {
-      padding: var(--option-padding, 0.2em 0.75em 0.15em);
-      margin: var(--option-margin, 0.2em 0.35em 0.2em 0.1em);
-      transition: all 0.15s ease-in-out;
-      letter-spacing: 0.02em;
+      //letter-spacing: 0.02em; //tt specific
 
       &[aria-selected="true"] {
         background-color: var(--option-selected-background, $grey);
@@ -382,14 +377,6 @@ div(ref="container").custom-dropdown
         &:first-child {
           margin-top: 0.5rem;
         }
-      }
-
-      &::-webkit-scrollbar {
-        width: var(--scollbar-width, 5px); 
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: var(--scrollbar-color, $grey);
       }
     }
   }

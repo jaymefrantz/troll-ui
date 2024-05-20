@@ -1,21 +1,41 @@
 <template lang="pug">
-<Autocomplete ref="autocomplete" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
+<Autocomplete ref="autocomplete" @selected="movie = $event" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
 //- <Props :props="props" />
-//- pre {{movies, null, "  "}}
+pre {{movie, null, "  "}}
 div.options-container
   p.subtitle Sample options
   ul.options-list
-    //- li(v-for="movie in useObjectSort(movies, 'title')" :key="movie.id") {{ movie.title }}
+    li(v-for="movie in useObjectSort(movies, 'title')" :key="movie.id") {{ movie.title }}
 </template>
 
 <script setup lang="ts">
+  interface Movie {
+    id: number
+    title: string
+    posterURL: string
+    imdbId: string
+  }
   const autocomplete = ref(null)
   const { data: movies } = await useFetch("https://api.sampleapis.com/movies/comedy")
   const itemComponent = resolveComponent("AutocompleteItem")
   const props = computed(() => Object.keys(autocomplete.value?.props ?? {}))
+  const movie = ref<null | Movie>(null)
 </script>
 
 <style lang="scss">
+  .autocomplete-container {
+    max-width: 30rem;
+    --focus-color: var(--dark-200);
+  }
+
+  .autocomplete-input-wrap:focus-within {
+    outline-color: var(--primary) !important;
+  }
+
+  .autocomplete-results-list > li {
+    border-radius: 0.2em; 
+  }
+
   * + .options-container {
     margin-top: 3em;
   }

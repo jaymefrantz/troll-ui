@@ -16,25 +16,23 @@ transition(name="dropdown-outer-wrap")
 </script>
 
 <style lang="scss">
-  //add transition + css vars for transition timings and transforms
   .dropdown-outer-wrap {
     background-color: var(--dropdown-background, white);
     padding: var(--dropdown-outer-padding, 0.5em 0.35em);
-    border-radius: var(--border-radius);
-    border: var(--border);
+    border-radius: var(--dropdown-border-radius);
+    border: var(--dropdown-border);
     position: absolute;
     top: 100%;
     left: 0;
     width: 100%;
     z-index: 20;
-    transition: all $medium-fast ease-in-out;
+    transition: all var(--transition-duration, $medium-fast) ease-in-out;
     margin-top: 0.5em;
 
     &-enter-from,
     &-leave-to {
       opacity: 0;
-      translate: 0 -0.5em;
-      //scale: 0.98;
+      transform: var(--transform, translate(0 -0.5em));
     }
 
 
@@ -61,9 +59,22 @@ transition(name="dropdown-outer-wrap")
 
     & > ul {
       overflow-y: auto;
+      max-height: var(--dropdown-height, 10rem);
+
+      &::-webkit-scrollbar {
+        width: var(--scollbar-width, 5px); 
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-color, $grey);
+      }
 
       & > li {
         cursor: pointer;
+        padding: var(--option-padding, 0.2em 0.75em 0.15em);
+        margin: var(--option-margin, 0.2em 0.35em 0.2em 0.1em);
+        transition: var(--option-transition, all 0.15s ease-in-out);
+        color: var(--option-color, $grey);
       }
     }
   }

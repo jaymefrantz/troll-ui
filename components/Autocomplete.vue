@@ -1,11 +1,9 @@
 <template lang="pug">
-p query: {{ query }}
-p typedSearch: {{ typedSearch }}
 div(ref="container").autocomplete-container
-  label(v-if="label !== ''" v-html="label" for="autocomplete").default-label
+  label(v-if="label !== ''" v-html="label" :for="id").default-label
   div.autocomplete-input-wrap
     <Icon class="close-icon" :size="searchIcon.size.toString()" :name="searchIcon.name"/>
-    input(type="text" v-model="query" id="autocomplete"
+    input(type="text" v-model="query" :id="id"
       ref="textInput"
       @blur="blured"
       @focus="focused"
@@ -19,17 +17,16 @@ div(ref="container").autocomplete-container
     ).autocomplete-input
     button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
       <Icon class="close-icon" :size="closeIcon.size.toString()" :name="closeIcon.name"/>
-  transition(name="autocomplete-outer-wrap")
-    div(v-show="!hideResults && hasResults").autocomplete-outer-wrap
-      div.autocomplete-inner-wrap
-        ul.autocomplete-results-list
-          li(v-for="(result, index) in results ?? []" :key="result" @click="selected(result)" ref="resultListItems" :class="{ 'focused': index === focusedIndex }")
-            //pre {{ JSON.stringify(options[result], null, "  ") }}
-            <component v-bind="options[result]" :is="itemComponent"/>
+  <DropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd">
+      ul(ref="resultList").autocomplete-results-list
+        li(v-for="(result, index) in results ?? []" :key="result" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
+          <component v-bind="options[result]" :is="itemComponent"/>
+  </DropdownWrap>
 </template>
 
 <script setup lang="ts">
   import stringSimilarity from "string-similarity"
+  const id = `autocomplete-${useId()}`
   import { onClickOutside } from "@vueuse/core"
 
   const defaultIcons = {
@@ -78,6 +75,13 @@ div(ref="container").autocomplete-container
   const textInput = ref<HTMLInputElement | null>(null)
   const resultListItems = ref<HTMLElement | null>(null)
   const container = ref<HTMLDivElement | null>(null)
+  const resultList = ref<HTMLElement | null>(null)
+  const isEnd = ref(false)
+  const { arrivedState, y } = useScroll(resultList, { 'throttle' : 200 })
+	const { bottom } = toRefs(arrivedState)
+  watch(y, () => {
+		isEnd.value = bottom.value;
+	})
   //will need to make sure this is needed
   //selectedValue.value = props?.override ?? autocompleteOptions.value[0].value	
   const options = computed(() => {
@@ -185,8 +189,24 @@ div(ref="container").autocomplete-container
   watch(focusedIndex, index => {
     if(index === -1) return
     const item = options.value[focusedOption.value]
+    const element = resultListItems.value[index]
     query.value = item[searchedProp.value]
+    if(!isLiVisible(element)) {
+      resultListItems.value[index - 1].scrollIntoView()
+    }
   })
+
+  function isLiVisible(liElement) {
+    const liRect = liElement.getBoundingClientRect()
+    const ulRect = resultList.value.getBoundingClientRect()
+
+    return (
+        liRect.top >= ulRect.top &&
+        liRect.bottom <= ulRect.bottom
+    )
+}
+
+
 
   function focused() {
     if(hasResults.value) {
@@ -215,19 +235,23 @@ div(ref="container").autocomplete-container
 </script>
 
 <style lang="scss" scoped>
+  .autocomplete-container {
+    position: relative;
+  }
+  
   .autocomplete-input-wrap {
     background-color: var(--autocomplete-background, white);
 		border: var(--autocomplete-border, 1px solid $grey);
     color: var(--autocomplete-color, $grey);
 		border-radius: var(--autocomplete-border-radius, 1.75rem);
-    padding: var(--autocomplete-padding, 0.95em 1em 0.95em 1.5em);
+    padding: var(--autocomplete-wrap-padding, 0 0.5em);
     display: flex;
     align-items: center;
     justify-content: space-between;
 
 
     &:focus-within {
-      outline: 2px dotted var(--focus-color);
+      outline: 2px solid var(--focus-color);
       outline-offset: 3px;
 
       color: var(--focus-color);
@@ -239,6 +263,8 @@ div(ref="container").autocomplete-container
     font-family: var(--autocomplete-font, arial);
     font-size: var(--autocomplete-font-size, 0.85em);
     font-weight: var(--autocomplete-font-weight, inherit);
+    padding: var(--autocomplete-padding, 0.95em 1em 0.95em 0.5em);
+    background: transparent;
     display: block;
     width: 100%;
     border: 0;
@@ -249,32 +275,24 @@ div(ref="container").autocomplete-container
     }
   }
 
-  .autocomplete-outer-wrap {
-    background-color: var(--autocomplete-background, white);
-    padding: var(--autocomplete-outer-padding, 0.5em 0.35em);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    z-index: 20;
-    transition: all $fast ease-in-out;
-    margin-top: 0.5em;
+  .autocomplete-close-button {
+    background: var(--close-button-background, transparent);
+    border: 0;
+    padding: 0;
+    color: currentColor;
+  }
 
-    &:after {
-      content: "";
-      position: absolute;
-      bottom: 0.25em;
-      left: 0.5em;
-      width: calc(100% - 1.5em);
-      height: 2.5em;
-      background: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-      transition: opacity 0.15s;
-      opacity: 1;
-      pointer-events: none;
-    }
+  .autocomplete-results-list {
+    & > li {
+      &.selected {
+        background-color: var(--option-selected-background, $grey);
+        color: var(--option-selected-color, white);
+      }
 
-    &.end:after {
-      opacity: 0;
+      &:not(.selected):hover {
+        background-color: var(--option-hover-background, $dark-grey);
+        color: var(--option-hover-color, white);
+      }
     }
   }
 

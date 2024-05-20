@@ -1,5 +1,5 @@
 <template lang="pug">
-pre {{ title }}
+span {{ title }}
 </template>
 
 <script setup lang="ts">

@@ -12,7 +12,7 @@
   --font-weight: 300;
   --focus-offset: 5px;
   --focus-outline-color: var(--primary);
-  //--focus-color: var(--primary);
+  --focus-color: var(--primary);
 
   //need font family
   //focus things
@@ -24,6 +24,25 @@
   --site-background: #18181b;
   --border: 1px solid var(--dark-800);
   --border-radius: 0.5rem;
+
+
+
+  --dropdown-border: var(--border);
+  --dropdown-background: var(--site-background);
+  --dropdown-color: var(--dark-200);
+  --dropdown-border-radius: 0.2rem;
+  --trigger-font-weight: 500;
+  --trigger-hover-color: var(--dark-200);
+  --scrollbar-color: var(--dark-600);
+  --option-color: var(--dark-200);
+  --option-selected-background: var(--primary);
+  --option-hover-background: var(--dark-800);
+  --option-size: 0.9em;
+  --dropdown-gradient: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(24, 24, 27, 1) 100%);
+  --autocomplete-background: var(--site-background);
+  --autocomplete-border: var(--border);
+  --autocomplete-border-radius: 0.2rem;
+  --autocomplete-color: var(--dark-200);
 }
 
 h1 {

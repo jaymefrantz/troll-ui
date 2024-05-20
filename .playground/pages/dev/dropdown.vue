@@ -73,19 +73,7 @@ ul.dropdowns
   }
 
   .custom-dropdown {
-    --dropdown-border: var(--border);
-    --dropdown-background: var(--site-background);
-    --dropdown-color: var(--dark-200);
-    --dropdown-border-radius: 0.2rem;
-    --trigger-font-weight: 500;
-    --trigger-hover-color: var(--dark-200);
-    --scrollbar-color: var(--dark-600);
-    --option-color: var(--dark-200);
-    --option-selected-background: var(--primary);
-    --option-hover-background: var(--dark-800);
     --focus-offset: 0.05rem;
-    --dropdown-gradient: linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(24, 24, 27, 1) 100%);
-    
     //background-color: var(--dark-800);
   }
 
