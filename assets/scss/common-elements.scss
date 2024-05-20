@@ -24,7 +24,7 @@ body {
 
 body *:focus-visible {
   outline: -webkit-focus-ring-color none 0;
-  outline: var(--focus-weight) dotted var(--focus-outline-color);
+  outline: var(--focus-weight) solid var(--focus-outline-color);
   outline-offset: var(--focus-offset);
   color: var(--focus-color) !important;
 }
