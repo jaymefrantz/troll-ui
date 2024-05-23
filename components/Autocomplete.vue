@@ -82,18 +82,15 @@ div(ref="container").autocomplete-container
   watch(y, () => {
 		isEnd.value = bottom.value;
 	})
-  //will need to make sure this is needed
-  //selectedValue.value = props?.override ?? autocompleteOptions.value[0].value	
+
+  query.value = override.value ?? ""
+
   const options = computed(() => {
     return items.value.reduce((obj, item) => ({ ...obj, [item[searchedProp.value].toLowerCase()]: { ...item, text: item[searchedProp.value] } }), {})
   })
 
   const hasResults = computed(() => results.value.length > 0 && query.value !== "")
-  /*
-    todo:
-    - end on scroll
-    - make sure the selected item is in view
-  */
+  
   onClickOutside(container, () => {
     if(!hideResults.value && hasResults.value) {
       hideResults.value = true
@@ -101,10 +98,10 @@ div(ref="container").autocomplete-container
     }
   })
 
-  watch(
-    typedSearch,
-    useDebounceFn(() => {
-      if (typedSearch.value.split("").length > 3 && Object.keys(options.value).length > 0) {
+  watch(typedSearch, useDebounceFn(setResults, 200))
+
+  function setResults() {
+    if (typedSearch.value.split("").length > 3 && Object.keys(options.value).length > 0) {
         results.value = stringSimilarity
           .findBestMatch(
             typedSearch.value.toLowerCase(),
@@ -128,20 +125,19 @@ div(ref="container").autocomplete-container
       } else {
         results.value = []
       }
-    }, 200)
-  )
+  }
+
+  watch(() => items.value, async() => {
+    await wait(10)
+    setResults()
+  })
 
   async function keydown({ target }: Event) {
     await wait(1)
 
     if (!wasReservedKey.value) {
-      if (query.value !== "") {
-        //emit("typed", query.value)
-        typedSearch.value = query.value
-        hideResults.value = false
-      } else {
-        hideResults.value = true
-      }
+      typedSearch.value = query.value
+      hideResults.value = query.value === ""
     }
 
     await wait(10)
@@ -156,11 +152,13 @@ div(ref="container").autocomplete-container
   }
 
   async function goDown() {
+    if(results.value.length === 0) return
     wasReservedKey.value = true
     focusedIndex.value = focusedIndex.value < results.value.length - 1 ? focusedIndex.value + 1 : 1
   }
 
   function goUp() {
+    if(results.value.length === 0) return
     wasReservedKey.value = true
     focusedIndex.value = focusedIndex.value > 0 ? focusedIndex.value - 1 : results.value.length - 1
   }
@@ -229,6 +227,8 @@ div(ref="container").autocomplete-container
   defineExpose({
     results,
     props,
+    setResults,
+    query,
   })
 </script>
 

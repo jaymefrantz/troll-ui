@@ -1,6 +1,6 @@
 <template lang="pug">
 <Autocomplete ref="autocomplete" @selected="movie = $event" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
-div.movie-card
+div(v-if="movie !== null").movie-card
   img(:src="movie.posterURL" :alt="movie.title")
   h2 {{ movie.title }}
 <Props :props="props" />
