@@ -66,9 +66,9 @@
     value => {
       if (!value) return
       ready.value = true
-      emit("ready")
       overlay.value = initOverlay(google, gmap.value.map)
       labelOverlay.value = initLabelOverlay(google, gmap.value.map)
+      emit("ready")
 
 
       useResizeObserver(
