@@ -1,7 +1,8 @@
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
-const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.ENV === "dev" ? "dev" : "prod"}`
-
+import { fileURLToPath } from "url"
+import { dirname, join } from "path"
+const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${
+  process.env.ENV === "dev" ? "dev" : "prod"
+}`
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
@@ -24,37 +25,32 @@ export default defineNuxtConfig({
   alias: { "@": currentDir },
   runtimeConfig: {
     public: {
-      CLOUDINARY
-    }
+      CLOUDINARY,
+    },
   },
-  modules: [
-    "@vueuse/nuxt",
-    "nuxt-icon",
-  ],
+  modules: ["@vueuse/nuxt", "nuxt-icon"],
   css: [
-    join(currentDir, './assets/scss/resets.scss'),
-    join(currentDir, './assets/scss/common-elements.scss')
+    join(currentDir, "./assets/ui/scss/resets.scss"),
+    join(currentDir, "./assets/ui/scss/common-elements.scss"),
   ],
   imports: {
-    dirs: ['utils']
+    dirs: ["utils"],
   },
   vite: {
-    // resolve: {
-    //   alias: {
-    //     '@': join(currentDir, './'),
-    //     '~': join(currentDir, './'),
-    //   },
-    // },
+    resolve: {
+      alias: {
+        "@": join(currentDir, "./"),
+      },
+    },
     css: {
       preprocessorOptions: {
         scss: {
+          api: "modern-compiler",
           additionalData: `
-            @use "sass:math";
-            @import "@/assets/scss/global.scss"; 
+            @import "@/assets/ui/scss/global.scss";
           `,
         },
       },
     },
-  }
+  },
 })
-

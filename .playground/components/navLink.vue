@@ -1,7 +1,7 @@
 <template lang="pug">
   nuxt-link(:to="to").nav-link
     div.icon-container
-      <Icon class="icon" size="24" :name="`material-symbols-light:${icon}`"/>
+      //- <Icon class="icon" size="24" :name="`material-symbols-light:keyboard-double-arrow-right-rounded`"/>
     span.text {{ label }}
 </template>
 

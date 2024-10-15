@@ -10,8 +10,11 @@
 </template>
 
 <script setup lang="ts">
+  const { styles } = useAppConfig()
+  //console.log(styles);
+
   import logo from "./assets/svg/troll-ui-logo.svg?component"
-  const layout = computed(() => useRoute().path.startsWith("/dev") ? "dev" : "default")
+  const layout = computed(() => (!isHome.value ? "dev" : "default"))
   const isHome = computed(() => {
     return useRoute().path === "/"
   })

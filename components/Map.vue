@@ -21,7 +21,7 @@
 <script setup lang="ts">
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
   const { map } = useAppConfig()
-  const isMobile = useBreakpoints()?.smallerOrEqual("map") ?? false
+  const isMobile = useTrollBreakpoints()?.smallerOrEqual("map") ?? false
   const gmap = ref(null)
   const center = { lat: 41.495, lng: -71.712 }
   const options = { ...mapOptions, ...map }
@@ -35,28 +35,31 @@
   const loaded = ref(false)
 
   const water = map.styles.find(({ featureType }) => featureType === "water")
-  if(water !== undefined) {
+  if (water !== undefined) {
     options.backgroundColor = water.stylers[0].color
   }
 
   const emit = defineEmits<{
     (e: "ready"): void
     (e: "loaded"): void
-    (e: "zoomChanged", { zoom, level }: { zoom: number, level: string }): void
+    (e: "zoomChanged", { zoom, level }: { zoom: number; level: string }): void
     (e: "markerClick", marker: Marker): void
     (e: "markerMouseOver", marker: Marker): void
     (e: "markerMouseOut", marker: Marker): void
   }>()
 
-  const props = withDefaults(defineProps<{
-    markers: Marker[]
-    ready: boolean
-    initialZoom?: number
-    initialLevel?: string
-  }>(), {
-    initialZoom: 2,
-    initialLevel: "country",
-  })
+  const props = withDefaults(
+    defineProps<{
+      markers: Marker[]
+      ready: boolean
+      initialZoom?: number
+      initialLevel?: string
+    }>(),
+    {
+      initialZoom: 2,
+      initialLevel: "country",
+    }
+  )
 
   const zoom = ref(props.initialZoom)
   const level = ref(props.initialLevel)
@@ -69,7 +72,6 @@
       overlay.value = initOverlay(google, gmap.value.map)
       labelOverlay.value = initLabelOverlay(google, gmap.value.map)
       emit("ready")
-
 
       useResizeObserver(
         gmap.value.$el,
@@ -119,7 +121,7 @@
 
       gmap.value?.map?.fitBounds(bounds)
     } else if (props.markers.length !== 0) {
-      const [ marker ] = props.markers
+      const [marker] = props.markers
 
       if (level.value === "country") {
         gmap.value?.map?.setZoom(2)
@@ -134,7 +136,7 @@
   }
 
   function handleIdle() {
-    if(!hasIdled.value) {
+    if (!hasIdled.value) {
       hasIdled.value = true
     }
   }
@@ -228,10 +230,9 @@
           }
         }
       }
-
     }
   }
-  
+
   .zoom-control-button {
     background: transparent;
     border: none;
@@ -251,7 +252,7 @@
     &[disabled] {
       opacity: 0.35;
     }
-    
+
     &:not([disabled]):hover {
       color: var(--hover-color, #{$dark-grey});
     }
@@ -260,5 +261,4 @@
       height: var(--icon-size, 2em);
     }
   }
-
 </style>

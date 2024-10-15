@@ -16,8 +16,9 @@ ul.pages-list
 <style lang="scss" scoped>
   .pages-list {
     max-width: 30rem;
+    //margin-top: 2rem;
 
-    & > li + li {
+    & > li {
       margin-top: 1.4em;
     }
   }
@@ -36,6 +37,6 @@ ul.pages-list
 
   // a {
   //   text-decoration: none;
-  //   color: 
+  //   color:
   // }
 </style>
