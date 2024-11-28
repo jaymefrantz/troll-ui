@@ -1,10 +1,10 @@
-$small-viewport: rem(320);
+$small-viewport: 20rem;
 $medium-small-viewport: 30rem;
 $medium-viewport: 40rem;
 $medium-large-viewport: 50rem;
 $large-viewport: 60rem;
-$extra-large-viewport: rem(1280);
-$page-inner-wrap: rem(1920);
+$extra-large-viewport: 80rem;
+$page-inner-wrap: 120rem;
 $center-margin-wraps: (medium, $medium-viewport), (medium-large, $medium-large-viewport), (large, $large-viewport), (extra-large, $extra-large-viewport);
 $dropdown-mobile-viewport: $medium-small-viewport + 5rem;
 $mobile-map-breakpoint: 821px;

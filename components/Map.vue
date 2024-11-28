@@ -180,7 +180,7 @@
 <style lang="scss" scoped>
   #gmap {
     position: relative;
-    padding-top: var(--height, clamp(25rem, 50vw, #{rem(675)}));
+    padding-top: var(--height, clamp(25rem, 50vw, 42.2rem));
   }
 
   :deep(.mapdiv) {

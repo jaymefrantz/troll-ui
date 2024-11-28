@@ -1,4 +1,8 @@
-@import "./mixins.scss";
-@import "./viewports.scss";
-@import "./design/colors.scss";
-@import "./design/animations.scss";
+// @import "./mixins.scss";
+// @import "./viewports.scss";
+// @import "./design/colors.scss";
+// @import "./design/animations.scss";
+@use 'mixins' as *;
+@use 'viewports' as *;
+@use 'design/colors' as *;
+@use 'design/animations' as *;
