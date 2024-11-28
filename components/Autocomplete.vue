@@ -20,34 +20,34 @@ div(ref="container").autocomplete-container
   <DropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd">
       ul(ref="resultList").autocomplete-results-list
         li(v-for="(result, index) in results ?? []" :key="result" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
-          <component v-bind="options[result]" :is="itemComponent"/>
+          <component v-bind="result" :is="itemComponent"/>
   </DropdownWrap>
 </template>
 
 <script setup lang="ts">
-  import stringSimilarity from "string-similarity"
+  //import stringSimilarity from "string-similarity"
   const id = `autocomplete-${useId()}`
   import { onClickOutside } from "@vueuse/core"
 
   const defaultIcons = {
     search: {
-      name: "material-symbols-light:search-rounded",	
+      name: "material-symbols-light:search-rounded",
     },
     close: {
-      name: "material-symbols-light:close-rounded",	
-    }
+      name: "material-symbols-light:close-rounded",
+    },
   }
 
   const props = withDefaults(
     defineProps<{
       placeholder?: string
-      items: Array<any>
+      results: Array<any>
       searchedProp?: string
       label?: string
       override?: string
       searchIcon?: Icon
       closeIcon?: Icon
-      itemComponent: Object
+      itemComponent?: Object
     }>(),
     {
       placeholder: "Search Google maps",
@@ -65,10 +65,9 @@ div(ref="container").autocomplete-container
     (e: "selected", value: string | null): void
   }>()
 
-  const { placeholder, items, label, override, searchedProp } = toRefs(props)
+  const { placeholder, results, label, override, searchedProp } = toRefs(props)
   const query = ref("")
   const typedSearch = ref("")
-  const results = ref([])
   const wasReservedKey = ref(false)
   const focusedIndex = ref(-1)
   const hideResults = ref(false)
@@ -77,59 +76,69 @@ div(ref="container").autocomplete-container
   const container = ref<HTMLDivElement | null>(null)
   const resultList = ref<HTMLElement | null>(null)
   const isEnd = ref(false)
-  const { arrivedState, y } = useScroll(resultList, { 'throttle' : 200 })
-	const { bottom } = toRefs(arrivedState)
+  const { arrivedState, y } = useScroll(resultList, { throttle: 200 })
+  const { bottom } = toRefs(arrivedState)
   watch(y, () => {
-		isEnd.value = bottom.value;
-	})
+    isEnd.value = bottom.value
+  })
 
   query.value = override.value ?? ""
 
-  const options = computed(() => {
-    return items.value.reduce((obj, item) => ({ ...obj, [item[searchedProp.value].toLowerCase()]: { ...item, text: item[searchedProp.value] } }), {})
-  })
+  // const options = computed(() => {
+  //   return items.value.reduce(
+  //     (obj, item) => ({
+  //       ...obj,
+  //       [item[searchedProp.value].toLowerCase()]: { ...item, text: item[searchedProp.value] },
+  //     }),
+  //     {}
+  //   )
+  // })
 
   const hasResults = computed(() => results.value.length > 0 && query.value !== "")
-  
+
   onClickOutside(container, () => {
-    if(!hideResults.value && hasResults.value) {
+    if (!hideResults.value && hasResults.value) {
       hideResults.value = true
       focusedIndex.value = -1
     }
   })
 
-  watch(typedSearch, useDebounceFn(setResults, 200))
+  //watch(typedSearch, useDebounceFn(setResults, 200))
 
-  function setResults() {
-    if (typedSearch.value.split("").length > 3 && Object.keys(options.value).length > 0) {
-        results.value = stringSimilarity
-          .findBestMatch(
-            typedSearch.value.toLowerCase(),
-            Object.keys(options.value)
-          )
-          .ratings.filter(({ rating }) => rating !== 0)
-          .sort((a, b) => {
-            if (a.rating < b.rating) {
-              return -1
-            }
-            if (a.rating > b.rating) {
-              return 1
-            }
-          })
-          .reverse()
-          .reduce((unique, item) => {
-            //needs this reduce cause string similarity is doing some weird stuff and adding duplicates even though autocompleteItems are unique and clean
-            return !unique.map(({ target }) => target).includes(item.target) ? [...unique, item] : unique
-          }, [])
-          .splice(0, 12).map(({ target }) => target)          
-      } else {
-        results.value = []
-      }
-  }
+  // function setResults() {
+  //   if (typedSearch.value.split("").length > 3 && Object.keys(options.value).length > 0) {
+  //       results.value = stringSimilarity
+  //         .findBestMatch(
+  //           typedSearch.value.toLowerCase(),
+  //           Object.keys(options.value)
+  //         )
+  //         .ratings.filter(({ rating }) => rating !== 0)
+  //         .sort((a, b) => {
+  //           if (a.rating < b.rating) {
+  //             return -1
+  //           }
+  //           if (a.rating > b.rating) {
+  //             return 1
+  //           }
+  //         })
+  //         .reverse()
+  //         .reduce((unique, item) => {
+  //           //needs this reduce cause string similarity is doing some weird stuff and adding duplicates even though autocompleteItems are unique and clean
+  //           return !unique.map(({ target }) => target).includes(item.target) ? [...unique, item] : unique
+  //         }, [])
+  //         .splice(0, 12).map(({ target }) => target)
+  //     } else {
+  //       results.value = []
+  //     }
+  // }
 
-  watch(() => items.value, async() => {
-    await wait(10)
-    setResults()
+  // watch(() => items.value, async() => {
+  //   await wait(10)
+  //   setResults()
+  // })
+
+  watch(typedSearch, (newValue, oldValue) => {
+    emit("typed", newValue)
   })
 
   async function keydown({ target }: Event) {
@@ -152,20 +161,20 @@ div(ref="container").autocomplete-container
   }
 
   async function goDown() {
-    if(results.value.length === 0) return
+    if (results.value.length === 0) return
     wasReservedKey.value = true
     focusedIndex.value = focusedIndex.value < results.value.length - 1 ? focusedIndex.value + 1 : 1
   }
 
   function goUp() {
-    if(results.value.length === 0) return
+    if (results.value.length === 0) return
     wasReservedKey.value = true
     focusedIndex.value = focusedIndex.value > 0 ? focusedIndex.value - 1 : results.value.length - 1
   }
 
-  function selected(name: string) {
+  function selected(item: any) {
     wasReservedKey.value = true
-    const item = options.value[name]
+    // const item = options.value[name]
     query.value = item[searchedProp.value]
     hideResults.value = true
     focusedIndex.value = -1
@@ -174,7 +183,7 @@ div(ref="container").autocomplete-container
 
   function enterPressed() {
     wasReservedKey.value = true
-    
+
     if (focusedIndex.value !== -1) {
       selected(focusedOption.value)
     }
@@ -185,12 +194,20 @@ div(ref="container").autocomplete-container
   })
 
   watch(focusedIndex, index => {
-    if(index === -1) return
-    const item = options.value[focusedOption.value]
+    if (index === -1) return
+
+    const item = results.value[focusedIndex.value]
     const element = resultListItems.value[index]
     query.value = item[searchedProp.value]
-    if(!isLiVisible(element)) {
-      resultListItems.value[index - 1].scrollIntoView()
+
+    //this logic is probably wrong.
+    if (!isLiVisible(element) && index > 0) {
+      // console.log(resultListItems.value[index].textContent)
+
+      resultListItems.value[index].scrollIntoView()
+    } else if (index === 0) {
+      // console.log(resultListItems.value[0].textContent)
+      resultListItems.value[0].scrollIntoView()
     }
   })
 
@@ -198,14 +215,11 @@ div(ref="container").autocomplete-container
     const liRect = liElement.getBoundingClientRect()
     const ulRect = resultList.value.getBoundingClientRect()
 
-    return (
-        liRect.top >= ulRect.top &&
-        liRect.bottom <= ulRect.bottom
-    )
-}
+    return liRect.top >= ulRect.top && liRect.bottom <= ulRect.bottom
+  }
 
   function focused() {
-    if(hasResults.value) {
+    if (hasResults.value) {
       hideResults.value = false
       focusedIndex.value = results.value.findIndex(name => name === query.value.toLowerCase())
     }
@@ -225,9 +239,8 @@ div(ref="container").autocomplete-container
   }
 
   defineExpose({
-    results,
     props,
-    setResults,
+    //setResults,
     query,
   })
 </script>
@@ -236,17 +249,16 @@ div(ref="container").autocomplete-container
   .autocomplete-container {
     position: relative;
   }
-  
+
   .autocomplete-input-wrap {
     background-color: var(--autocomplete-background, white);
-		border: var(--autocomplete-border, 1px solid $grey);
+    border: var(--autocomplete-border, 1px solid $grey);
     color: var(--autocomplete-color, $grey);
-		border-radius: var(--autocomplete-border-radius, 1.75rem);
+    border-radius: var(--autocomplete-border-radius, 1.75rem);
     padding: var(--autocomplete-wrap-padding, 0 0.5em);
     display: flex;
     align-items: center;
     justify-content: space-between;
-
 
     &:focus-within {
       outline: 2px solid var(--focus-color);
@@ -293,5 +305,4 @@ div(ref="container").autocomplete-container
       }
     }
   }
-
 </style>
