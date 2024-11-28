@@ -2,7 +2,7 @@
 div(ref="container").custom-dropdown
 	label(v-if="label !== ''" v-html="label" :id="`${id}-label`" @click="focusDropdown").default-label
 	div.dropdown-mobile-select-container
-		select(v-model="selectedValue" @change="selectChanged"  ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
+		select(v-model="selectedValue" ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
 			option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
 		<Icon :size="icon.size.toString()" :name="icon.name" class="dropdown-arrow"/>
 	button(type="button" ref="dropdownTrigger" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
@@ -24,7 +24,7 @@ div(ref="container").custom-dropdown
 			li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
 				:aria-posinset="index + 1" 
 				:aria-setsize="dropdownOptions.length + 1" 
-				:aria-selected="option.value === selectedValue ? 'true' : 'false'"
+				:aria-selected="option.value == selectedValue ? 'true' : 'false'"
 				@keydown.space.exact.prevent="spaceHit"
 				@click="selectOption(option)"
 				@keydown.enter.exact.prevent="selectOption(option)"
@@ -40,7 +40,7 @@ div(ref="container").custom-dropdown
 				@keydown="keydown"
 			)
 				span.option-label {{option.label}}
-				span(:aria-hidden="option.value === selectedValue ? 'false' : 'true'").sr-only , Selected
+				span(:aria-hidden="option.value == selectedValue ? 'false' : 'true'").sr-only , Selected
 	</DropdownWrap>
 </template>
 
@@ -48,8 +48,8 @@ div(ref="container").custom-dropdown
   import { onClickOutside, useScroll } from "@vueuse/core"
   import { vScroll } from "@vueuse/components"
   const isMobile = useTrollBreakpoints()?.smallerOrEqual("dropdown") ?? false
+
   const id = useId()
-  const selectedValue = ref("")
   const expanded = ref(false)
   const previouslySelected = ref("")
   const typedText = ref("")
@@ -96,20 +96,17 @@ div(ref="container").custom-dropdown
       label: "",
     }
   )
+  const selectedValue = defineModel()
 
   const icon = useIconDefaults(props?.icon, defaultIcon)
   const iconSize = computed(() => icon.size)
 
   const { override, options: dropdownOptions, label } = toRefs(props)
-  selectedValue.value = props?.override ?? dropdownOptions.value[0].value
-
-  function selectChanged() {
-    emit("change", selectedValue.value)
-  }
+  //selectedValue.value = props?.override ?? dropdownOptions.value[0].value
 
   const selectedLabel = computed(() => {
     if (dropdownOptions.value === null) return ""
-    return dropdownOptions.value.find(option => option.value === selectedValue.value)?.label ?? ""
+    return dropdownOptions.value.find(option => option.value == selectedValue.value)?.label ?? ""
   })
 
   function openDropdown(event: Event) {
@@ -120,7 +117,7 @@ div(ref="container").custom-dropdown
     expanded.value = true
     previouslySelected.value = selectedValue.value
 
-    const index = dropdownOptions.value.findIndex(option => option.value === selectedValue.value)
+    const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
     setTimeout(() => {
       listItemOptions.value[index].focus()
     }, 10)
@@ -132,8 +129,6 @@ div(ref="container").custom-dropdown
     setTimeout(() => {
       dropdownTrigger.value.focus()
     }, 1)
-
-    if (previouslySelected.value !== selectedValue.value) selectChanged()
   }
 
   function spaceHit({ target }: Event) {
@@ -170,23 +165,21 @@ div(ref="container").custom-dropdown
     //event.preventDefault()
     selectedValue.value = dropdownOptions.value[index].value
 
-    if (target.classList.contains("dropdown-trigger")) {
-      selectChanged()
-    } else {
+    if (!target.classList.contains("dropdown-trigger")) {
       listItemOptions.value[index].focus()
     }
   }
 
   function goDown({ target }: Event) {
     wasReservedKey.value = true
-    const index = dropdownOptions.value.findIndex(option => option.value === selectedValue.value)
+    const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
     if (index + 1 >= dropdownOptions.value.length) return
     setSelected(target, index + 1)
   }
 
   function goUp({ target }: Event) {
     wasReservedKey.value = true
-    const index = dropdownOptions.value.findIndex(option => option.value === selectedValue.value)
+    const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
     if (index <= 0) return
     setSelected(target, index - 1)
   }
@@ -208,7 +201,7 @@ div(ref="container").custom-dropdown
     if (!wasReservedKey.value) {
       const key = event.key.toLowerCase()
       let duplicate = JSON.parse(JSON.stringify(dropdownOptions.value))
-      const index = dropdownOptions.value.findIndex(option => option.value === selectedValue.value)
+      const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
       let searchable = []
       const typedTime = new Date()
       const difference = typedTime - lastTyped.value
@@ -227,10 +220,8 @@ div(ref="container").custom-dropdown
         label.toLowerCase().startsWith(typedText.value)
       )
       if (typeof foundItem !== "undefined") {
-        selectedValue.value = foundItem.value
-        const index = dropdownOptions.value.findIndex(
-          option => option.value === selectedValue.value
-        )
+        //selectedValue.value = foundItem.value
+        const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
         listItemOptions.value[index].focus()
       }
 
@@ -244,7 +235,7 @@ div(ref="container").custom-dropdown
   }
 
   defineExpose({
-    value: selectedValue,
+    selectedValue,
     props,
   })
 </script>
