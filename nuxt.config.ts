@@ -1,8 +1,6 @@
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
-const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${
-  process.env.ENV === "dev" ? "dev" : "prod"
-}`
+const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.CLOUDINARY_FOLDER}`
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
@@ -47,7 +45,11 @@ export default defineNuxtConfig({
         scss: {
           api: "modern-compiler",
           additionalData: `
-            @import "@/assets/ui/scss/global.scss";
+            @use "sass:math";
+            @use "@/assets/ui/scss/mixins.scss" as *;
+            @use "@/assets/ui/scss/viewports.scss" as *;
+            @use "@/assets/ui/scss/design/colors.scss" as *;
+            @use "@/assets/ui/scss/design/animations.scss" as *;
           `,
         },
       },
