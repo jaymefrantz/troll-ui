@@ -1,37 +1,41 @@
 <template lang="pug">
-  <GoogleMarker :options="markerOptions" ref="gmapMarker" @click="handleEvent('markerClick')" @mouseover="handleEvent('markerMouseOver'); hovered = true" @mouseout="handleEvent('markerMouseOut'); hovered = false"/>
+  <GoogleMarker :options="markerOptions" ref="gmapMarker" @click="handleEvent('markerClick')" @dragend="dragend" @mouseover="handleEvent('markerMouseOver'); hovered = true" @mouseout="handleEvent('markerMouseOut'); hovered = false"/>
 </template>
 
 <script setup lang="ts">
   import { Marker as GoogleMarker } from "vue3-google-map"
   const gmapMarker = ref(null)
   const emit = defineEmits<{
-    (e: "emit", { name, marker }: {name: string, marker: Marker}): void
+    (e: "emit", { name, marker }: { name: string; marker: Marker }): void
   }>()
 
-  const marker = withDefaults(defineProps<{
-    id: string
-    title: string
-    link?: string
-    polaroids: string[]
-    position: {
-      lat: number
-      lng: number
+  const marker = withDefaults(
+    defineProps<{
+      id: string
+      title?: string
+      link?: string
+      polaroids?: string[]
+      position: {
+        lat: number
+        lng: number
+      }
+      level: string
+      icon?: string
+      hoverIcon?: string
+      label?: number | string
+      color?: string
+      iconOptions?: google.maps.Icon
+    }>(),
+    {
+      color: "#6d6f73",
     }
-    level: string
-    icon?: string
-    hoverIcon?: string
-    label?: number
-    color?: string
-    iconOptions?: google.maps.Icon
-  }>(), {
-    color: "#6d6f73"
-  })
+  )
 
   const { position, level, polaroids: polaroidIds, link, title, color } = toRefs(marker)
   const hovered = ref(false)
 
   const label = computed(() => {
+    if (level.value === "polaroid") return {}
     let size = "14px"
     let polaroidCount = marker?.label ?? polaroidIds.value.length
 
@@ -41,10 +45,13 @@
       size = "12px"
     }
 
-    if (level.value !== "polaroid") {
-      return { label: { text: polaroidCount.toString(), fontSize: size, fontWeight: "bold", color: color.value } }
-    } else {
-      return {} //hopefully this is ok
+    return {
+      label: {
+        text: polaroidCount.toString(),
+        fontSize: size,
+        fontWeight: "bold",
+        color: color.value,
+      },
     }
   })
 
@@ -69,17 +76,21 @@
   // }
 
   const markerOptions = computed(() => {
-    let obj = { position: position.value, clickable: true, ...label.value }
+    let obj = { draggable: true, position: position.value, clickable: true, ...label.value }
     const icon = hovered.value && marker.hoverIcon !== undefined ? marker.hoverIcon : marker.icon
-    if(icon !== undefined) {
-      obj.icon = { url: icon, ...iconOptions } 
+    if (icon !== undefined) {
+      obj.icon = { url: icon, ...iconOptions }
     }
-    
+
     return obj
   })
 
-  function handleEvent(name: string) {
-    emit('emit', { name, marker: {...marker, gmapMarker: gmapMarker.value }})
+  function dragend({ latLng }) {
+    handleEvent("dragend", { newPosition: { lat: latLng.lat(), lng: latLng.lng() } })
+  }
+
+  function handleEvent(name: string, additional: any = {}) {
+    emit("emit", { name, marker: { ...marker, gmapMarker: gmapMarker.value, ...additional } })
   }
 </script>
 
@@ -171,7 +182,10 @@
     border: 0;
 
     &:after {
-      content: var(--x-icon, url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" fill="rgb(22, 27, 34)" viewBox="0 0 24 24"><path d="M14.1945,12.07,20.8417,5.423A1.4367,1.4367,0,1,0,18.81,3.3912L12,10.2012l-6.81-6.81A1.4367,1.4367,0,0,0,3.1583,5.423L9.8055,12.07,3.1583,18.7173A1.4367,1.4367,0,1,0,5.19,20.7491l6.81-6.81,6.81,6.81a1.4367,1.4367,0,1,0,2.0318-2.0318Z"/></svg>'));
+      content: var(
+        --x-icon,
+        url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" fill="rgb(22, 27, 34)" viewBox="0 0 24 24"><path d="M14.1945,12.07,20.8417,5.423A1.4367,1.4367,0,1,0,18.81,3.3912L12,10.2012l-6.81-6.81A1.4367,1.4367,0,0,0,3.1583,5.423L9.8055,12.07,3.1583,18.7173A1.4367,1.4367,0,1,0,5.19,20.7491l6.81-6.81,6.81,6.81a1.4367,1.4367,0,1,0,2.0318-2.0318Z"/></svg>')
+      );
       display: block;
       width: 1.15rem;
       margin-left: auto;
