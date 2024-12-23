@@ -1,5 +1,4 @@
 <template lang="pug">
-  pre {{JSON.stringify(results.map(({title}) => title), null, "  ")}}
   <Autocomplete ref="autocomplete" @selected="movie = $event" :results="results" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
   div(v-if="movie !== null").movie-card
     img(:src="movie.posterURL" :alt="movie.title")
