@@ -27,16 +27,16 @@
   })
 
   function formatObj(link: string | undefined) {
-    if(link === undefined) return null
+    if (link === undefined) return null
     return {
       name: pages[link],
       link,
     }
   }
 
-  useHead({
-    title: computed(() => `${title.value} Demo / Troll UI`),
-  })
+  // useHead({
+  //   title: computed(() => `${title.value} Demo / Troll UI`),
+  // })
 </script>
 
 <style lang="scss" scoped>
@@ -67,6 +67,11 @@
 
   h1 {
     margin-top: 0.65em;
+    font-size: 2em;
+  }
+
+  :global(h1 + *) {
+    margin-top: 3em;
   }
 
   .nav-link-list {
