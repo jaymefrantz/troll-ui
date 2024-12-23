@@ -87,7 +87,6 @@ div(ref="container").custom-dropdown
 
   const props = withDefaults(
     defineProps<{
-      override?: string
       options: Option[]
       label?: string
       icon?: Icon
@@ -101,8 +100,7 @@ div(ref="container").custom-dropdown
   const icon = useIconDefaults(props?.icon, defaultIcon)
   const iconSize = computed(() => icon.size)
 
-  const { override, options: dropdownOptions, label } = toRefs(props)
-  //selectedValue.value = props?.override ?? dropdownOptions.value[0].value
+  const { options: dropdownOptions, label } = toRefs(props)
 
   const selectedLabel = computed(() => {
     if (dropdownOptions.value === null) return ""
@@ -197,7 +195,6 @@ div(ref="container").custom-dropdown
   async function keydown(event: Event) {
     //this.test = event.key
     await wait(1)
-
     if (!wasReservedKey.value) {
       const key = event.key.toLowerCase()
       let duplicate = JSON.parse(JSON.stringify(dropdownOptions.value))
@@ -219,8 +216,9 @@ div(ref="container").custom-dropdown
       const foundItem = searchable.find(({ label }) =>
         label.toLowerCase().startsWith(typedText.value)
       )
+
       if (typeof foundItem !== "undefined") {
-        //selectedValue.value = foundItem.value
+        selectedValue.value = foundItem.value
         const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
         listItemOptions.value[index].focus()
       }
@@ -332,7 +330,7 @@ div(ref="container").custom-dropdown
 
       &[aria-selected="true"] {
         background-color: var(--option-selected-background, $grey);
-        color: var(--option-selected-color, white);
+        --focus-color: var(--option-selected-color, white);
       }
 
       &:not([aria-selected="true"]):hover {

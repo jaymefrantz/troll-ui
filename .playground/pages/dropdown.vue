@@ -1,19 +1,21 @@
 <template lang="pug">
 ul.dropdowns
   li
-    <Dropdown class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
+    <Dropdown v-model="yearSelection" class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
     clientOnly
-      p selected year: {{ yearDropdown.value }}
+      p selected year: {{ yearSelection }}
   li
-    <Dropdown class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" override="SmellyCheese" label="Cheese"/>
+    <Dropdown v-model="cheeseSelection" class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" label="Cheese"/>
     clientOnly
-      p selected cheese: {{ cheeseDropdown.value }}
+      p selected cheese: {{ cheeseSelection }}
 <Props :props="props" />
 </template>
 
 <script setup lang="ts">
   const yearDropdown = ref(null)
   const cheeseDropdown = ref(null)
+  const cheeseSelection = ref("SmellyCheese")
+  const yearSelection = ref("")
 
   const yearOptions = [
     { label: "Any year", value: "" },
@@ -31,7 +33,17 @@ ul.dropdowns
     { label: "2013", value: "2013" },
   ]
 
-  const cheeses = ["Queso", "Feta", "Cottage Cheese", "Cheddar", "Pepper Jack", "Mozzarella", "Smelly Cheese", "Pecorino", "Parmesan"].map(cheese => ({ label: cheese, value: cheese.split(" ").join("") }))
+  const cheeses = [
+    "Queso",
+    "Feta",
+    "Cottage Cheese",
+    "Cheddar",
+    "Pepper Jack",
+    "Mozzarella",
+    "Smelly Cheese",
+    "Pecorino",
+    "Parmesan",
+  ].map(cheese => ({ label: cheese, value: cheese.split(" ").join("") }))
   const props = computed(() => Object.keys(yearDropdown.value?.props ?? {}))
   const cssVars = [
     "--trigger-padding",
@@ -56,9 +68,8 @@ ul.dropdowns
     "--dropdown-outer-padding",
     "--dropdown-inner-padding",
     "--scollbar-width",
-    "--scrollbar-color"
+    "--scrollbar-color",
   ]
-
 </script>
 
 <style lang="scss">
@@ -85,13 +96,12 @@ ul.dropdowns
     width: 12em;
   }
 
-
   .dropdown-inner-wrap::-webkit-scrollbar-thumb {
     border-radius: 5px;
   }
 
-
-  .dropdown-trigger, .dropdown-mobile-select-container {
+  .dropdown-trigger,
+  .dropdown-mobile-select-container {
     transition: background-color $medium;
 
     &:hover {
@@ -99,19 +109,18 @@ ul.dropdowns
     }
   }
 
-// .dropdown-select-input {
-//   border-radius: 1.75rem;
-// }
-// //--option-hover-background: $lightest-magenta
-// // --option-selected-background: map-get($magenta, shadow)
-// //need font weight
-// .dropdown-mobile-select-container {
-//   padding-right: 2rem;
-//   padding-left: 0.25rem;
-// }
+  // .dropdown-select-input {
+  //   border-radius: 1.75rem;
+  // }
+  // //--option-hover-background: $lightest-magenta
+  // // --option-selected-background: map-get($magenta, shadow)
+  // //need font weight
+  // .dropdown-mobile-select-container {
+  //   padding-right: 2rem;
+  //   padding-left: 0.25rem;
+  // }
 
-.dropdown-list > li {
-  border-radius: 0.2em; 
-}
-
+  .dropdown-list > li {
+    border-radius: 0.2em;
+  }
 </style>
