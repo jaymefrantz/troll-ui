@@ -25,7 +25,6 @@ div(ref="container").autocomplete-container
 </template>
 
 <script setup lang="ts">
-  //import stringSimilarity from "string-similarity"
   const id = `autocomplete-${useId()}`
   import { onClickOutside } from "@vueuse/core"
 
@@ -84,16 +83,6 @@ div(ref="container").autocomplete-container
 
   query.value = override.value ?? ""
 
-  // const options = computed(() => {
-  //   return items.value.reduce(
-  //     (obj, item) => ({
-  //       ...obj,
-  //       [item[searchedProp.value].toLowerCase()]: { ...item, text: item[searchedProp.value] },
-  //     }),
-  //     {}
-  //   )
-  // })
-
   const hasResults = computed(() => results.value.length > 0 && query.value !== "")
 
   onClickOutside(container, () => {
@@ -102,40 +91,6 @@ div(ref="container").autocomplete-container
       focusedIndex.value = -1
     }
   })
-
-  //watch(typedSearch, useDebounceFn(setResults, 200))
-
-  // function setResults() {
-  //   if (typedSearch.value.split("").length > 3 && Object.keys(options.value).length > 0) {
-  //       results.value = stringSimilarity
-  //         .findBestMatch(
-  //           typedSearch.value.toLowerCase(),
-  //           Object.keys(options.value)
-  //         )
-  //         .ratings.filter(({ rating }) => rating !== 0)
-  //         .sort((a, b) => {
-  //           if (a.rating < b.rating) {
-  //             return -1
-  //           }
-  //           if (a.rating > b.rating) {
-  //             return 1
-  //           }
-  //         })
-  //         .reverse()
-  //         .reduce((unique, item) => {
-  //           //needs this reduce cause string similarity is doing some weird stuff and adding duplicates even though autocompleteItems are unique and clean
-  //           return !unique.map(({ target }) => target).includes(item.target) ? [...unique, item] : unique
-  //         }, [])
-  //         .splice(0, 12).map(({ target }) => target)
-  //     } else {
-  //       results.value = []
-  //     }
-  // }
-
-  // watch(() => items.value, async() => {
-  //   await wait(10)
-  //   setResults()
-  // })
 
   watch(typedSearch, (newValue, oldValue) => {
     emit("typed", newValue)
@@ -163,7 +118,7 @@ div(ref="container").autocomplete-container
   async function goDown() {
     if (results.value.length === 0) return
     wasReservedKey.value = true
-    focusedIndex.value = focusedIndex.value < results.value.length - 1 ? focusedIndex.value + 1 : 1
+    focusedIndex.value = focusedIndex.value < results.value.length - 1 ? focusedIndex.value + 1 : 0
   }
 
   function goUp() {
@@ -200,14 +155,16 @@ div(ref="container").autocomplete-container
     const element = resultListItems.value[index]
     query.value = item[searchedProp.value]
 
-    //this logic is probably wrong.
     if (!isLiVisible(element) && index > 0) {
-      // console.log(resultListItems.value[index].textContent)
-
-      resultListItems.value[index].scrollIntoView()
+      resultListItems.value[index].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
     } else if (index === 0) {
-      // console.log(resultListItems.value[0].textContent)
-      resultListItems.value[0].scrollIntoView()
+      resultListItems.value[0].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
     }
   })
 
@@ -240,8 +197,7 @@ div(ref="container").autocomplete-container
 
   defineExpose({
     props,
-    //setResults,
-    query,
+    query: typedSearch,
   })
 </script>
 
@@ -299,7 +255,7 @@ div(ref="container").autocomplete-container
         color: var(--option-selected-color, white);
       }
 
-      &:not(.selected):hover {
+      &:not(.selected) > *:hover {
         background-color: var(--option-hover-background, $dark-grey);
         color: var(--option-hover-color, white);
       }

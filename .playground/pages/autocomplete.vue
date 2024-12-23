@@ -1,34 +1,80 @@
 <template lang="pug">
-<Autocomplete ref="autocomplete" @selected="movie = $event" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
-div(v-if="movie !== null").movie-card
-  img(:src="movie.posterURL" :alt="movie.title")
-  h2 {{ movie.title }}
-<Props :props="props" />
-//-pre {{movie, null, "  "}}
-div.options-container
-  p.subtitle Sample options
-  ul.options-list
-    li(v-for="movie in useObjectSort(movies, 'title')" :key="movie.id") {{ movie.title }}
+  pre {{JSON.stringify(results.map(({title}) => title), null, "  ")}}
+  <Autocomplete ref="autocomplete" @selected="movie = $event" :results="results" v-bind="{ label: 'Movies', placeholder: 'Search movies', items: movies, searchedProp: 'title', itemComponent  }" />
+  div(v-if="movie !== null").movie-card
+    img(:src="movie.posterURL" :alt="movie.title")
+    h2 {{ movie.title }}
+  <Props :props="props" />
+  //-pre {{movie, null, "  "}}
+  div.options-container
+    p.subtitle Sample options
+    ul.options-list
+      li(v-for="movie in useObjectSort(Object.values(movies), 'title')" :key="movie.id") {{ movie.title }}
 </template>
 
 <script setup lang="ts">
+  import stringSimilarity from "string-similarity"
   interface Movie {
     id: number
     title: string
     posterURL: string
     imdbId: string
   }
+
   const autocomplete = ref(null)
-  const { data: movies } = await useFetch("https://api.sampleapis.com/movies/comedy")
+  const { data } = await useFetch("https://api.sampleapis.com/movies/comedy")
+  const movies = ref(
+    data.value.reduce((obj, movie) => {
+      return { ...obj, [movie.title.toLowerCase()]: movie }
+    }, {})
+  )
   const itemComponent = resolveComponent("AutocompleteItem")
   const props = computed(() => Object.keys(autocomplete.value?.props ?? {}))
   const movie = ref<null | Movie>(null)
+  const results = ref([])
+  //console.log(autocomplete.value.query);
+  const typedSearch = computed(() => {
+    return autocomplete.value?.query
+  })
+
+  watch(typedSearch, useDebounceFn(setResults, 200))
+
+  function setResults() {
+    if (typedSearch.value.split("").length > 3 && Object.keys(movies.value).length > 0) {
+      results.value = useObjectSort(
+        stringSimilarity
+          .findBestMatch(typedSearch.value.toLowerCase(), Object.keys(movies.value))
+          .ratings.filter(({ rating }) => rating !== 0),
+        "rating"
+      )
+        .reverse()
+        .reduce((unique, item) => {
+          //needs this reduce cause string similarity is doing some weird stuff and adding duplicates even though autocompleteItems are unique and clean
+          return !unique.map(({ target }) => target).includes(item.target)
+            ? [...unique, item]
+            : unique
+        }, [])
+        .splice(0, 12)
+        .map(({ target }) => target)
+        .map(key => movies.value[key])
+    } else {
+      results.value = []
+    }
+  }
 </script>
 
 <style lang="scss">
   .autocomplete-container {
+    --dropdown-height: 14rem;
+    --option-padding: 0.75rem;
+    --option-margin: 0 0.35em 0 0.1em;
+
     max-width: 30rem;
     --focus-color: var(--dark-200);
+  }
+
+  ul.autocomplete-results-list li:first-child {
+    padding-top: 0;
   }
 
   .autocomplete-input-wrap:focus-within {
@@ -36,7 +82,7 @@ div.options-container
   }
 
   .autocomplete-results-list > li {
-    border-radius: 0.2em; 
+    border-radius: 0.2em;
   }
 
   .movie-card {
@@ -88,5 +134,4 @@ div.options-container
       padding: 0.35rem 0.875rem;
     }
   }
-
 </style>
