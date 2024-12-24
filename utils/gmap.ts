@@ -29,8 +29,8 @@ const mapOptions = {
   zoomControl: false,
   center: {
     lat: 41.4993,
-    lng: -81.6944
-  }
+    lng: -81.6944,
+  },
 }
 
 const zoomLevels = {
@@ -98,7 +98,6 @@ function initLabelOverlay(google, map) {
       this.setMap(null)
     }
     onRemove() {
-
       const div = document.getElementById("marker-location-label")
       console.log("removing", div, this.label)
       div.parentNode.removeChild(div)
@@ -172,38 +171,37 @@ function initOverlay(google, map) {
       }, 25)
     }
     hideLabel({ title }: Marker) {
-      //need to know if a marker is currently being hovered? 
+      //need to know if a marker is currently being hovered?
       setTimeout(() => {
         if (this.label === title) {
           this.$el.classList.remove("shown")
           this.label = ""
         }
       }, 25)
-
     }
     polaroidClicked(id: string) {
       this.previews[id].clicked = true
     }
     addPolaroid(polaroid: Polaroid, clicked = false) {
       const { image, position, id } = polaroid
-      //console.log("add", this.previews[id])
 
       if (this.previews[id] === undefined) {
         const panes = this.getPanes()
-        const imageUrl = JSON.parse(JSON.stringify(useRuntimeConfig().public.CLOUDINARY)).split("/")
-        const environment = imageUrl.pop()
-        panes.floatPane.insertAdjacentHTML("beforeend",
+        let splitImage = image.split("/upload/")
+
+        panes.floatPane.insertAdjacentHTML(
+          "beforeend",
           `<div class="marker-preview-container" id="preview-${id}"><div class="marker-preview">
               <button type="button" class="close-preview-button"></button>
               <div class="marker-preview-image-wrap">
-                <img src="${`${imageUrl.join("/")}/w_228,h_202,f_auto,dpr_auto/${environment}/polaroids/${id}.jpg`}" width="128" height="102">
+                <img src="${`${splitImage[0]}/upload/w_228,h_202,f_auto,dpr_auto/${splitImage[1]}`}" width="128" height="102">
               </div>
             </div></div>`
         )
 
         const $el = document.getElementById(`preview-${id}`)
 
-        $el?.querySelector(".close-preview-button")?.addEventListener("click", (event) => {
+        $el?.querySelector(".close-preview-button")?.addEventListener("click", event => {
           this.previews[id].clicked = false
           this.removePreview(id)
         })
@@ -254,6 +252,10 @@ function initOverlay(google, map) {
         this.previews[id].hidden = true
       }
     }
+    showPreview(id: string) {
+      const $el = this.previews[id].$el
+      $el.classList.add("shown")
+    }
     hidePreview($el: HTMLElement) {
       $el.classList.add("leave")
       $el.classList.remove("shown")
@@ -262,8 +264,7 @@ function initOverlay(google, map) {
       $el.classList.remove("leave")
       //}, 100)
     }
-    onRemove() {
-    }
+    onRemove() {}
   }
 
   const overlay = new Overlay()
@@ -283,7 +284,14 @@ function getTitle({ level, polaroids }: Marker) {
   }
 
   if (level !== "polaroid") {
-    return { label: { text: polaroidCount.toString(), fontSize: size, fontWeight: "bold", color: "#6d6f73" } }
+    return {
+      label: {
+        text: polaroidCount.toString(),
+        fontSize: size,
+        fontWeight: "bold",
+        color: "#6d6f73",
+      },
+    }
   } else {
     return {} //hopefully this is ok
   }
@@ -301,5 +309,14 @@ function getZoomedMarkers(level: string, markers: Marker[]) {
   })
 }
 
-export { mapOptions, mapStyles, mobileBreakpoint, zoomLevels, getNextLevel, getTitle, initOverlay, initLabelOverlay, getZoomedMarkers }
-
+export {
+  mapOptions,
+  mapStyles,
+  mobileBreakpoint,
+  zoomLevels,
+  getNextLevel,
+  getTitle,
+  initOverlay,
+  initLabelOverlay,
+  getZoomedMarkers,
+}

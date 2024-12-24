@@ -1,21 +1,23 @@
 <template lang="pug">
-  <GoogleMap :zoom="initialZoom" :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, minZoom: isMobile ? 1 : 2}" @zoom_changed="zoomChanged" @idle="handleIdle">
-    <Marker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
-  </GoogleMap>
-  ul(v-if="loaded").zoom-control-list
-    li
-      button(type="button" @click="setZoom(1)" :disabled="zoomInHidden").zoom-control-button
-        span.sr-only Zoom in
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
-          <rect fill="currentColor" x="10.8594" y="4.5089" width="2.2813" height="14.9821" rx="1.0476"/>
-        </svg>
-    li
-      button(type="button" @click="setZoom(-1)" :disabled="zoomOutHidden").zoom-control-button
-        span.sr-only Zoom out
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
-        </svg>
+  div.map-container
+    client-only
+      <GoogleMap :zoom="initialZoom" :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, minZoom: isMobile ? 1 : 2}" @zoom_changed="zoomChanged" @idle="handleIdle">
+        <Marker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
+      </GoogleMap>
+      ul(v-if="loaded").zoom-control-list
+        li
+          button(type="button" @click="setZoom(1)" :disabled="zoomInHidden").zoom-control-button
+            span.sr-only Zoom in
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
+              <rect fill="currentColor" x="10.8594" y="4.5089" width="2.2813" height="14.9821" rx="1.0476"/>
+            </svg>
+        li
+          button(type="button" @click="setZoom(-1)" :disabled="zoomOutHidden").zoom-control-button
+            span.sr-only Zoom out
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
+            </svg>
 </template>
 
 <script setup lang="ts">
@@ -178,7 +180,7 @@
 </script>
 
 <style lang="scss" scoped>
-  #gmap {
+  .map-container {
     position: relative;
     padding-top: var(--height, clamp(25rem, 50vw, 42.2rem));
   }

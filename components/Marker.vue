@@ -25,9 +25,13 @@
       label?: number | string
       color?: string
       iconOptions?: google.maps.Icon
+      options?: any
+      image?: string
     }>(),
     {
       color: "#6d6f73",
+      options: {},
+      image: "",
     }
   )
 
@@ -76,13 +80,13 @@
   // }
 
   const markerOptions = computed(() => {
-    let obj = { draggable: true, position: position.value, clickable: true, ...label.value }
+    let obj = { draggable: false, position: position.value, clickable: true, ...label.value }
     const icon = hovered.value && marker.hoverIcon !== undefined ? marker.hoverIcon : marker.icon
     if (icon !== undefined) {
       obj.icon = { url: icon, ...iconOptions }
     }
 
-    return obj
+    return { ...obj, ...marker.options }
   })
 
   function dragend({ latLng }) {

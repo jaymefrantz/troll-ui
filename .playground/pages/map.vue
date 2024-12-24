@@ -3,14 +3,16 @@
 button(type="button" @click="refresh").refresh-button 
 	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
 	span refresh
-div.map-container
-	<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 <Props :props="props" />
 </template>
 
 <script setup lang="ts">
   import icon from "./assets/svg/map-marker.svg?url"
-  const { data, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroid/random`)
+  const { data, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroids/random`, {
+    pick: ["markers"],
+  })
+
   const map = ref(null)
   const markers = ref(data.value.markers)
   let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
@@ -28,6 +30,59 @@ div.map-container
       return marker
     })
   })
+
+  // const zoomedMarkers = ref([
+  //   {
+  //     id: "United States",
+  //     title: "United States",
+  //     position: { lat: 38, lng: -97 },
+  //     level: "country",
+  //     polaroids: [
+  //       "676311aa36d79827700dfe21",
+  //       "676311c036d79827700dfe66",
+  //       "6763119736d79827700dfe08",
+  //       "676311a936d79827700dfe13",
+  //       "676311a936d79827700dfe15",
+  //       "6763117736d79827700dfd9b",
+  //       "676311bf36d79827700dfe5c",
+  //     ],
+  //     link: "/united-states",
+  //     count: 7,
+  //   },
+  //   {
+  //     id: "Canada",
+  //     title: "Canada",
+  //     position: { lat: 54.85, lng: -94.37 },
+  //     level: "country",
+  //     polaroids: [
+  //       "6763119536d79827700dfde7",
+  //       "6763119536d79827700dfdeb",
+  //       "676311aa36d79827700dfe26",
+  //       "676311aa36d79827700dfe2c",
+  //       "676311ab36d79827700dfe35",
+  //     ],
+  //     link: "/canada",
+  //     count: 5,
+  //   },
+  //   {
+  //     id: "Mexico",
+  //     title: "Mexico",
+  //     position: { lat: 23, lng: -102 },
+  //     level: "country",
+  //     polaroids: [
+  //       "676311c036d79827700dfe72",
+  //       "676311cc36d79827700dfe87",
+  //       "676311cc36d79827700dfe89",
+  //       "676311cc36d79827700dfe91",
+  //       "676311ce36d79827700dfe9d",
+  //       "676311ce36d79827700dfea0",
+  //       "676311ce36d79827700dfea3",
+  //       "676311cf36d79827700dfea6",
+  //     ],
+  //     link: "/mexico",
+  //     count: 8,
+  //   },
+  // ])
 
   async function markerClick(marker: Marker) {
     if (map.value.level !== "polaroid") {
@@ -55,6 +110,7 @@ div.map-container
 
   function markerMouseOver(marker: Marker) {
     clearTimeout(timeoutId)
+
     marker.gmapMarker.marker.setZIndex(100)
     if (marker.level !== "polaroid" && marker.title !== "") {
       map.value.overlay.showLabel(marker)
@@ -62,7 +118,7 @@ div.map-container
       timeoutId = setTimeout(() => {
         map.value.overlay.addPolaroid({
           id: marker.id,
-          image: `${useRuntimeConfig().public.CLOUDINARY}/polaroids/${marker.id}.jpg`,
+          image: marker.image,
           position: marker.position,
         })
       }, 250)
