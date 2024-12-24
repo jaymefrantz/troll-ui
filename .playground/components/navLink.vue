@@ -1,7 +1,7 @@
 <template lang="pug">
   nuxt-link(:to="to").nav-link
     div.icon-container
-      //- <Icon class="icon" size="24" :name="`material-symbols-light:keyboard-double-arrow-right-rounded`"/>
+      <Icon class="icon" size="24" :name="`material-symbols-light:${icon}`"/>
     span.text {{ label }}
 </template>
 
@@ -13,12 +13,13 @@
   }>()
 
   const icon = computed(() => {
-    return props.direction === "right" ? "keyboard-double-arrow-right-rounded" : "keyboard-double-arrow-left-rounded"
+    return props.direction === "right"
+      ? "keyboard-double-arrow-right-rounded"
+      : "keyboard-double-arrow-left-rounded"
   })
 </script>
 
 <style lang="scss" scoped>
-
   .nav-link {
     padding: 1em 1.5em;
     border: var(--border);
@@ -43,7 +44,6 @@
       }
     }
   }
-
 
   .icon-container {
     position: relative;
