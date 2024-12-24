@@ -19,7 +19,7 @@ div(ref="container").autocomplete-container
       <Icon class="close-icon" :size="closeIcon.size.toString()" :name="closeIcon.name"/>
   <DropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd">
       ul(ref="resultList").autocomplete-results-list
-        li(v-for="(result, index) in results ?? []" :key="result" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
+        li(v-for="(result, index) in results ?? []" :key="result.id" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
           <component v-bind="result" :is="itemComponent"/>
   </DropdownWrap>
 </template>
@@ -150,13 +150,12 @@ div(ref="container").autocomplete-container
 
   watch(focusedIndex, index => {
     if (index === -1) return
-
     const item = results.value[focusedIndex.value]
-    const element = resultListItems.value[index]
+    const element = resultList.value?.querySelector(`li:nth-child(${index + 1})`)
     query.value = item[searchedProp.value]
 
     if (!isLiVisible(element) && index > 0) {
-      resultListItems.value[index].scrollIntoView({
+      element.scrollIntoView({
         behavior: "smooth",
         block: "center",
       })
