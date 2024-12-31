@@ -90,7 +90,7 @@
   })
 
   function dragend({ latLng }) {
-    handleEvent("dragend", { newPosition: { lat: latLng.lat(), lng: latLng.lng() } })
+    handleEvent("markerDragend", { newPosition: { lat: latLng.lat(), lng: latLng.lng() } })
   }
 
   function handleEvent(name: string, additional: any = {}) {
