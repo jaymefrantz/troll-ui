@@ -1,19 +1,19 @@
 <template lang="pug">
   div.map-container
     client-only
-      <GoogleMap :zoom="initialZoom" :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, minZoom: isMobile ? 1 : 2}" @zoom_changed="zoomChanged" @idle="handleIdle">
+      <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom: 14, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
         <Marker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
       </GoogleMap>
       ul(v-if="loaded").zoom-control-list
         li
-          button(type="button" @click="setZoom(1)" :disabled="zoomInHidden").zoom-control-button
+          button(type="button" @click="setZoom(zoom + 1)" :disabled="zoomInHidden").zoom-control-button
             span.sr-only Zoom in
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
               <rect fill="currentColor" x="10.8594" y="4.5089" width="2.2813" height="14.9821" rx="1.0476"/>
             </svg>
         li
-          button(type="button" @click="setZoom(-1)" :disabled="zoomOutHidden").zoom-control-button
+          button(type="button" @click="setZoom(zoom - 1)" :disabled="zoomOutHidden").zoom-control-button
             span.sr-only Zoom out
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <rect fill="currentColor" x="4.5089" y="10.8594" width="14.9821" height="2.2813" rx="1.0476"/>
@@ -48,6 +48,7 @@
     (e: "markerClick", marker: Marker): void
     (e: "markerMouseOver", marker: Marker): void
     (e: "markerMouseOut", marker: Marker): void
+    (e: "markerDragend", marker: Marker): void
   }>()
 
   const props = withDefaults(
@@ -56,10 +57,12 @@
       ready: boolean
       initialZoom?: number
       initialLevel?: string
+      overrideOptions?: object
     }>(),
     {
       initialZoom: 2,
       initialLevel: "country",
+      overrideOptions: {},
     }
   )
 
@@ -93,7 +96,7 @@
     useDebounceFn(async json => {
       if (loaded.value) return
 
-      if (ready.value && props.ready) fitbounds()
+      if (ready.value && props.ready && !hasIdled.value) fitbounds()
       if (hasIdled.value && ready.value && props.ready) {
         loaded.value = true
         emit("loaded")
@@ -143,8 +146,12 @@
     }
   }
 
-  function setZoom(shift: number) {
-    gmap.value?.map.setZoom(zoom.value + shift)
+  function setCenter(center: google.maps.LatLngLiteral) {
+    gmap.value?.map.setCenter(new google.maps.LatLng(center))
+  }
+
+  function setZoom(newZoom: number) {
+    gmap.value?.map.setZoom(newZoom)
   }
 
   const zoomChanged = useDebounceFn(() => {
@@ -176,6 +183,8 @@
     ready,
     options,
     props,
+    setZoom,
+    setCenter,
   })
 </script>
 
