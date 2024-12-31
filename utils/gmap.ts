@@ -216,6 +216,8 @@ function initOverlay(google, map) {
       this.positionPreview(id)
     }
     removePreview(id: string, hardRemove = false) {
+      console.log(id, this.previews)
+
       if (this.previews[id] === undefined) return
       //, hardRemove = false
       //hard remove should be used on like after filters?
@@ -309,6 +311,36 @@ function getZoomedMarkers(level: string, markers: Marker[]) {
   })
 }
 
+function polaroidMouseOver(marker: Marker, image, overlay: google.maps.OverlayView) {
+  marker.gmapMarker.marker.setZIndex(100)
+  setTimeout(() => {
+    overlay.addPolaroid({
+      id: marker.id,
+      image,
+      position: marker.position,
+    })
+
+    setTimeout(() => {
+      overlay.showPreview(marker.id)
+    }, 0)
+  }, 250)
+}
+
+function polaroidMouseOut(marker: Marker, overlay: google.maps.OverlayView) {
+  marker.gmapMarker.marker.setZIndex(10)
+  overlay.removePreview(marker.id)
+}
+
+function locationMouseOver(marker: Marker, overlay: google.maps.OverlayView) {
+  marker.gmapMarker.marker.setZIndex(100)
+  overlay.showLabel(marker)
+}
+
+function locationMouseOut(marker: Marker, overlay: google.maps.OverlayView) {
+  marker.gmapMarker.marker.setZIndex(10)
+  overlay.hideLabel(marker)
+}
+
 export {
   mapOptions,
   mapStyles,
@@ -319,4 +351,8 @@ export {
   initOverlay,
   initLabelOverlay,
   getZoomedMarkers,
+  polaroidMouseOver,
+  polaroidMouseOut,
+  locationMouseOver,
+  locationMouseOut,
 }
