@@ -215,20 +215,15 @@ function initOverlay(google, map) {
 
       this.positionPreview(id)
     }
-    removePreview(id: string, hardRemove = false) {
-      console.log(id, this.previews)
+    async removePreview(id: string, hardRemove = false) {
+      await wait(250) //needed cause things are fast
 
       if (this.previews[id] === undefined) return
-      //, hardRemove = false
-      //hard remove should be used on like after filters?
 
+      //hard remove should be used on like after filters?
       if (!this.previews[id].clicked || hardRemove) {
-        //setTimeout(() => {
         this.previews[id].hidden = true
-        // this.previews[id].$el.classList.remove("shown")
         this.hidePreview(this.previews[id].$el)
-        //here
-        //}, 50)
       }
     }
     removeAllPreviews() {
@@ -262,9 +257,9 @@ function initOverlay(google, map) {
       $el.classList.add("leave")
       $el.classList.remove("shown")
 
-      //setTimeout(() => {
-      $el.classList.remove("leave")
-      //}, 100)
+      setTimeout(() => {
+        $el.classList.remove("leave")
+      }, 10)
     }
     onRemove() {}
   }
