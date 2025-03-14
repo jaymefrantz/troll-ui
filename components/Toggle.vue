@@ -2,10 +2,10 @@
   div(:class="labelPosition").toggle-container
     input(:id="id" :disabled="disabled" type="checkbox" v-model="boolean")
     label(:for="id").toggle-label
-      span(v-if="labelPosition === 'top'" v-html="text").toggle-text
+      span(v-if="labelPosition === 'top' || labelPosition === 'left'" v-html="text").toggle-text
       div.custom-toggle
         span(v-html="booleanLabel").custom-toggle-knob
-      span(v-if="labelPosition === 'side'" v-html="text").toggle-text
+      span(v-if="labelPosition === 'right'" v-html="text").toggle-text
 </template>
 
 <script setup lang="ts">
@@ -24,7 +24,7 @@
     }>(),
     {
       disabled: false,
-      labelPosition: "side",
+      labelPosition: "right",
       booleanLabels: {
         true: "",
         false: "",
@@ -49,6 +49,18 @@
   .toggle-container {
     position: relative;
     display: inline-block;
+
+    &:not(.left):has(input[type="checkbox"]:checked) {
+      --toggle-knob-translate: 0;
+    }
+
+    &.left {
+      --toggle-knob-translate: 0;
+
+      &:has(input[type="checkbox"]:checked) {
+        --toggle-knob-translate: 100%;
+      }
+    }
   }
 
   input[type="checkbox"] {
@@ -60,10 +72,6 @@
     opacity: 0;
     cursor: pointer;
     z-index: 3;
-
-    &:checked + label .custom-toggle-knob {
-      transform: translateX(0);
-    }
 
     &:focus-visible {
       outline: none;
@@ -105,7 +113,7 @@
     border: var(--toggle-knob-border, $grey);
     border-radius: var(--toggle-knob-border-radius, 2rem);
     aspect-ratio: 1;
-    transform: translateX(100%);
+    transform: translateX(var(--toggle-knob-translate, 100%));
     transition: transform $medium-fast;
   }
 </style>
