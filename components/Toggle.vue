@@ -39,6 +39,10 @@
   const booleanLabel = computed(() => {
     return props.booleanLabels[boolean?.value.toString() ?? "false"]
   })
+
+  defineExpose({
+    props,
+  })
 </script>
 
 <style lang="scss" scoped>

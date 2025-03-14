@@ -1,14 +1,18 @@
 <template lang="pug">
   ul.toggle-list
     li
-      <Toggle class="rounded" text="Rounded toggle" v-model="roundedBool"/>
+      <Toggle ref="toggle" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
     li
       <Toggle class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
+  <Props :props="props" />
 </template>
 
 <script setup lang="ts">
   const roundedBool = ref(false)
   const rectangleBool = ref(true)
+  const toggle = ref(null)
+
+  const props = computed(() => Object.keys(toggle.value?.props ?? {}))
 
   const rectangle = {
     text: "Kitty mood",
@@ -44,7 +48,8 @@
     --toggle-padding-x: 0.75rem;
 
     :deep(.custom-toggle-knob) {
-      aspect-ratio: 4 / 3;
+      display: inline-flex;
+      align-items: center;
     }
   }
 </style>
