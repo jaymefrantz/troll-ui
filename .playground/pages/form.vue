@@ -1,20 +1,55 @@
 <template lang="pug">
-  <checkbox text="Disabled" v-model="disabled"/>
-  ul.toggle-list
-    li
-      <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
-    li
-      <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
-  <Props :props="props" />
+  div.medium-large-center-margin-wrap
+    <checkbox class="disabled-checkbox" :icon="icons.checkbox" text="Disable fields" v-model="disabled"/>
+    ul.textbox-list
+      li.name
+        TextField(ref="textField" v-model="name" label="Name" :disabled="disabled").floating
+      li.email
+        TextField(v-model="email" :icon="icons.email" type="email" label="Email" placeholder="Enter your email" :disabled="disabled")
+      li.phone
+        TextField(v-model="phone" :icon="icons.phone" type="phone" label="Phone" :disabled="disabled")
+    <Props :props="textFieldProps" title="TextField Props" />
+    p Selected checkboxes: {{ activeCheckboxes.length > 0 ? activeCheckboxes.join(', ') : "none"}}
+    ul.checkbox-list
+      li(v-for="checkbox in checkboxes" :key="checkbox")
+        <checkbox ref="check" :text="checkbox" :icon="icons.checkbox" :id="checkbox" :disabled="disabled" v-model="activeCheckboxes" />
+    <Props :props="checkProps" title="Checkbox Props" />
+    ul.toggle-list
+      li
+        <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
+      li
+        <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
+    <Props :props="toggleProps" title="Toggle Props" />
 </template>
 
 <script setup lang="ts">
-  const roundedBool = ref(false)
-  const rectangleBool = ref(true)
-  const toggle = ref(null)
   const disabled = ref(false)
+  const name = ref("")
+  const email = ref("")
+  const phone = ref("")
+  const textField = ref(null)
+  const textFieldProps = computed(() => Object.keys(textField.value?.props ?? {}))
 
-  const props = computed(() => Object.keys(toggle.value?.props ?? {}))
+  const check = ref(null)
+  const activeCheckboxes = ref<string[]>(["two"])
+  const checkboxes = ref<string[]>(["one", "two", "three"])
+  const checkProps = computed(() =>
+    Object.keys(check.value !== null ? check.value[0]?.props ?? {} : "")
+  )
+
+  const toggle = ref(null)
+  const toggleProps = computed(() => Object.keys(toggle.value?.props ?? {}))
+  const roundedBool = ref(true)
+  const rectangleBool = ref(false)
+
+  const icons = {
+    email: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.72 18.72"><path fill="currentColor" d="M1.976,16.3597c-.4607,0-.845-.154-1.153-.462-.308-.308-.4623-.6927-.463-1.154V3.9757c0-.4607.1543-.845.463-1.153.3087-.308.6927-.4623,1.152-.463h14.77c.46,0,.844.1543,1.152.463.308.3087.4623.693.463,1.153v10.769c0,.46-.1543.8443-.463,1.153s-.6927.4627-1.152.462H1.976ZM9.36,9.4757L1.36,4.2447v10.5c0,.1793.0577.3267.173.442.1153.1153.263.173.443.173h14.769c.1793,0,.3267-.0577.442-.173s.173-.263.173-.443V4.2437l-8,5.232ZM9.36,8.3597l7.692-5H1.668l7.692,5ZM1.36,4.2447v-.885,11.385c0,.1793.0577.3267.173.442.1153.1153.263.173.443.173h-.616V4.2447Z"/></svg>`,
+    phone: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.72 18.72"><path fill="currentColor" d="M16.29,17.36c-1.6853,0-3.4133-.422-5.184-1.266-1.7707-.844-3.4187-2.029-4.944-3.555-1.5133-1.5253-2.692-3.1703-3.536-4.935s-1.266-3.4893-1.266-5.174c0-.3.1-.5533.3-.76s.45-.31.75-.31h2.473c.272,0,.5093.0857.712.257s.3397.391.411.659l.496,2.384c.0467.28.0383.5243-.025.733-.0633.2087-.1743.3797-.333.513l-2.194,2.046c.4107.7447.8643,1.4367,1.361,2.076.4967.6393,1.0267,1.245,1.59,1.817.58.58,1.2047,1.12,1.874,1.62.6693.4993,1.404.9707,2.204,1.414l2.139-2.177c.1627-.1753.3457-.291.549-.347.2027-.0553.4273-.0663.674-.033l2.103.43c.272.0667.4927.2037.662.411.1693.2073.254.4447.254.712v2.435c0,.3-.1033.55-.31.75-.2067.2-.46.3-.76.3"/></svg>`,
+    checkbox: {
+      name: "material-symbols:check",
+      size: "1.35em",
+    },
+  }
 
   const rectangle = {
     text: "Kitty mood",
@@ -27,11 +62,140 @@
 </script>
 
 <style lang="scss" scoped>
-  .toggle-list {
-    margin-top: 1em;
+  .disabled-checkbox {
+    & + * {
+      margin-top: 1em;
+    }
+  }
 
+  .textbox-list {
+    display: grid;
+
+    align-items: flex-end;
+    gap: 1em;
+
+    @include viewport($medium-large-viewport up) {
+      grid-template-columns: repeat(6, 1fr);
+
+      .name {
+        grid-column: 1 / 3;
+      }
+
+      .email {
+        grid-column: 3 / 6;
+      }
+
+      .phone {
+        grid-column: 6 / 6;
+      }
+    }
+
+    :deep(input) {
+      width: 100%;
+    }
+  }
+
+  .textbox-container {
+    --textbox-background: var(--site-background);
+    --textbox-icon-size: 1.25em;
+    --textbox-font-size: 1em;
+    color: var(--dark-200);
+    --textbox-color: var(--dark-200);
+    --textbox-padding-x: 1rem;
+    --textbox-icon-padding: 0.75rem;
+    --textbox-padding-y: 0.75rem;
+    --textbox-border: 1px solid var(--dark-400);
+    position: relative;
+
+    ::placeholder {
+      color: var(--dark-400);
+    }
+
+    &:has(input:not(.floating)) :deep(.textbox-wrap) {
+      margin-top: 0.35em;
+    }
+
+    &:has(input.floating) :deep(label) {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: var(--textbox-padding-x);
+      transition: transform $medium, top $medium;
+      z-index: 1;
+    }
+
+    //this means that there's some content
+    &:has(.floating:not(:placeholder-shown)) :deep(label) {
+      top: 0;
+      transform: translateY(-50%) scale(0.75) translateX(calc(0.5em * -0.75));
+      padding: 0 0.5em;
+      background: var(--site-background);
+    }
+
+    &:has(input:hover:not([disabled])) {
+      --textbox-border: 1px solid var(--primary);
+    }
+
+    &:has(input[disabled]) {
+      --textbox-color: var(--dark-400);
+      --textbox-border: 1px solid var(--dark-400);
+      color: var(--dark-400);
+
+      ::placeholder {
+        color: var(--dark-600);
+      }
+    }
+
+    #main &:has(input:focus-visible) :deep(input) {
+      --textbox-border: 1px solid var(--primary);
+      color: var(--dark-200) !important;
+      outline: 0;
+    }
+  }
+
+  .checkbox-list {
     & > li + li {
-      margin-top: 2.5em;
+      margin-top: 0.35em;
+    }
+  }
+
+  .checkbox-container {
+    --checkbox-background: transparent;
+    --checkbox-border: 1px solid var(--dark-400);
+    --checkbox-border-radius: 0.15rem;
+    --checkbox-color: var(--dark-200);
+    --checkbox-icon-y: 50%;
+    --checkbox-icon-x: calc(50% + 0.05em);
+
+    &:has(input[type="checkbox"]:checked) {
+      --checkbox-background: var(--primary);
+      --checkbox-border: 1px solid var(--primary);
+    }
+
+    &:has(input[type="checkbox"]:not(:checked):not([disabled]):hover) {
+      --checkbox-border: 1px solid var(--primary);
+      & :deep(.checkbox) {
+        box-shadow: 0 0 0 1px var(--primary);
+      }
+    }
+
+    &:has(input[type="checkbox"][disabled]:checked) {
+      --checkbox-background: var(--dark-400);
+      --checkbox-border: 1px solid var(--dark-400);
+      --checkbox-color: var(--dark-200);
+      color: var(--dark-400);
+    }
+
+    &:has(input[type="checkbox"][disabled]:not(:checked)) {
+      --checkbox-color: var(--dark-400);
+      --checkbox-border: 1px solid var(--dark-400);
+      color: var(--dark-400);
+    }
+  }
+
+  .toggle-list {
+    & > li + li {
+      margin-top: 1.5em;
     }
   }
 
@@ -60,6 +224,16 @@
       //--toggle-border: 2px solid var(--dark-600);
       box-shadow: 0 0 0 1px var(--dark-400);
       --toggle-border: 1px solid var(--dark-400);
+    }
+  }
+
+  .props-container {
+    margin-top: 1.5em;
+
+    & + * {
+      border-top: 1px solid var(--dark-400);
+      padding-top: 4em;
+      margin-top: 4em;
     }
   }
 </style>

@@ -31,6 +31,10 @@
   const id = computed(() => {
     return props?.id || `Checkbox-${useId()}`
   })
+
+  defineExpose({
+    props,
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -57,12 +61,11 @@
     width: 100%;
     height: 100%;
     opacity: 0;
+    cursor: pointer;
 
     .checkbox-container:has(input[type="checkbox"]:disabled) & {
       cursor: not-allowed;
     }
-
-    cursor: pointer;
 
     &:focus-visible {
       outline: none;
