@@ -81,11 +81,19 @@
         outline-offset: var(--focus-offset);
       }
     }
+
+    &[disabled] {
+      cursor: not-allowed;
+      & + label {
+        opacity: 0.75;
+      }
+    }
   }
 
   .toggle-label {
     display: flex;
     gap: var(--toggle-gap, 0.65rem);
+    transition: opacity $fast;
 
     .top & {
       flex-direction: column;
@@ -104,6 +112,7 @@
     width: var(--toggle-width, 2.5em);
     display: flex;
     align-items: center;
+    transition: all $medium-fast;
   }
 
   .custom-toggle-knob {

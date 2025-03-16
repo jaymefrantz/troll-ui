@@ -1,9 +1,10 @@
 <template lang="pug">
+  <checkbox text="Disabled" v-model="disabled"/>
   ul.toggle-list
     li
-      <Toggle ref="toggle" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
+      <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
     li
-      <Toggle class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
+      <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
   <Props :props="props" />
 </template>
 
@@ -11,6 +12,7 @@
   const roundedBool = ref(false)
   const rectangleBool = ref(true)
   const toggle = ref(null)
+  const disabled = ref(false)
 
   const props = computed(() => Object.keys(toggle.value?.props ?? {}))
 
@@ -26,6 +28,8 @@
 
 <style lang="scss" scoped>
   .toggle-list {
+    margin-top: 1em;
+
     & > li + li {
       margin-top: 2.5em;
     }
@@ -40,7 +44,7 @@
 
   .rectangle {
     --toggle-background: transparent;
-    --toggle-border: 2px solid var(--grey-400);
+    --toggle-border: 1px solid var(--dark-600);
     --toggle-border-radius: 0.15rem;
     --toggle-width: 5.5rem;
     --toggle-knob-background: transparent;
@@ -50,6 +54,12 @@
     :deep(.custom-toggle-knob) {
       display: inline-flex;
       align-items: center;
+    }
+
+    &:hover:not([disabled]) :deep(.custom-toggle) {
+      //--toggle-border: 2px solid var(--dark-600);
+      box-shadow: 0 0 0 1px var(--dark-400);
+      --toggle-border: 1px solid var(--dark-400);
     }
   }
 </style>
