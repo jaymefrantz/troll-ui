@@ -1,25 +1,24 @@
 <template lang="pug">
-  div.medium-large-center-margin-wrap
-    <checkbox class="disabled-checkbox" :icon="icons.checkbox" text="Disable fields" v-model="disabled"/>
-    ul.textbox-list
-      li.name
-        TextField(ref="textField" v-model="name" label="Name" :disabled="disabled").floating
-      li.email
-        TextField(v-model="email" :icon="icons.email" type="email" label="Email" placeholder="Enter your email" :disabled="disabled")
-      li.phone
-        TextField(v-model="phone" :icon="icons.phone" type="phone" label="Phone" :disabled="disabled")
-    <Props :props="textFieldProps" title="TextField Props" />
-    p Selected checkboxes: {{ activeCheckboxes.length > 0 ? activeCheckboxes.join(', ') : "none"}}
-    ul.checkbox-list
-      li(v-for="checkbox in checkboxes" :key="checkbox")
-        <checkbox ref="check" :text="checkbox" :icon="icons.checkbox" :id="checkbox" :disabled="disabled" v-model="activeCheckboxes" />
-    <Props :props="checkProps" title="Checkbox Props" />
-    ul.toggle-list
-      li
-        <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
-      li
-        <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
-    <Props :props="toggleProps" title="Toggle Props" />
+  <checkbox class="disabled-checkbox" :icon="icons.checkbox" text="Disable fields" v-model="disabled"/>
+  ul.textbox-list
+    li.name
+      TextField(ref="textField" v-model="name" label="Name" :disabled="disabled").floating
+    li.email
+      TextField(v-model="email" :icon="icons.email" type="email" label="Email" placeholder="Enter your email" :disabled="disabled")
+    li.phone
+      TextField(v-model="phone" :icon="icons.phone" type="phone" label="Phone" :disabled="disabled")
+  <Props :props="textFieldProps" title="TextField Props" />
+  p Selected checkboxes: {{ activeCheckboxes.length > 0 ? activeCheckboxes.join(', ') : "none"}}
+  ul.checkbox-list
+    li(v-for="checkbox in checkboxes" :key="checkbox")
+      <checkbox ref="check" :text="checkbox" :icon="icons.checkbox" :id="checkbox" :disabled="disabled" v-model="activeCheckboxes" />
+  <Props :props="checkProps" title="Checkbox Props" />
+  ul.toggle-list
+    li
+      <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
+    li
+      <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
+  <Props :props="toggleProps" title="Toggle Props" />
 </template>
 
 <script setup lang="ts">
@@ -75,19 +74,20 @@
     gap: 1em;
 
     @include viewport($medium-large-viewport up) {
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: 1fr 1fr 12rem;
+      // grid-template-columns: repeat(6, 1fr);
 
-      .name {
-        grid-column: 1 / 3;
-      }
+      // .name {
+      //   grid-column: 1 / 3;
+      // }
 
-      .email {
-        grid-column: 3 / 6;
-      }
+      // .email {
+      //   grid-column: 3 / 6;
+      // }
 
-      .phone {
-        grid-column: 6 / 6;
-      }
+      // .phone {
+      //   grid-column: 6 / 6;
+      // }
     }
 
     :deep(input) {
