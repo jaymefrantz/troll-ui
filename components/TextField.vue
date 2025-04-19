@@ -2,8 +2,10 @@
   div.textbox-container
     label(v-if="label !== ''" :for="id" v-html="label").textbox-label
     div.textbox-wrap
+      <slot name="before"></slot>
       span(v-if="icon !== ''" v-html="icon").textbox-icon-container
       input(:type="type" v-bind="attrs" :id="id" v-model="value" :placeholder="placeholder").textbox-input
+      <slot name="after"></slot>
 </template>
 
 <script setup lang="ts">
@@ -60,7 +62,9 @@
     border-radius: var(--textbox-border-radius, 0.25rem);
     color: var(--textbox-color, $dark-grey);
     font-size: var(--textbox-font-size, 1rem);
+    font-family: var(--textbox-font, inherit);
     padding: var(--textbox-padding-y, 0.5rem) var(--textbox-padding-x, 0.5rem);
+    width: 100%;
 
     .textbox-wrap:has(.textbox-icon-container) & {
       padding-left: calc(
