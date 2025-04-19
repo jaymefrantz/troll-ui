@@ -4,7 +4,7 @@ div(ref="container").custom-dropdown
 	div.dropdown-mobile-select-container
 		select(v-model="selectedValue" ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
 			option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
-		<Icon :size="icon.size.toString()" :name="icon.name" class="dropdown-arrow"/>
+		<Icon :size="icon?.size.toString() ?? 'none'" :name="icon.name" class="dropdown-arrow"/>
 	button(type="button" ref="dropdownTrigger" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
 		@keydown.down.exact.prevent="goDown" 
 		@keydown.up.exact.prevent="goUp" 
@@ -18,7 +18,7 @@ div(ref="container").custom-dropdown
 		@keydown="keydown"
 	).dropdown-trigger
 		span.dropdown-trigger-label {{selectedLabel}}
-		<Icon :name="icon.name" :size="icon.size.toString()" class="dropdown-arrow"/>
+		<Icon :name="icon.name" :size="icon?.size.toString() ?? 'none'" class="dropdown-arrow"/>
 	<DropdownWrap :expanded="expanded" :isEnd="isEnd">
 		ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
 			li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
@@ -80,11 +80,6 @@ div(ref="container").custom-dropdown
     value: string
   }
 
-  const defaultIcon = {
-    name: "material-symbols:keyboard-arrow-down-rounded",
-    size: "1.25em",
-  }
-
   const props = withDefaults(
     defineProps<{
       options: Option[]
@@ -93,12 +88,15 @@ div(ref="container").custom-dropdown
     }>(),
     {
       label: "",
+      icon: {
+        name: "material-symbols:keyboard-arrow-down-rounded",
+        size: "1.25em",
+      },
     }
   )
   const selectedValue = defineModel()
 
-  const icon = useIconDefaults(props?.icon, defaultIcon)
-  const iconSize = computed(() => icon.size)
+  const iconSize = computed(() => props.icon.size)
 
   const { options: dropdownOptions, label } = toRefs(props)
 
@@ -242,6 +240,7 @@ div(ref="container").custom-dropdown
   .custom-dropdown {
     position: relative;
     display: inline-block;
+    width: 100%;
   }
 
   .dropdown-trigger {

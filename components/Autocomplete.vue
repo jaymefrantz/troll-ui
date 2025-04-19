@@ -2,7 +2,7 @@
 div(ref="container").autocomplete-container
   label(v-if="label !== ''" v-html="label" :for="id").default-label
   div.autocomplete-input-wrap
-    <Icon class="close-icon" :size="searchIcon.size.toString()" :name="searchIcon.name"/>
+    <Icon class="search-icon" :size="searchIcon?.size?.toString() ?? 'none'" :name="searchIcon.name"/>
     input(type="text" v-model="query" :id="id"
       ref="textInput"
       @blur="blured"
@@ -16,7 +16,7 @@ div(ref="container").autocomplete-container
       :placeholder="placeholder"
     ).autocomplete-input
     button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
-      <Icon class="close-icon" :size="closeIcon.size.toString()" :name="closeIcon.name"/>
+      <Icon class="close-icon" :size="closeIcon?.size?.toString() ?? 'none'" :name="closeIcon.name"/>
   <DropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd">
       ul(ref="resultList").autocomplete-results-list
         li(v-for="(result, index) in results ?? []" :key="result.id" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
@@ -27,15 +27,6 @@ div(ref="container").autocomplete-container
 <script setup lang="ts">
   const id = `autocomplete-${useId()}`
   import { onClickOutside } from "@vueuse/core"
-
-  const defaultIcons = {
-    search: {
-      name: "material-symbols-light:search-rounded",
-    },
-    close: {
-      name: "material-symbols-light:close-rounded",
-    },
-  }
 
   const props = withDefaults(
     defineProps<{
@@ -53,11 +44,16 @@ div(ref="container").autocomplete-container
       label: "",
       override: "",
       searchedProp: "text",
+      searchIcon: {
+        name: "material-symbols-light:search-rounded",
+        size: "20",
+      },
+      closeIcon: {
+        name: "material-symbols-light:close-rounded",
+        size: "20",
+      },
     }
   )
-
-  const closeIcon = useIconDefaults(props?.closeIcon, defaultIcons.close)
-  const searchIcon = useIconDefaults(props?.searchIcon, defaultIcons.search)
 
   const emit = defineEmits<{
     (e: "typed", value: string): void

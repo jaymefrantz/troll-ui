@@ -3,7 +3,7 @@
     input(:id="id" checked :disabled="disabled" :value="id" type="checkbox" v-model="checkboxes")
     label(:for="id").checkbox-label
       span.checkbox
-        Icon(:size="icon.size.toString()" :name="icon.name" class="checkbox-icon")
+        Icon(:name="icon.name" :size="icon?.size?.toString() ?? 'none'" class="checkbox-icon")
       span(v-html="text").checkbox-text
 </template>
 
@@ -18,14 +18,13 @@
     }>(),
     {
       disabled: false,
+      icon: {
+        name: "fluent-emoji-high-contrast:check-mark",
+        size: "1em",
+      },
     }
   )
 
-  const defaultIcon = {
-    name: "fluent-emoji-high-contrast:check-mark",
-    size: "1em",
-  }
-  const icon = useIconDefaults(props?.icon, defaultIcon)
   const iconSize = computed(() => icon.size)
 
   const id = computed(() => {
