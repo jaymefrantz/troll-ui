@@ -17,8 +17,8 @@ body {
   font-size: clamp(var(--font-min, 1rem), var(--font-scaler, 2.4vw), var(--font-max, 1.2rem));
   background-color: var(--site-background);
   color: var(--site-color);
-  font-family: var(--font-family);
-  font-weight: var(--font-weight);
+  font-family: var(--body-font);
+  font-weight: var(--body-weight);
   overflow-x: hidden;
 }
 
