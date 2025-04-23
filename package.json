@@ -29,7 +29,6 @@
     "@vueuse/core": "^10.9.0",
     "sass": "^1.79.5",
     "sass-loader": "^14.2.1",
-    "vite-svg-loader": "^5.1.0",
     "vue3-google-map": "^0.20.0"
   }
 }
