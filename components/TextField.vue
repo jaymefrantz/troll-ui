@@ -1,6 +1,6 @@
 <template lang="pug">
   div.textbox-container
-    label(v-if="label !== ''" :for="id" v-html="label").textbox-label
+    label(v-if="label !== ''" :for="id" v-html="label").textbox-label.default-label
     div.textbox-wrap
       <slot name="before"></slot>
       span(v-if="icon !== ''" v-html="icon").textbox-icon-container
@@ -63,6 +63,7 @@
     color: var(--textbox-color, $dark-grey);
     font-size: var(--textbox-font-size, 1rem);
     font-family: var(--textbox-font, inherit);
+    font-weight: var(--textbox-weight, 400);
     padding: var(--textbox-padding-y, 0.5rem) var(--textbox-padding-x, 0.5rem);
     width: 100%;
 
