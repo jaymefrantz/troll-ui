@@ -1,3 +1,4 @@
+import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.CLOUDINARY_FOLDER}`
@@ -40,6 +41,21 @@ export default defineNuxtConfig({
         "@": join(currentDir, "./"),
       },
     },
+    plugins: [
+      svgLoader({
+        svgoConfig: {
+          plugins: [
+            {
+              name: "removeViewBox",
+            },
+            {
+              name: "removeStyleElement",
+              active: false,
+            },
+          ],
+        },
+      }),
+    ],
     css: {
       preprocessorOptions: {
         scss: {
