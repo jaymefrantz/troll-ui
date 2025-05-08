@@ -51,7 +51,7 @@
     display: inline-block;
 
     &:not(.left):has(input[type="checkbox"]:checked) {
-      --toggle-knob-translate: 0;
+      --toggle-knob-translate: 100%;
     }
 
     &.left {
@@ -122,7 +122,7 @@
     border: var(--toggle-knob-border, $grey);
     border-radius: var(--toggle-knob-border-radius, 2rem);
     aspect-ratio: 1;
-    transform: translateX(var(--toggle-knob-translate, 100%));
+    transform: translateX(var(--toggle-knob-translate, 0%));
     transition: transform $medium-fast;
   }
 </style>
