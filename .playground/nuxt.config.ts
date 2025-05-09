@@ -1,3 +1,4 @@
+import fonts from "./assets/js/fonts.ts"
 import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
@@ -19,9 +20,7 @@ export default defineNuxtConfig({
     [
       "@nuxtjs/google-fonts",
       {
-        families: {
-          "Noto Sans": [200, 300, 400, 500, 600, 700],
-        },
+        families: fonts,
       },
     ],
   ],
