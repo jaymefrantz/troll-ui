@@ -1,21 +1,12 @@
 <template lang="pug">
   div.container
     label(:for="id").body-xxs {{label}}
-    //- pre {{JSON.stringify(colors, null, 2)}}
-    //- div(v-for="([color, group]) in Object.entries(colors)" role="group")
-    //-   pre(v-for="(hex, cssVar) in group") {{JSON.stringify(cssVar, null, 2)}}
     select(:id="id" v-model="value")
-      button(type="button" :style="`--color: var(${value})`")
-        <selectedcontent>{{value}}</selectedcontent>
-      div.scrollable
-        option(v-for="(hex, cssVar, index) in colorOptions" :key="`${id}-${value}`" :style="`--color: ${hex}`" :value="cssVar")
+      button(type="button")
+        <selectedcontent :style="`--color: var(${value})`">{{value}}</selectedcontent>
+      div.option-container
+        option(v-for="(hex, cssVar, index) in colorOptions" :key="`${id}-${cssVar}`" :style="`--color: ${hex}`" :value="cssVar")
           span.sr-only {{cssVar.replace("--", "").split("-").join(" ")}}
-        //div
-          //- label {{color}}
-        //ul(v-for="([color,group]) in Object.entries(colors)" role="group").color-group-list
-          li(v-for="(hex, cssVar, index) in group" :key="`${id}-${value}`" :style="`--color: ${hex}`")
-            option(:value="cssVar")
-              span(v-html="`${color} ${index === 0 ? '50' : index * 100}`").sr-only
 </template>
 
 <script setup lang="ts">
@@ -51,7 +42,7 @@
   }
 </script>
 
-<style scoped>
+<style>
   select {
     &,
     &::picker(select) {
@@ -88,31 +79,48 @@
       ::picker-icon {
         transform: rotate(180deg);
       }
+
+      &:has(option:hover) option:not(:has(:hover)),
+      &:has(option:focus-visible) option:not(:has(:focus-visible)) {
+        //scale: 0.975;
+        opacity: 0.5;
+      }
     }
 
-    option {
-      /* background: var(--site-background);
-      font-size: 0.875em;
-      color: var(--dropdown-color); */
-      /* gap: 0.2em; */
+    & option {
       padding: 0;
+      aspect-ratio: 1;
+      position: relative;
+      transition: scale 0.325s, opacity 0.25s;
 
       &::checkmark {
         /* // content: v-bind(checkLink); */
-        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
+        color: white;
       }
 
-      &:checked {
-        background: red;
+      /* &:focus-visible {
+        border: 1px solid red;
+      } */
+
+      .option-container > &:hover,
+      .option-container > &:focus-visible {
+        scale: 1.15 !important;
+        opacity: 1 !important;
       }
 
       &:before {
         content: "";
         display: block;
-        width: 1rem;
+        /* width: 1rem; */
+        width: 100%;
+        height: 100%;
         aspect-ratio: 1;
         background-color: var(--color);
-        border-radius: 100%;
+        /* border-radius: 100%; */
         /* border: 1px solid var(--grey-50); */
       }
     }
@@ -130,11 +138,17 @@
     &:before {
       content: "";
       display: block;
-      width: 1.5rem;
+      width: 1.25rem;
       aspect-ratio: 1;
       background-color: var(--color);
-      border-radius: 100%;
-      box-shadow: inset 0 0 0 1px var(--grey-100), 0 0 0 1px var(--grey-200);
+      border-radius: 4px;
+      border: 1px solid var(--grey-200);
+      //box-shadow: inset 0 0 0 1px var(--grey-100), 0 0 0 2px var(--grey-200);
     }
+  }
+
+  .option-container {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
   }
 </style>
