@@ -2,11 +2,11 @@
   <checkbox class="disabled-checkbox" :icon="icons.checkbox" text="Disable fields" v-model="disabled"/>
   ul.textbox-list
     li.name
-      TextField(ref="textField" v-model="name" label="Name" :disabled="disabled").floating
+      TrollTextField(ref="textField" v-model="name" label="Name" :disabled="disabled").floating
     li.email
-      TextField(v-model="email" :icon="icons.email" type="email" label="Email" placeholder="Enter your email" :disabled="disabled")
+      TrollTextField(v-model="email" :icon="icons.email" type="email" label="Email" placeholder="Enter your email" :disabled="disabled")
     li.phone
-      TextField(v-model="phone" :icon="icons.phone" type="phone" label="Phone" :disabled="disabled")
+      TrollTextField(v-model="phone" :icon="icons.phone" type="phone" label="Phone" :disabled="disabled")
   <Props :props="textFieldProps" title="TextField Props" />
   p Selected checkboxes: {{ activeCheckboxes.length > 0 ? activeCheckboxes.join(', ') : "none"}}
   ul.checkbox-list
@@ -15,9 +15,9 @@
   <Props :props="checkProps" title="Checkbox Props" />
   ul.toggle-list
     li
-      <Toggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
+      <TrollToggle ref="toggle" :disabled="disabled" class="rounded" text="Rounded toggle" v-model="roundedBool"/>
     li
-      <Toggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
+      <TrollToggle :disabled="disabled" class="rectangle" v-bind="rectangle" v-model="rectangleBool"/>
   <Props :props="toggleProps" title="Toggle Props" />
 </template>
 

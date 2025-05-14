@@ -3,7 +3,7 @@
 button(type="button" @click="refresh").refresh-button 
 	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
 	span refresh
-<Map ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+<TrollMap ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 <Props :props="props" />
 </template>
 

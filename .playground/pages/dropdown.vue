@@ -1,11 +1,11 @@
 <template lang="pug">
 ul.dropdowns
   li
-    <Dropdown v-model="yearSelection" class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
+    <TrollDropdown v-model="yearSelection" class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
     clientOnly
       p selected year: {{ yearSelection }}
   li
-    <Dropdown v-model="cheeseSelection" class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" label="Cheese"/>
+    <TrollDropdown v-model="cheeseSelection" class="cheese-dropdown" ref="cheeseDropdown" :options="cheeses" label="Cheese"/>
     clientOnly
       p selected cheese: {{ cheeseSelection }}
 <Props :props="props" />
