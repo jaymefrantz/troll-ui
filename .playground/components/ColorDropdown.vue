@@ -1,23 +1,43 @@
 <template lang="pug">
   div.container
-    label(:for="id").body-xxs {{label}}
     select(:id="id" v-model="value")
       button(type="button")
         <selectedcontent :style="`--color: var(${value})`">{{value}}</selectedcontent>
-      div.option-container
-        option(v-for="(hex, cssVar, index) in colorOptions" :key="`${id}-${cssVar}`" :style="`--color: ${hex}`" :value="cssVar")
+        span.label {{label}}
+      div(ref="container").option-container
+        option(v-if="includeTransparent" :key="`${id}-transparent`" :value="'--transparent'" :style="`--color: var(--transparent)`").transparent 
+          span Transparent
+        option(v-for="(hex, cssVar, index) in colorOptions" :key="`${id}-${cssVar}`" :disabled="invalidContrast.includes(hex)" :style="`--color: ${hex}`" :value="cssVar")
           span.sr-only {{cssVar.replace("--", "").split("-").join(" ")}}
+    //-label(:for="id") {{label}} //this doesn't trigger the select for some reason
 </template>
 
 <script setup lang="ts">
   const colors = groupCSSVarsByPrefix(jsonToCSSVars(useAppConfig().colors))
-  const colorOptions = Object.values(colors).reduce((obj, group) => ({ ...obj, ...group }), {})
   const value = defineModel()
 
-  const props = defineProps<{
-    label: string
-    id: string
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      label: string
+      id: string
+      options?: Record<string, string>
+      compare: string
+      includeTransparent?: boolean
+    }>(),
+    {
+      includeTransparent: false,
+    }
+  )
+
+  const colorOptions = computed(() => {
+    return (
+      props?.options || Object.values(colors).reduce((obj, group) => ({ ...obj, ...group }), {})
+    )
+  })
+
+  const compareRef = toRef(props, "compare")
+
+  const invalidContrast = useContrastChecker(Object.values(colorOptions.value), compareRef)
 
   const id = computed(() => {
     return props?.id || `Select-${useId()}`
@@ -42,48 +62,31 @@
   }
 </script>
 
-<style>
+<style scoped>
+  .container {
+    display: inline-flex;
+    --transparent: white
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='5' height='5' fill='%23ffffff'/%3E%3Crect x='5' y='5' width='5' height='5' fill='%23ffffff'/%3E%3Crect x='5' width='5' height='5' fill='%23ccc'/%3E%3Crect y='5' width='5' height='5' fill='%23ccc'/%3E%3C/svg%3E")
+      repeat;
+  }
+
+  ::picker-icon {
+    display: none;
+  }
+
   select {
-    &,
-    &::picker(select) {
-      appearance: base-select;
-    }
-
-    cursor: pointer;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    &::picker(select) {
-      background: var(--site-background);
-      border: 0;
-      transition: display allow-discrete 1s, opacity 0.25s, overlay 1s allow-discrete;
-    }
-
-    &:not(:open)::picker(select) {
-      opacity: 0;
-    }
-
-    &:open::picker(select) {
-      opacity: 1;
-
-      @starting-style {
-        opacity: 0;
-      }
-    }
-
-    &::picker-icon {
-      /* content: v-bind(dropdownLink); */
-    }
+    align-items: center;
+    /* padding: 0;
+    border: 0; */
 
     &:open {
-      ::picker-icon {
-        transform: rotate(180deg);
-      }
-
       &:has(option:hover) option:not(:has(:hover)),
       &:has(option:focus-visible) option:not(:has(:focus-visible)) {
-        //scale: 0.975;
         opacity: 0.5;
+
+        &:before {
+          scale: 0.975;
+        }
       }
     }
 
@@ -91,7 +94,26 @@
       padding: 0;
       aspect-ratio: 1;
       position: relative;
-      transition: scale 0.325s, opacity 0.25s;
+      transition: opacity 0.25s;
+      background: transparent;
+      display: flex;
+      align-items: center;
+
+      &[disabled] {
+        cursor: not-allowed;
+        &:before {
+          border: 1px solid red;
+        }
+
+        &:after {
+          content: "X";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          translate: -50% -50%;
+          color: red;
+        }
+      }
 
       &::checkmark {
         /* // content: v-bind(checkLink); */
@@ -106,42 +128,62 @@
         border: 1px solid red;
       } */
 
-      .option-container > &:hover,
+      .option-container > &:not([disabled]):hover,
       .option-container > &:focus-visible {
-        scale: 1.15 !important;
         opacity: 1 !important;
+        &:before {
+          scale: 1.15 !important;
+        }
       }
 
       &:before {
         content: "";
         display: block;
         /* width: 1rem; */
-        width: 100%;
-        height: 100%;
+        width: 1.5rem;
+        /* height: 100%; */
         aspect-ratio: 1;
-        background-color: var(--color);
-        /* border-radius: 100%; */
-        /* border: 1px solid var(--grey-50); */
+        transition: scale 0.325s;
+        background: var(--color);
+      }
+
+      &.transparent {
+        grid-column: span 10;
+        width: 100%;
+        height: 1.5rem;
+        padding-bottom: 0.5rem;
+
+        span {
+          font-size: 0.875rem;
+        }
       }
     }
-  }
-
-  .color-group-list {
-    display: flex;
-    gap: 0.25rem;
   }
 
   selectedcontent {
     white-space: nowrap;
     text-overflow: ellipsis;
 
+    span {
+      border: 0;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+      white-space: nowrap;
+    }
+
     &:before {
       content: "";
       display: block;
-      width: 1.25rem;
+      width: 1em;
       aspect-ratio: 1;
-      background-color: var(--color);
-      border-radius: 4px;
+      background: var(--color);
+      border-radius: 100%;
       border: 1px solid var(--grey-200);
       //box-shadow: inset 0 0 0 1px var(--grey-100), 0 0 0 2px var(--grey-200);
     }
@@ -149,6 +191,10 @@
 
   .option-container {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1.5rem);
+    overflow: hidden;
+    background: white;
+    gap: 0 0.25rem;
+    grid-template-rows: repeat(auto-fill, 1.5rem);
   }
 </style>
