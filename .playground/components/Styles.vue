@@ -1,32 +1,31 @@
 <template lang="pug">
   div.styles
-    pre {{JSON.stringify(storage.buttonStyle, null, 2)}}
-    pre {{JSON.stringify(storage.formStyle, null, 2)}}
+    pre {{JSON.stringify(storage, null, 2)}}
     div.extra-large-center-margin-wrap
-      button(type="button") 
+      button(type="button" popovertarget="stylePopover") 
         span.button-text Change styles
-      div(v-for="(theme, hex) in test" :style="`background: ${hex}`")
-        pre {{theme}}
-      div.expanding-outer
-        div.expanding-inner
-          ul.styles-list
-            li.half-column
-            //- li.large-column
-              <NativeDropdown v-model="storage.icon" label="Icons" :options="convertToObject(Object.keys(allIcons))" />
-            //- li.small-column
-            //-   <ColorDropdown v-model="storage.color" label="Primary" :compare="backgroundHex"/>
-            //- li.small-column
-            //-   <ColorDropdown v-model="storage.background" label="Background" :options="backgrounds"/>
-            //- li.small-column
-            //-   <ColorDropdown v-model="storage.bodyColor" label="Body color" :compare="backgroundHex"/>
-            //- li.medium-column
-              <FontDropdown id="heading" v-model:font="storage.headingFont" v-model:weight="storage.headingWeight" label="Heading" />
-            //- li.medium-column
-              <FontDropdown id="body" v-model:font="storage.bodyFont" v-model:weight="storage.bodyWeight" label="Body" />
-            li.large-column
-              <GroupStyles label="Button styles" v-model:color="storage.buttonStyle.color" v-model:border="storage.buttonStyle.border" v-model:background="storage.buttonStyle.background" v-model:borderWidth="storage.buttonStyle.borderWidth" v-model:borderRadius="storage.buttonStyle.borderRadius"/>
-            li.large-column
-              <GroupStyles label="Form field styles" v-model:color="storage.formStyle.color" v-model:border="storage.formStyle.border" v-model:background="storage.formStyle.background" v-model:borderWidth="storage.formStyle.borderWidth" v-model:borderRadius="storage.formStyle.borderRadius"/>
+      clientOnly
+        div.expanding-outer#stylePopover
+          div.expanding-inner
+            ul.styles-list
+              li.large-column
+                <NativeDropdown v-model="storage.icon" label="Icons" :options="convertToObject(Object.keys(allIcons))" />
+            span.default-label Colors
+            ul.styles-list
+              li.small-column
+                <ColorDropdown v-model="storage.color" label="Primary" :compare="backgroundHex"/>
+              li.small-column
+                <ColorDropdown v-model="storage.bodyColor" label="Body color" :compare="backgroundHex"/>
+              li.small-column
+                <ColorDropdown v-model="storage.background" label="Background"/>
+              li.medium-column
+                <FontDropdown id="heading" v-model:font="storage.headingFont" v-model:weight="storage.headingWeight" label="Heading" />
+              li.medium-column
+                <FontDropdown id="body" v-model:font="storage.bodyFont" v-model:weight="storage.bodyWeight" label="Body" />
+              li.large-column
+                <GroupStyles label="Button styles" :siteBackground="storage.background" v-model:color="storage.buttonStyle.color" v-model:border="storage.buttonStyle.border" v-model:background="storage.buttonStyle.background" v-model:borderWidth="storage.buttonStyle.borderWidth" v-model:borderRadius="storage.buttonStyle.borderRadius"/>
+              li.large-column
+                <GroupStyles label="Form field styles" :siteBackground="storage.background" v-model:color="storage.formStyle.color" v-model:border="storage.formStyle.border" v-model:background="storage.formStyle.background" v-model:borderWidth="storage.formStyle.borderWidth" v-model:borderRadius="storage.formStyle.borderRadius"/>
 </template>
 
 <script setup lang="ts">
@@ -46,30 +45,20 @@
        background: red: , green, 400s?
      }
    */
-
-  const customBackgrounds = ["#1c1c1c", "#252525", "#121b24", "#1d242f"].reduce(
-    (obj, hex, index) => {
-      return { ...obj, [`--custom-bg-${index + 1}`]: hex }
-    },
-    {}
-  )
-
-  const backgrounds = {
-    ...useAppConfig().colors.grey.reduce((obj, hex, index) => {
-      return { ...obj, [`--grey-${index === 0 ? "50" : index * 100}`]: hex }
-    }, {}),
-    ...customBackgrounds,
-  }
-
+  const colors = getColorOptions()
   const backgroundThemes = {
     ...useAppConfig().colors.grey.reduce(
       (obj, hex, index) => ({ ...obj, [hex]: index > 3 ? "dark" : "light" }),
       {}
     ),
-    ...Object.values(customBackgrounds).reduce((obj, hex) => ({ ...obj, [hex]: "dark" }), {}),
   }
 
-  const backgroundHex = computed(() => backgrounds[storage.value.background])
+  const backgroundHex = computed(() => colors[storage.value.background])
+  const theme = computed(() => {
+    return parseInt(storage.value.background.replace("--", "").split("-").at(-1)) > 300
+      ? "dark"
+      : "light"
+  })
 
   const allIcons = Object.entries(useAppConfig().icons).reduce(
     (obj, [name, { icons }]) => ({ ...obj, [name]: icons }),
@@ -112,40 +101,51 @@
   })
 
   const buttonStyles = computed(() => {
-    if (storage.value.buttonStyle.style == "filled") {
-      return `
-   		border-radius: ${storage.value.buttonStyle.borderRadius}rem;
-   		background: var(--${activeColorFamily.value}-${storage.value.buttonStyle.background});
-   		color: var(--${activeColorFamily.value}-${storage.value.buttonStyle.color});
-   		border: 1px solid var(--${activeColorFamily.value}-${storage.value.buttonStyle.background});
-   	`
-    } else if (storage.value.buttonStyle.style == "outlined") {
-      return `
-   		border-radius: ${storage.value.buttonStyle.borderRadius}rem;
-   		background: transparent;
-   		color: var(--${activeColorFamily.value}-${storage.value.buttonStyle.color});
-   		border: 1px solid var(--${activeColorFamily.value}-${storage.value.buttonStyle.background});
-   	`
-    }
+    const background = storage.value.buttonStyle.background
+    return `
+      border-radius: ${storage.value.buttonStyle.borderRadius}px;
+      background: var(${background !== "--transparent" ? background : "--site-background"});
+      color: var(${storage.value.buttonStyle.color});
+      border: ${storage.value.buttonStyle.borderWidth}px solid var(${
+      storage.value.buttonStyle.border
+    });`
   })
 
   const formFieldStyles = computed(() => {
-    return ""
-    const background =
-      storage.value.formStyle.style === "filled"
-        ? `var(--site-color-${storage.value.formStyle.background}`
-        : "transparent"
-    const border = `1px solid var(--site-color-${storage.value.formStyle.background})`
+    const background = storage.value.formStyle.background
     return `
-   	--textbox-background: ${background};
-   	--textbox-border: ${border};
-   	--textbox-color: var(--site-color-${storage.value.formStyle.color});
-   	--textbox-border-radius: ${storage.value.formStyle.borderRadius}rem;
+   	--textbox-background: var(${background !== "--transparent" ? background : "--site-background"});
+   	--textbox-border: ${storage.value.formStyle.borderWidth}px solid var(${
+      storage.value.formStyle.border
+    });
+   	--textbox-color: var(${storage.value.formStyle.color});
+   	--textbox-border-radius: ${storage.value.formStyle.borderRadius}px;
+    --textbox-padding-x: ${storage.value.formStyle.borderRadius / 4}px;
    `
   })
 
+  watch(
+    () => storage.value.icon,
+    icon => {
+      icons.value = allIcons[icon]
+      dropdownIcon.value = { name: icons.value["arrow-down"] ?? "", size: "1em" }
+    }
+  )
+  const dropdownIcon = useState("dropdownIcon", () => ({
+    name: icons.value["arrow-down"] ?? "",
+    size: "1em",
+  }))
+
+  const dropdownLink = computed(() => {
+    const [family, name] = dropdownIcon.value.name.split(":")
+    const color = colors[storage.value.formStyle.color]
+    return `url(https://api.iconify.design/${family}/${name}.svg?height=1em&color=${color.replace(
+      "#",
+      "%23"
+    )})`
+  })
+
   const rootStyles = computed(() => {
-    return ""
     return `
    		--body-font: ${
         storage.value.bodyFont.includes("+")
@@ -160,7 +160,8 @@
    		--body-weight: ${storage.value.bodyWeight};
    		--heading-weight: ${storage.value.headingWeight};
    		--site-color: var(${storage.value.color});
-   		//--site-background: ${storage.value.background};
+      --site-body-color: var(${storage.value.bodyColor});
+   		--site-background: var(${storage.value.background});
    		--site-color-50: var(--${activeColorFamily.value}-50);
    		--site-color-100: var(--${activeColorFamily.value}-100);
    		--site-color-200: var(--${activeColorFamily.value}-200);
@@ -173,14 +174,14 @@
    		--site-color-900: var(--${activeColorFamily.value}-900);
    		--near-white: color-mix(in lab, var(--site-color) 8%, white);
       --transparent: var(--site-background);
-      ${Object.entries(customBackgrounds)
-        .map(([key, value]) => `${key}: ${value};`)
-        .join("\n")}
    		${formFieldStyles.value}
    	`
   })
 
   useHead({
+    bodyAttrs: {
+      class: () => `${theme.value}-theme`,
+    },
     style: [
       {
         innerHTML: () => `:root {
@@ -204,13 +205,42 @@
 <style lang="scss">
   .styles {
     padding: 0 var(--side-padding);
+
+    .default-label {
+      --label-size: 0.875rem;
+      --label-weight: 500;
+    }
+
+    select {
+      width: 100%;
+      &:not(.color) {
+        font-size: 1rem;
+      }
+    }
+
+    .container {
+      width: 100%;
+    }
+
+    .expanding-outer {
+      width: 70%;
+      max-width: 28rem;
+    }
+
+    .expanding-inner {
+      & > .default-label {
+        margin-top: 1rem;
+      }
+    }
   }
 
   select {
-    // border: var(--textbox-border);
-    // border-radius: var(--textbox-border-radius);
-    // color: var(--textbox-color);
-    // background: var(--textbox-background);
+    border: var(--textbox-border);
+    border-radius: var(--textbox-border-radius);
+    color: var(--textbox-color);
+    background: var(--textbox-background);
+    padding: 0.375rem calc(0.75rem + var(--textbox-padding-x));
+
     &,
     &::picker(select) {
       appearance: base-select;
@@ -239,7 +269,7 @@
     }
 
     &::picker-icon {
-      /* content: v-bind(dropdownLink); */
+      content: v-bind(dropdownLink);
     }
 
     &:open {
@@ -249,7 +279,35 @@
     }
   }
 
-  // .styles-list {
+  .styles-list {
+    --sm-column: 1;
+    --md-column: 2;
+    --lg-column: 2;
+    --xl-column: 2;
+
+    --sm-column: 2;
+    --md-column: 3;
+    --lg-column: 6;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(6, 1fr);
+
+    .large-column {
+      grid-column: span var(--lg-column);
+    }
+
+    .medium-column {
+      grid-column: span var(--md-column);
+    }
+
+    .small-column {
+      grid-column: span var(--sm-column);
+    }
+
+    & > li {
+      width: 100%;
+    }
+  }
   //   --weight-width: 6rem;
   //   display: grid;
   //   gap: 1rem;
