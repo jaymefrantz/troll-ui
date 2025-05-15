@@ -10,7 +10,7 @@ export function useContrastChecker(colors: string[], compare: Ref<string>) {
       const lightnessDifference = Math.abs(compareHsl.l - colorHsl.l)
 
       // Example threshold for acceptable contrast (adjust as needed)
-      const contrastThreshold = 50
+      const contrastThreshold = 20
 
       // Return true if the color fails the contrast check
       return lightnessDifference < contrastThreshold
