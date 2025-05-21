@@ -1,0 +1,27 @@
+name: Deploy Playground
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    #paths:
+    #  - "server/**"
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Transfer backend files via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "./.playground"
+          #target: ${{vars.SERVER_PATH}}
+          target: "~/apps/ui/"
+          strip_components: 2
