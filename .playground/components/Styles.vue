@@ -1,31 +1,30 @@
 <template lang="pug">
   div.styles
-    pre {{JSON.stringify(storage, null, 2)}}
-    div.extra-large-center-margin-wrap
-      button(type="button" popovertarget="stylePopover") 
-        span.button-text Change styles
-      clientOnly
-        div.expanding-outer#stylePopover
-          div.expanding-inner
-            ul.styles-list
-              li.large-column
-                <NativeDropdown v-model="storage.icon" label="Icons" :options="convertToObject(Object.keys(allIcons))" />
-            span.default-label Colors
-            ul.styles-list
-              li.small-column
-                <ColorDropdown v-model="storage.color" label="Primary" :compare="backgroundHex"/>
-              li.small-column
-                <ColorDropdown v-model="storage.bodyColor" label="Body color" :compare="backgroundHex"/>
-              li.small-column
-                <ColorDropdown v-model="storage.background" label="Background"/>
-              li.medium-column
-                <FontDropdown id="heading" v-model:font="storage.headingFont" v-model:weight="storage.headingWeight" label="Heading" />
-              li.medium-column
-                <FontDropdown id="body" v-model:font="storage.bodyFont" v-model:weight="storage.bodyWeight" label="Body" />
-              li.large-column
-                <GroupStyles label="Button styles" :siteBackground="storage.background" v-model:color="storage.buttonStyle.color" v-model:border="storage.buttonStyle.border" v-model:background="storage.buttonStyle.background" v-model:borderWidth="storage.buttonStyle.borderWidth" v-model:borderRadius="storage.buttonStyle.borderRadius"/>
-              li.large-column
-                <GroupStyles label="Form field styles" :siteBackground="storage.background" v-model:color="storage.formStyle.color" v-model:border="storage.formStyle.border" v-model:background="storage.formStyle.background" v-model:borderWidth="storage.formStyle.borderWidth" v-model:borderRadius="storage.formStyle.borderRadius"/>
+    //- pre {{JSON.stringify(storage, null, 2)}}
+    button(type="button" popovertarget="stylePopover") 
+      span.button-text Change styles
+    clientOnly
+      div.expanding-outer#stylePopover
+        div.expanding-inner
+          ul.styles-list
+            li.large-column
+              <NativeDropdown v-model="storage.icon" label="Icons" :options="convertToObject(Object.keys(allIcons))" />
+          span.default-label Colors
+          ul.styles-list
+            li.small-column
+              <ColorDropdown v-model="storage.color" label="Primary" :compare="backgroundHex"/>
+            li.small-column
+              <ColorDropdown v-model="storage.bodyColor" label="Body color" :compare="backgroundHex"/>
+            li.small-column
+              <ColorDropdown v-model="storage.background" label="Background"/>
+            li.medium-column
+              <FontDropdown id="heading" v-model:font="storage.headingFont" v-model:weight="storage.headingWeight" label="Heading" />
+            li.medium-column
+              <FontDropdown id="body" v-model:font="storage.bodyFont" v-model:weight="storage.bodyWeight" label="Body" />
+            li.large-column
+              <GroupStyles label="Button styles" :siteBackground="storage.background" v-model:color="storage.buttonStyle.color" v-model:border="storage.buttonStyle.border" v-model:background="storage.buttonStyle.background" v-model:borderWidth="storage.buttonStyle.borderWidth" v-model:borderRadius="storage.buttonStyle.borderRadius"/>
+            li.large-column
+              <GroupStyles label="Form field styles" :siteBackground="storage.background" v-model:color="storage.formStyle.color" v-model:border="storage.formStyle.border" v-model:background="storage.formStyle.background" v-model:borderWidth="storage.formStyle.borderWidth" v-model:borderRadius="storage.formStyle.borderRadius"/>
 </template>
 
 <script setup lang="ts">
@@ -39,11 +38,6 @@
   		<path d="m11 8l2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8" />
   	</g>
   </svg>
-     colors: {
-       primary: { red: "#", green: "" }, 400s?
-       body: red, green, 400s?
-       background: red: , green, 400s?
-     }
    */
   const colors = getColorOptions()
   const backgroundThemes = {
@@ -139,7 +133,7 @@
   const dropdownLink = computed(() => {
     const [family, name] = dropdownIcon.value.name.split(":")
     const color = colors[storage.value.formStyle.color]
-    return `url(https://api.iconify.design/${family}/${name}.svg?height=1em&color=${color.replace(
+    return `url(https://api.iconify.design/${family}/${name}.svg?width=1.75em&color=${color.replace(
       "#",
       "%23"
     )})`
@@ -213,6 +207,7 @@
 
     select {
       width: 100%;
+      align-items: center;
       &:not(.color) {
         font-size: 1rem;
       }
@@ -239,16 +234,15 @@
     border-radius: var(--textbox-border-radius);
     color: var(--textbox-color);
     background: var(--textbox-background);
-    padding: 0.375rem calc(0.75rem + var(--textbox-padding-x));
+    padding: 0.375rem calc(0.875rem + var(--textbox-padding-x));
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     &,
     &::picker(select) {
       appearance: base-select;
     }
-
-    cursor: pointer;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 
     &::picker(select) {
       background: var(--site-background);
@@ -269,7 +263,11 @@
     }
 
     &::picker-icon {
-      content: v-bind(dropdownLink);
+      content: "";
+      background: v-bind(dropdownLink);
+      background-position: center center;
+      height: 1.5em;
+      width: 1.5em;
     }
 
     &:open {
