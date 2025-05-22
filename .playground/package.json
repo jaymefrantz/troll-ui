@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --port 5000",
+    "dev": "nuxt dev --port 5001",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -10,12 +10,16 @@
     "@nuxt/devtools": "^1.6.0",
     "nuxt-icon": "^0.6.10",
     "pug": "^3.0.3",
-    "pug-plain-loader": "^1.1.0"
+    "pug-plain-loader": "^1.1.0",
+    "@vueuse/nuxt": "^10.9.0"
   },
   "dependencies": {
+    "sass": "^1.79.5",
+    "sass-loader": "^14.2.1",
     "string-similarity": "^4.0.4",
     "vite-svg-loader": "^5.1.0",
     "vue3-google-map": "^0.21.1",
-    "@nuxtjs/google-fonts": "^3.2.0"
+    "@nuxtjs/google-fonts": "^3.2.0",
+    "nuxt": "^3.13.0"
   }
 }

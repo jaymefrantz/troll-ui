@@ -6,7 +6,11 @@ import { dirname, join } from "path"
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
-  extends: [".."],
+  // extends: [".."],
+  extends: [
+    "github:jaymefrantz/troll-ui", // GitHub Remote Source
+    { install: true },
+  ],
   app: {
     baseURL: "/dev/",
   },
@@ -48,6 +52,13 @@ export default defineNuxtConfig({
           // additionalData: `
           //   @import "@@/assets/scss/design/colors.scss";
           // `,
+        },
+      },
+    },
+    vue: {
+      template: {
+        compilerOptions: {
+          // isCustomElement: tag => tag === "selectedcontent",
         },
       },
     },
