@@ -12,9 +12,11 @@ const layer =
       ]
     : [".."]
 
+console.log("layer", layer)
+
 export default defineNuxtConfig({
-  extends: [".."],
-  // extends: layer,
+  // extends: [".."],
+  extends: layer,
   app: {
     baseURL: "/dev/",
     head: {
