@@ -38,6 +38,9 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ~/apps/ui
+            echo "Replacing package.json..."
+            rm -f package.json
+            cp package.prod.json package.json
             echo "Installing dependencies..."
             npm install
             echo "Building Nuxt app..."
