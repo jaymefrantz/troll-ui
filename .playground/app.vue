@@ -1,13 +1,14 @@
 <template lang="pug">
-  <Styles/>
-  //- header
-  //-   div.extra-large-center-margin-wrap
-  //-     <logo id="logo"/>
-  //- main#main
-  //-   div.extra-large-center-margin-wrap
-  //-     <NuxtLayout :name="layout">
-  //-       <NuxtPage />
-  //-     </NuxtLayout>
+  
+  header
+    div.extra-large-center-margin-wrap
+      <logo id="logo"/>
+      <Styles/>
+  main#main
+    //- div.extra-large-center-margin-wrap
+      <NuxtLayout :name="layout">
+        <NuxtPage />
+      </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -34,10 +35,10 @@
 <style lang="scss">
   // @import "@/assets/scss/design/colors.scss"; //this shouldn't happen, but vite additionalData might not be working?
   :root {
-    --textbox-border: 2px solid var(--site-color-200);
+    // --textbox-border: 2px solid var(--site-color-200);
     --textbox-font-size: 0.875em;
     --textbox-font: var(--body-font);
-    --textbox-border-radius: var(--border-radius);
+    // --textbox-border-radius: var(--border-radius);
     --textbox-padding-y: 0.5rem;
     --textbox-padding-x: 1.2rem;
     --textbox-weight: var(--body-weight);
@@ -59,12 +60,14 @@
     --autocomplete-padding: var(--textbox-padding-y) var(--textbox-padding-x);
     --autocomplete-color: var(--textbox-color);
     --autocomplete-wrap-padding: 0 0 0 1rem;
+
+    --side-padding: clamp(1rem, 4.2vw, 2rem);
   }
   // :root {
   //   --primary: #{$primary};
   //   --near-black: #{$near-black};
   //   --near-white: #{$near-white};
-  //   --side-padding: clamp(1rem, 4.2vw, 2rem);
+  //
   //   --font-max: 1.2rem;
   //   --font-min: 1rem;
   //   --font-scaler: 2.4vw;
@@ -132,12 +135,11 @@
   }
 
   .default-label {
-    --label-size: 0.875em;
     font-size: var(--label-size, 0.825em);
+    font-family: var(--body-font);
     margin-bottom: 0.5em;
     display: block;
-    font-weight: 600;
-    text-transform: uppercase;
+    font-weight: var(--label-weight, var(--body-weight));
   }
 
   .subtitle {
@@ -226,6 +228,13 @@
 
   .body-xs {
     font-size: var(--body-size-xs);
+    line-height: var(--line-height-lg);
+    font-weight: var(--body-weight);
+    font-family: var(--body-font);
+  }
+
+  .body-xxs {
+    font-size: var(--body-size-xxs);
     line-height: var(--line-height-lg);
     font-weight: var(--body-weight);
     font-family: var(--body-font);

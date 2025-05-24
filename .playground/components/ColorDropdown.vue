@@ -1,8 +1,9 @@
 <template lang="pug">
+  //- pre {{JSON.stringify(invalidContrast, null, 2)}}
   div.container
-    select(:id="id" v-model="value")
+    select(:id="id" v-model="value").color
       button(type="button")
-        <selectedcontent :style="`--color: var(${value})`">{{value}}</selectedcontent>
+        <selectedcontent :style="`--color: var(${value})`" :class="invalidContrast.includes(colorOptions[value]) ? 'invalid' : ''">{{value}}</selectedcontent>
         span.label {{label}}
       div(ref="container").option-container
         option(v-if="includeTransparent" :key="`${id}-transparent`" :value="'--transparent'" :style="`--color: var(--transparent)`").transparent 
@@ -19,9 +20,9 @@
   const props = withDefaults(
     defineProps<{
       label: string
-      id: string
+      id?: string
       options?: Record<string, string>
-      compare: string
+      compare?: string
       includeTransparent?: boolean
     }>(),
     {
@@ -63,6 +64,34 @@
 </script>
 
 <style scoped>
+  [disabled],
+  .invalid {
+    &:before {
+      border: 1px solid red;
+    }
+
+    &:after {
+      content: "X";
+      color: red;
+      /* 
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      */
+      background-image: radial-gradient(red 1px, transparent 1px);
+      background-size: 4px 4px;
+      /* content: ""; */
+      position: absolute;
+      inset: 0;
+    }
+  }
+  .label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: var(--body-font);
+  }
+
   .container {
     display: inline-flex;
     --transparent: white
@@ -76,6 +105,7 @@
 
   select {
     align-items: center;
+    gap: 0.375rem;
     /* padding: 0;
     border: 0; */
 
@@ -98,21 +128,10 @@
       background: transparent;
       display: flex;
       align-items: center;
+      text-align: center;
 
       &[disabled] {
         cursor: not-allowed;
-        &:before {
-          border: 1px solid red;
-        }
-
-        &:after {
-          content: "X";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          translate: -50% -50%;
-          color: red;
-        }
       }
 
       &::checkmark {
@@ -163,6 +182,7 @@
   selectedcontent {
     white-space: nowrap;
     text-overflow: ellipsis;
+    position: relative;
 
     span {
       border: 0;
@@ -180,7 +200,7 @@
     &:before {
       content: "";
       display: block;
-      width: 1em;
+      width: 0.875rem;
       aspect-ratio: 1;
       background: var(--color);
       border-radius: 100%;

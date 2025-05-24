@@ -1,6 +1,6 @@
 <template lang="pug">
   div.container
-    label(:for="id").body-xs Icon
+    label(:for="id").default-label {{label}}
     select(:id="id" v-model="value")
       div.option-wrapper
         option(v-for="(value, option) in options" :key="value" :value="value") {{ option }}
@@ -12,7 +12,7 @@
   const props = defineProps<{
     options: Record<string, string>
     label: string
-    id: string
+    id?: string
   }>()
 
   const id = computed(() => {

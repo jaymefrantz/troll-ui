@@ -6,8 +6,8 @@
         div.option-wrapper
           option(v-for="font in fonts" :key="`${id}-${font}`" :value="font" :style="`font-family: ${font}; font-weight: ${weight}`") {{ font.replace('+', ' ') }}
     div.container
-      label(:for="id").default-label.small weight
-      select(:id="id" v-model="weight")
+      label(:for="`${id}Weight`").default-label.small weight
+      select(:id="`${id}Weight`" v-model="weight")
         div.option-wrapper
           option(v-for="weight in weights" :key="`${id}-${weight}`" :value="weight" :style="`font-weight: ${weight}; font-family: ${font}`") {{ weight }}
 </template>
@@ -28,24 +28,31 @@
 
 <style scoped>
   .font-wrap {
-    display: flex;
+    /* display: flex; */
+    display: grid;
+    grid-template-columns: 1fr 70px;
   }
+
+  /* [id$="Weight"] {
+    width: 
+  } */
+
   .container {
     &:first-of-type {
       select {
-        background: red;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         border-right: none;
+        padding-right: 0.25rem;
       }
     }
 
     &:last-of-type {
       select {
-        background: yellow;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         border-left: none;
+        padding-left: 0.25rem;
       }
     }
   }

@@ -1,11 +1,12 @@
 <template lang="pug">
-  div(:style="`--percentage: ${percentage}%`").container
+  div(:style="`--percentage: ${percentage}%`").input-container
     label(:for="id").default-label {{label}}
     div.input-wrap
       input(type="range" :min="min" :max="max" :step="step" v-model="value" :id="id")
     ul(:style="`grid-template-columns: repeat(${max + 1}, 1fr)`").label-list
       li(v-for="(label, index) in labels" :key="`${id}-${label}`" :class="index < value ? 'active' : ''")
-        span.label {{label}}
+        button(type="button" @click="value = index").label {{label}}
+        //- span.label {{label}}
 </template>
 
 <script setup lang="ts">
@@ -28,11 +29,11 @@
     }
   )
 
-  const labels = new Array(props.max + 1).fill(0).map((_, i) => i)
-
   const id = computed(() => {
     return props?.id || `Range-${useId()}`
   })
+
+  const labels = new Array(props.max + 1).fill(0).map((_, i) => i)
 
   const percentage = computed(() => {
     return ((value.value - props.min) / (props.max - props.min)) * 100
@@ -40,9 +41,14 @@
 </script>
 
 <style lang="scss" scoped>
-  .container {
+  :global(.dark-theme .input-container) {
     --input-active: var(--site-color-200);
     --input-inactive: color-mix(in lab, var(--site-color-200) 20%, white);
+  }
+
+  :global(.light-theme .input-container) {
+    --input-inactive: var(--site-color-600);
+    --input-active: var(--site-color-400);
   }
 
   .input-wrap {
@@ -51,10 +57,10 @@
     &:before {
       content: "";
       position: absolute;
-      height: 3px;
+      height: 4px;
       width: var(--percentage);
       background: var(--input-active);
-      top: calc(50% + 1px);
+      top: calc(50% + 2px);
       left: 0;
       translate: 0 -50%;
       border-radius: 5px;
@@ -91,6 +97,10 @@
     position: relative;
     pointer-events: none;
     transition: scale 0.2s ease-in-out, color 0.2s ease-in-out;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: currentColor;
 
     &:before {
       content: "";
@@ -101,7 +111,7 @@
       border-radius: 50%;
       left: 50%;
       position: absolute;
-      transform: translateX(-50%) translateY(-14px);
+      transform: translateX(-50%) translateY(-15px);
       transition: transform 0.2s ease-in-out;
     }
   }
