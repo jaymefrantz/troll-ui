@@ -25,18 +25,11 @@ jobs:
           #target: ${{vars.SERVER_PATH}}
           target: "~/apps/ui/"
           strip_components: 2
-  restart:
+  build:
     runs-on: ubuntu-latest
     needs: [deploy]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Check package.json changes
-        id: changed-packagejson
-        uses: tj-actions/changed-files@v35
-        with:
-          files: package.json
-      - name: Install + Restart pm2 process
+      - name: SSH to install dependencies and build
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -44,7 +37,22 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            if ${{ steps.changed-packagejson.outputs.any_changed == 'true' }}; then
-              npm install
-            fi
-              pm2 restart troll-ui
+            cd ~/apps/ui
+            echo "Installing dependencies..."
+            npm install
+            echo "Building Nuxt app..."
+            npm run build
+  restart:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Restart PM2 process
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            echo "Restarting PM2 process..."
+            pm2 restart troll-ui

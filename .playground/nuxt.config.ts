@@ -4,15 +4,22 @@ import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
+const layer =
+  process.env.ENV === "PROD"
+    ? [
+        "github:jaymefrantz/troll-ui", // GitHub Remote Source
+        { install: true },
+      ]
+    : [".."]
 
 export default defineNuxtConfig({
-  // extends: [".."],
-  extends: [
-    "github:jaymefrantz/troll-ui", // GitHub Remote Source
-    { install: true },
-  ],
+  extends: [".."],
+  // extends: layer,
   app: {
     baseURL: "/dev/",
+    head: {
+      meta: [{ name: "robots", content: "noindex, nofollow" }],
+    },
   },
   runtimeConfig: {
     public: {
