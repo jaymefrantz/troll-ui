@@ -2,13 +2,13 @@
   div.font-wrap
     div.container
       label(:for="`${id}Font`").default-label {{label}} font
-      select(:id="`${id}Font`" v-model="font")
-        div.option-wrapper
+      select(:id="`${id}Font`" v-model="font").native
+        div.option-container
           option(v-for="font in fonts" :key="`${id}-${font}`" :value="font" :style="`font-family: ${font}; font-weight: ${weight}`") {{ font.replace('+', ' ') }}
     div.container
       label(:for="`${id}Weight`").default-label.small weight
-      select(:id="`${id}Weight`" v-model="weight")
-        div.option-wrapper
+      select(:id="`${id}Weight`" v-model="weight").native
+        div.option-container
           option(v-for="weight in weights" :key="`${id}-${weight}`" :value="weight" :style="`font-weight: ${weight}; font-family: ${font}`") {{ weight }}
 </template>
 
@@ -30,12 +30,17 @@
   .font-wrap {
     /* display: flex; */
     display: grid;
-    grid-template-columns: 1fr 70px;
+    grid-template-columns: 1fr 5rem;
   }
 
   /* [id$="Weight"] {
     width: 
   } */
+
+  select {
+    display: flex;
+    justify-content: space-between;
+  }
 
   .container {
     &:first-of-type {

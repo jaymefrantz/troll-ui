@@ -39,11 +39,17 @@
 </script>
 
 <style lang="scss" scoped>
+  .styles .default-label {
+    --label-size: 1rem;
+  }
   .border-width-column {
     grid-column: span 2;
   }
 
   .border-radius-column {
-    grid-column: span 4;
+    grid-column: span 2;
+    @include viewport($medium-small-viewport up) {
+      grid-column: span 4;
+    }
   }
 </style>

@@ -1,8 +1,8 @@
 <template lang="pug">
   div.container
     label(:for="id").default-label {{label}}
-    select(:id="id" v-model="value")
-      div.option-wrapper
+    select(:id="id" v-model="value").native
+      div.option-container
         option(v-for="(value, option) in options" :key="value" :value="value") {{ option }}
 </template>
 
