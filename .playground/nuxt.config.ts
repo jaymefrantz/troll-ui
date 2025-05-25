@@ -1,18 +1,19 @@
+type ProdLayer = [string, { install: boolean }]
+type DevLayer = [string]
+
 import fonts from "./assets/js/fonts.ts"
 import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
-const layer =
+const layer: ProdLayer | DevLayer =
   process.env.ENV === "PROD"
     ? [
         "github:jaymefrantz/troll-ui", // GitHub Remote Source
         { install: true },
       ]
     : [".."]
-
-console.log("layer", layer)
 
 export default defineNuxtConfig({
   // extends: [".."],
