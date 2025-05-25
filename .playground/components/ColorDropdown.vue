@@ -1,14 +1,16 @@
 <template lang="pug">
   //- pre {{JSON.stringify(invalidContrast, null, 2)}}
   div.container
-    select(:id="id" v-model="value").color
+    select(:id="id" v-model="value" :class="invalidContrast.includes(colorOptions[value]) ? 'invalid' : ''").color
       button(type="button")
-        <selectedcontent :style="`--color: var(${value})`" :class="invalidContrast.includes(colorOptions[value]) ? 'invalid' : ''">{{value}}</selectedcontent>
+        <selectedcontent :style="`--color: var(${value})`">{{value}}</selectedcontent>
         span.label {{label}}
       div(ref="container").option-container
         option(v-if="includeTransparent" :key="`${id}-transparent`" :value="'--transparent'" :style="`--color: var(--transparent)`").transparent 
+          Icon(v-if="value === '--transparent'" :name="check").check-icon
           span Transparent
         option(v-for="(hex, cssVar, index) in colorOptions" :key="`${id}-${cssVar}`" :disabled="invalidContrast.includes(hex)" :style="`--color: ${hex}`" :value="cssVar")
+          Icon(v-if="value === cssVar" :name="check" size="1.5rem" :style="`color: var(--${cssVar.replace('--', '').split('-')[0]}-${(index % 10) < 4 ? 900 : 50})`").check-icon
           span.sr-only {{cssVar.replace("--", "").split("-").join(" ")}}
     //-label(:for="id") {{label}} //this doesn't trigger the select for some reason
 </template>
@@ -16,6 +18,9 @@
 <script setup lang="ts">
   const colors = groupCSSVarsByPrefix(jsonToCSSVars(useAppConfig().colors))
   const value = defineModel()
+  const icons = useState("icons")
+
+  const check = computed(() => icons.value.check)
 
   const props = withDefaults(
     defineProps<{
@@ -64,28 +69,29 @@
 </script>
 
 <style scoped>
+  :global(.small-column:has(select:open)) {
+    grid-column: span calc(var(--sm-column) * 2);
+  }
   [disabled],
   .invalid {
     &:before {
       border: 1px solid red;
     }
+  }
+
+  .invalid selectedcontent,
+  [disabled] {
+    color: red;
 
     &:after {
-      content: "X";
-      color: red;
-      /* 
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      translate: -50% -50%;
-      */
+      content: "";
       background-image: radial-gradient(red 1px, transparent 1px);
       background-size: 4px 4px;
-      /* content: ""; */
       position: absolute;
       inset: 0;
     }
   }
+
   .label {
     font-size: 0.875rem;
     font-weight: 400;
@@ -109,71 +115,89 @@
     /* padding: 0;
     border: 0; */
 
-    &:open {
-      &:has(option:hover) option:not(:has(:hover)),
-      &:has(option:focus-visible) option:not(:has(:focus-visible)) {
-        opacity: 0.5;
+    &.invalid {
+      border-color: red;
+    }
 
-        &:before {
-          scale: 0.975;
-        }
-      }
+    &:has(option:hover) option:not(.transparent):not(:has(:hover)),
+    &:has(option:hover) option.transparent:not(:has(:hover)):before,
+    &:has(option:focus-visible) option:not(.transparent):not(:has(:focus-visible)),
+    &:has(option:focus-visible) option.transparent:not(:has(:focus-visible)):before {
+      opacity: 0.5;
+      scale: 0.875;
     }
 
     & option {
       padding: 0;
-      aspect-ratio: 1;
+      /* aspect-ratio: 1; */
       position: relative;
-      transition: opacity 0.25s;
+      transition: opacity 0.25s, scale 0.25s;
       background: transparent;
       display: flex;
       align-items: center;
-      text-align: center;
+      justify-content: center;
+      height: 1.5rem;
+      font-size: 1rem;
+      background: var(--color);
 
       &[disabled] {
         cursor: not-allowed;
+        border: 1px solid currentColor;
       }
 
       &::checkmark {
-        /* // content: v-bind(checkLink); */
+        display: none;
+      }
+
+      .check-icon {
         position: absolute;
         top: 50%;
         left: 50%;
         translate: -50% -50%;
-        color: white;
       }
 
       /* &:focus-visible {
         border: 1px solid red;
       } */
 
-      .option-container > &:not([disabled]):hover,
-      .option-container > &:focus-visible {
+      .option-container > &:not(.transparent):not([disabled]):hover,
+      .option-container > &:not(.transparent):focus-visible {
         opacity: 1 !important;
-        &:before {
-          scale: 1.15 !important;
-        }
+        scale: 1.15 !important;
       }
 
-      &:before {
-        content: "";
-        display: block;
-        /* width: 1rem; */
-        width: 1.5rem;
-        /* height: 100%; */
-        aspect-ratio: 1;
-        transition: scale 0.325s;
-        background: var(--color);
+      &[disabled]:after {
+        /* content: "X"; */
+        /* width: 1.5rem;
+        height: 1.5rem;
+         */
       }
 
       &.transparent {
         grid-column: span 10;
-        width: 100%;
-        height: 1.5rem;
-        padding-bottom: 0.5rem;
+        background: transparent;
+        justify-content: flex-start;
+
+        &:before {
+          content: "";
+          display: block;
+          width: 1.5rem;
+          aspect-ratio: 1;
+          background: var(--transparent);
+          transition: opacity 0.25s, scale 0.25s;
+        }
+
+        .option-container > &:hover,
+        .option-container > &:focus-visible {
+          scale: none;
+          &:before {
+            scale: 1.15;
+          }
+        }
 
         span {
           font-size: 0.875rem;
+          //padding-left: 2rem;
         }
       }
     }
@@ -183,6 +207,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
+
+    .check-icon {
+      display: none;
+    }
 
     span {
       border: 0;
@@ -205,7 +233,14 @@
       background: var(--color);
       border-radius: 100%;
       border: 1px solid var(--grey-200);
-      //box-shadow: inset 0 0 0 1px var(--grey-100), 0 0 0 2px var(--grey-200);
+    }
+
+    .invalid &:before {
+      border: 1px solid currentColor;
+    }
+
+    &:after {
+      border-radius: 100%;
     }
   }
 
@@ -213,8 +248,9 @@
     display: grid;
     grid-template-columns: repeat(10, 1.5rem);
     overflow: hidden;
-    background: white;
-    gap: 0 0.25rem;
+    gap: 0.25rem;
     grid-template-rows: repeat(auto-fill, 1.5rem);
+    padding: calc(0.5rem + var(--textbox-padding-x));
+    justify-content: center;
   }
 </style>
