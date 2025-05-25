@@ -1,9 +1,5 @@
 <template lang="pug">
-  
-  header
-    div.extra-large-center-margin-wrap
-      <logo id="logo"/>
-      <Styles/>
+  <SiteHeader />
   main#main
     //- div.extra-large-center-margin-wrap
       <NuxtLayout :name="layout">
@@ -13,9 +9,7 @@
 
 <script setup lang="ts">
   const { styles } = useAppConfig()
-  //console.log(styles);
 
-  import logo from "./assets/svg/troll-ui-logo.svg?component"
   const layout = computed(() => (!isHome.value ? "dev" : "default"))
   const isHome = computed(() => {
     return useRoute().path === "/"
@@ -40,7 +34,7 @@
     --textbox-font: var(--body-font);
     // --textbox-border-radius: var(--border-radius);
     --textbox-padding-y: 0.5rem;
-    --textbox-padding-x: 1.2rem;
+    // --textbox-padding-x: 1.2rem;
     --textbox-weight: var(--body-weight);
 
     --dropdown-background: var(--textbox-background);

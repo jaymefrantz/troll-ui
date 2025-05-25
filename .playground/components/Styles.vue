@@ -89,6 +89,7 @@
 
   const storage = useStorage("trollui-styles", defaultStyles)
   const icons = useState("icons", () => allIcons[storage.value.icon])
+  const siteColor = useState("color", () => colors[defaultStyles.color])
   const activeColorFamily = computed(() => {
     const [x, y, color, variant] = storage.value.color.split("-")
     return color
@@ -120,11 +121,19 @@
 
   watch(
     () => storage.value.icon,
-    icon => {
+    async icon => {
       icons.value = allIcons[icon]
       dropdownIcon.value = { name: icons.value["arrow-down"] ?? "", size: "1em" }
     }
   )
+
+  watch(
+    () => storage.value.color,
+    async color => {
+      siteColor.value = colors[color]
+    }
+  )
+
   const dropdownIcon = useState("dropdownIcon", () => ({
     name: icons.value["arrow-down"] ?? "",
     size: "1em",
@@ -134,6 +143,20 @@
     const [family, name] = dropdownIcon.value.name.split(":")
     const color = colors[storage.value.formStyle.color]
     return `url(https://api.iconify.design/${family}/${name}.svg?width=1.75em&color=${color.replace(
+      "#",
+      "%23"
+    )})`
+  })
+
+  const checkLink = computed(() => {
+    const icon = icons.value.check
+    if (icon == undefined) {
+      return ""
+    }
+
+    const color = colors[storage.value.formStyle.color]
+    const [family, name] = icon.split(":")
+    return `url(https://api.iconify.design/${family}/${name}.svg?height=1.75em&color=${color.replace(
       "#",
       "%23"
     )})`
@@ -190,6 +213,12 @@
     ],
   })
 
+  onMounted(() => {
+    setTimeout(() => {
+      siteColor.value = colors[storage.value.color]
+    }, 0)
+  })
+
   const convertToObject = (array: string[]) => array.reduce((obj, x) => ({ ...obj, [x]: x }), {})
   function toTitleCase(str: string) {
     return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase())
@@ -199,27 +228,22 @@
 <style lang="scss">
   .styles {
     padding: 0 var(--side-padding);
+    width: 100%;
+    max-width: 32rem;
 
     .default-label {
       --label-size: 0.875rem;
       --label-weight: 500;
     }
 
-    select {
-      width: 100%;
-      align-items: center;
-      &:not(.color) {
-        font-size: 1rem;
-      }
+    [popovertarget="stylePopover"] {
+      display: block;
+      text-align: right;
+      margin-left: auto;
     }
 
     .container {
       width: 100%;
-    }
-
-    .expanding-outer {
-      width: 70%;
-      max-width: 28rem;
     }
 
     .expanding-inner {
@@ -234,10 +258,20 @@
     border-radius: var(--textbox-border-radius);
     color: var(--textbox-color);
     background: var(--textbox-background);
-    padding: 0.375rem calc(0.875rem + var(--textbox-padding-x));
     cursor: pointer;
     white-space: nowrap;
     text-overflow: ellipsis;
+    width: 100%;
+    align-items: center;
+
+    &:not(.color) {
+      font-size: 1rem;
+      padding: 0.375rem calc(0.75rem + var(--textbox-padding-x));
+
+      .option-container {
+        padding: calc(0.5rem + var(--textbox-padding-x)) 0;
+      }
+    }
 
     &,
     &::picker(select) {
@@ -245,7 +279,7 @@
     }
 
     &::picker(select) {
-      background: var(--site-background);
+      background: var(--site-background); //here?
       border: 0;
       transition: display allow-discrete 1s, opacity 0.25s, overlay 1s allow-discrete;
     }
@@ -266,29 +300,67 @@
       content: "";
       background: v-bind(dropdownLink);
       background-position: center center;
-      height: 1.5em;
-      width: 1.5em;
+      height: 1.5rem;
+      width: 1.5rem;
+      transition: transform 0.25s ease-in-out;
     }
 
     &:open {
-      ::picker-icon {
+      &::picker-icon {
         transform: rotate(180deg);
+      }
+    }
+
+    ::checkmark {
+      content: v-bind(checkLink);
+    }
+
+    &.native {
+      option {
+        color: var(--dropdown-color);
+        & + option {
+          margin-top: 2px;
+        }
       }
     }
   }
 
+  .option-container {
+    margin-top: 0.5rem;
+    border-radius: var(--dropdown-border-radius);
+    border: var(--dropdown-border);
+    background: var(--dropdown-background);
+  }
+
+  selectedcontent > * {
+    transition: transform 1s var(--ease-spring-4), display 1s allow-discrete, opacity 1s;
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
   .styles-list {
-    --sm-column: 1;
+    --sm-column: 2;
     --md-column: 2;
     --lg-column: 2;
     --xl-column: 2;
-
-    --sm-column: 2;
-    --md-column: 3;
-    --lg-column: 6;
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+
+    @include viewport($small-viewport + 5rem up) {
+      --sm-column: 1;
+    }
+
+    @include viewport($medium-small-viewport up) {
+      grid-template-columns: repeat(6, 1fr);
+      --sm-column: 2;
+      --md-column: 3;
+      --lg-column: 6;
+    }
 
     .large-column {
       grid-column: span var(--lg-column);
@@ -530,9 +602,6 @@
   //     color: var(--dropdown-color);
   //     gap: 0.2em;
 
-  //     &::checkmark {
-  //       // content: v-bind(checkLink);
-  //     }
   //   }
 
   //   .styles-list & {
