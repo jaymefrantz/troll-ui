@@ -6,7 +6,6 @@
     ul(:style="`grid-template-columns: repeat(${max + 1}, 1fr)`").label-list
       li(v-for="(label, index) in labels" :key="`${id}-${label}`" :class="index < value ? 'active' : ''")
         button(type="button" @click="value = index").label {{label}}
-        //- span.label {{label}}
 </template>
 
 <script setup lang="ts">
