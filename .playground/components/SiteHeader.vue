@@ -53,11 +53,11 @@
     }
   }
 
-  :global(.dark-theme #logo) {
+  :global(body:has(.dark-theme) #logo) {
     color: var(--site-color-50);
   }
 
-  :global(.light-theme #logo) {
+  :global(body:has(.light-theme) #logo) {
     color: var(--site-color-900);
   }
 </style>

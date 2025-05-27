@@ -1,10 +1,11 @@
 <template lang="pug">
-  div.styles
+  div(:class="theme").styles
     //- pre {{JSON.stringify(storage, null, 2)}}
     button(type="button" popovertarget="stylePopover") 
-      span.button-text Change styles
+      Icon(name="heroicons-outline:color-swatch" size="2.5em")
+      span.sr-only.button-text Change styles
     clientOnly
-      div.expanding-outer#stylePopover
+      div(style="display: none;").expanding-outer#stylePopover
         div.expanding-inner
           ul.styles-list
             li.large-column
@@ -14,7 +15,7 @@
             li.small-column
               <ColorDropdown v-model="storage.color" label="Primary" :compare="backgroundHex"/>
             li.small-column
-              <ColorDropdown v-model="storage.bodyColor" label="Body color" :compare="backgroundHex"/>
+              <ColorDropdown v-model="storage.bodyColor" label="Secondary" :compare="backgroundHex"/>
             li.small-column
               <ColorDropdown v-model="storage.background" label="Background"/>
             li.medium-column
@@ -40,19 +41,6 @@
   </svg>
    */
   const colors = getColorOptions()
-  const backgroundThemes = {
-    ...useAppConfig().colors.grey.reduce(
-      (obj, hex, index) => ({ ...obj, [hex]: index > 3 ? "dark" : "light" }),
-      {}
-    ),
-  }
-
-  const backgroundHex = computed(() => colors[storage.value.background])
-  const theme = computed(() => {
-    return parseInt(storage.value.background.replace("--", "").split("-").at(-1)) > 300
-      ? "dark"
-      : "light"
-  })
 
   const allIcons = Object.entries(useAppConfig().icons).reduce(
     (obj, [name, { icons }]) => ({ ...obj, [name]: icons }),
@@ -89,7 +77,19 @@
 
   const storage = useStorage("trollui-styles", defaultStyles)
   const icons = useState("icons", () => allIcons[storage.value.icon])
+  const iconSet = useState("iconSet", () => defaultStyles.icon)
   const siteColor = useState("color", () => colors[defaultStyles.color])
+
+  const backgroundHex = computed(() => colors[storage.value.background])
+
+  const theme = computed(() => {
+    return `${
+      parseInt(storage.value.background.replace("--", "").split("-").at(-1)) > 300
+        ? "dark"
+        : "light"
+    }-theme`
+  })
+
   const activeColorFamily = computed(() => {
     const [x, y, color, variant] = storage.value.color.split("-")
     return color
@@ -121,9 +121,13 @@
 
   watch(
     () => storage.value.icon,
-    async icon => {
-      icons.value = allIcons[icon]
-      dropdownIcon.value = { name: icons.value["arrow-down"] ?? "", size: "1em" }
+    async name => {
+      icons.value = allIcons[name]
+      dropdownIcon.value = {
+        name: icons.value["arrow-down"] ?? "qlementine-icons:chevron-down-16",
+        size: "1em",
+      }
+      iconSet.value = name
     }
   )
 
@@ -135,7 +139,7 @@
   )
 
   const dropdownIcon = useState("dropdownIcon", () => ({
-    name: icons.value["arrow-down"] ?? "",
+    name: icons.value["arrow-down"] ?? "qlementine-icons:chevron-down-16",
     size: "1em",
   }))
 
@@ -151,7 +155,7 @@
   const checkLink = computed(() => {
     const icon = icons.value.check
     if (icon == undefined) {
-      return ""
+      return "qlementine-icons:check-tick-16"
     }
 
     const color = colors[storage.value.formStyle.color]
@@ -177,7 +181,7 @@
    		--body-weight: ${storage.value.bodyWeight};
    		--heading-weight: ${storage.value.headingWeight};
    		--site-color: var(${storage.value.color});
-      --site-body-color: var(${storage.value.bodyColor});
+      --site-secondary-color: var(${storage.value.bodyColor});
    		--site-background: var(${storage.value.background});
    		--site-color-50: var(--${activeColorFamily.value}-50);
    		--site-color-100: var(--${activeColorFamily.value}-100);
@@ -196,9 +200,6 @@
   })
 
   useHead({
-    bodyAttrs: {
-      class: () => `${theme.value}-theme`,
-    },
     style: [
       {
         innerHTML: () => `:root {
@@ -240,10 +241,28 @@
       display: block;
       text-align: right;
       margin-left: auto;
+      background: transparent;
+      border: 0;
+      color: var(--site-color);
+
+      &:hover {
+        .dark-theme & {
+          color: var(--site-color-100);
+        }
+
+        .light-theme & {
+          color: var(--site-color-800);
+        }
+      }
     }
 
     .container {
       width: 100%;
+    }
+
+    .expanding-outer {
+      position: absolute;
+      z-index: 1;
     }
 
     .expanding-inner {
