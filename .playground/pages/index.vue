@@ -12,7 +12,7 @@
     p(v-for="size in bodySizes" :class="`body-${size}`") Body {{ size }}
   section
     h2.heading-xl Icons
-    h3.heading-md.icon-set-name {{iconSet}}
+    h3.heading-sm.icon-set-name {{iconSet}}
       a(:href="iconLink.link" target="_blank" rel="noopener noreferrer")
         Icon(:name="iconLink.icon" size="none")
         span.sr-only Open icon set
@@ -99,6 +99,7 @@
   .icon-set-name {
     display: flex;
     align-items: flex-start;
+    margin-top: 1em;
 
     a {
       display: block;

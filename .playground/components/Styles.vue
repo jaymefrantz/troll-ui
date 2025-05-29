@@ -1,11 +1,11 @@
 <template lang="pug">
   div(:class="theme").styles
-    //- pre {{JSON.stringify(storage, null, 2)}}
     button(type="button" popovertarget="stylePopover") 
       Icon(name="heroicons-outline:color-swatch" size="2.5em")
       span.sr-only.button-text Change styles
+      //-  pre {{JSON.stringify(storage, null, 2)}}
     clientOnly
-      div(style="display: none;").expanding-outer#stylePopover
+      div(popover).expanding-outer#stylePopover
         div.expanding-inner
           ul.styles-list
             li.large-column
@@ -228,32 +228,17 @@
 
 <style lang="scss">
   .styles {
-    padding: 0 var(--side-padding);
-    width: 100%;
-    max-width: 32rem;
+    // padding: 0 var(--side-padding);
+    // width: 100%;
+    // margin-top: 0;
+
+    // margin: 1rem;
+    // width: 100%;
+    // max-width: 32rem;
 
     .default-label {
       --label-size: 0.875rem;
       --label-weight: 500;
-    }
-
-    [popovertarget="stylePopover"] {
-      display: block;
-      text-align: right;
-      margin-left: auto;
-      background: transparent;
-      border: 0;
-      color: var(--site-color);
-
-      &:hover {
-        .dark-theme & {
-          color: var(--site-color-100);
-        }
-
-        .light-theme & {
-          color: var(--site-color-800);
-        }
-      }
     }
 
     .container {
@@ -261,13 +246,40 @@
     }
 
     .expanding-outer {
+      // position: absolute;
+      // z-index: 1;
+      position-anchor: --tooltip;
       position: absolute;
-      z-index: 1;
+      position-area: span-left bottom;
+      max-width: 30rem;
+      width: 100%;
+      margin-top: 0.5rem;
+      margin-right: 0;
+      border: 0;
+      background: transparent;
     }
 
     .expanding-inner {
       & > .default-label {
         margin-top: 1rem;
+      }
+    }
+  }
+
+  [popovertarget="stylePopover"] {
+    display: block;
+    background: transparent;
+    border: 0;
+    color: var(--site-color);
+    anchor-name: --tooltip;
+
+    &:hover {
+      .dark-theme & {
+        color: var(--site-color-100);
+      }
+
+      .light-theme & {
+        color: var(--site-color-800);
       }
     }
   }
@@ -397,273 +409,4 @@
       width: 100%;
     }
   }
-  //   --weight-width: 6rem;
-  //   display: grid;
-  //   gap: 1rem;
-  //   margin-top: 1rem;
-  //   //grid-template-columns: repeat(12, 1fr);
-  //   --sm-column: 1;
-  //   --md-column: 2;
-  //   --lg-column: 2;
-  //   --xl-column: 2;
-
-  //   grid-template-columns: repeat(2, 1fr);
-
-  //   & > li {
-  //     width: 100%;
-  //   }
-
-  //   @include viewport($medium-small-viewport + 5rem up) {
-  //     grid-template-columns: repeat(4, 1fr);
-  //   }
-
-  //   @include viewport($medium-viewport up) {
-  //     grid-template-columns: repeat(6, 1fr);
-  //     --lg-column: 3;
-  //     --xl-column: 6;
-  //   }
-
-  //   @include viewport($large-viewport + 5rem up) {
-  //     grid-template-columns: repeat(12, 1fr);
-  //   }
-
-  //   li:nth-child(2) {
-  //     grid-column: span var(--sm-column);
-  //   }
-
-  //   li:first-child {
-  //     grid-column: span var(--md-column);
-  //   }
-
-  //   li:nth-child(4),
-  //   li:nth-child(5),
-  //   li:nth-child(3) {
-  //     grid-column: span var(--lg-column);
-  //   }
-
-  //   li:nth-child(6),
-  //   li:nth-child(7) {
-  //     grid-column: span var(--xl-column);
-  //   }
-
-  //   select {
-  //     border: var(--dropdown-border);
-  //     color: var(--dropdown-color);
-  //     font-size: var(--trigger-font-size);
-  //     font-family: var(--body-font);
-  //     border-radius: var(--dropdown-border-radius);
-  //     //here
-
-  //     button {
-  //       color: var(--dropdown-color);
-  //     }
-  //   }
-
-  //   select.weight {
-  //     width: var(--weight-width);
-  //   }
-
-  //   & > li {
-  //     display: flex;
-  //     gap: 1rem;
-  //     align-items: center;
-  //   }
-  // }
-
-  // .container {
-  //   width: 100%;
-  // }
-
-  // .container:not(:has(select + select)) {
-  //   select {
-  //     width: 100%;
-  //   }
-  // }
-
-  // .container:has(> select:nth-child(4):nth-last-child(1)) {
-  //   select:not(.weight) {
-  //     width: calc(100% - (var(--weight-width) * 2));
-  //   }
-  // }
-
-  // .container:has(select + select) {
-  //   select:not(.weight) {
-  //     width: calc(100% - var(--weight-width));
-  //   }
-
-  //   select {
-  //     border-top-right-radius: 0;
-  //     border-bottom-right-radius: 0;
-  //     border-top-left-radius: 0;
-  //     border-bottom-left-radius: 0;
-  //     border-right: none;
-  //     border-left: none;
-  //   }
-
-  //   select:first-of-type {
-  //     border-left: 1px solid var(--site-color);
-  //     border-top-left-radius: var(--dropdown-border-radius);
-  //     border-bottom-left-radius: var(--dropdown-border-radius);
-  //     padding-right: 0.15em;
-  //   }
-
-  //   select:last-of-type {
-  //     border-right: 1px solid var(--site-color);
-  //     border-top-right-radius: var(--dropdown-border-radius);
-  //     border-bottom-right-radius: var(--dropdown-border-radius);
-  //     padding-left: 0.15em;
-  //   }
-  // }
-
-  // label {
-  //   display: block;
-
-  //   &.small-label {
-  //     position: absolute;
-  //   }
-  // }
-
-  // .scrollable {
-  //   & label {
-  //     display: block;
-  //     position: sticky;
-  //     top: 0;
-  //     z-index: 1;
-  //     background: var(--site-background);
-  //     color: var(--site-color);
-  //     padding: 0 0.5em;
-  //     margin-bottom: 0.5em;
-  //   }
-  //   [role="group"] {
-  //     margin-bottom: 0.5em;
-  //   }
-
-  //   & option {
-  //     display: flex;
-  //     align-items: center;
-  //     //cursor: pointer;
-  //     outline-offset: -1px;
-
-  //     &:focus-visible {
-  //       outline-offset: -1px;
-  //     }
-
-  //     &:is(:focus, :hover) {
-  //       color: inherit;
-  //     }
-
-  //     &:is(:checked) {
-  //     }
-  //   }
-  // }
-
-  // select > div {
-  //   min-inline-size: calc(anchor-size(self-inline) + 20px);
-  //   scroll-behavior: smooth;
-
-  //   &.scrollable {
-  //     max-block-size: 20lh;
-  //     scrollbar-width: thin;
-
-  //     option {
-  //       &:before {
-  //         content: "";
-  //         display: block;
-  //         width: 1em;
-  //         aspect-ratio: 1;
-  //         background: var(--color);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // select {
-  //   &,
-  //   &::picker(select) {
-  //     appearance: base-select;
-  //   }
-
-  //   cursor: pointer;
-  //   white-space: nowrap;
-  //   text-overflow: ellipsis;
-
-  //   &::picker(select) {
-  //     background: var(--site-background);
-  //     border: 0;
-  //     transition: display allow-discrete 1s, opacity 0.25s, overlay 1s allow-discrete;
-  //   }
-
-  //   &:not(:open)::picker(select) {
-  //     opacity: 0;
-  //   }
-
-  //   &:open::picker(select) {
-  //     opacity: 1;
-
-  //     @starting-style {
-  //       opacity: 0;
-  //     }
-  //   }
-
-  //   &::picker-icon {
-  //     content: v-bind(dropdownLink);
-  //   }
-
-  //   &:open {
-  //     ::picker-icon {
-  //       transform: rotate(180deg);
-  //     }
-  //   }
-
-  //   option {
-  //     background: var(--site-background);
-  //     font-size: 0.875em;
-  //     color: var(--dropdown-color);
-  //     gap: 0.2em;
-
-  //   }
-
-  //   .styles-list & {
-  //     &[id$="Color"],
-  //     &[id$="Background"],
-  //     &[id$="Border"] {
-  //       &:before {
-  //         display: block;
-  //         width: 1em;
-  //         aspect-ratio: 1;
-  //         position: absolute;
-  //         transform: translateY(calc(-100% - 0.5rem));
-  //         font-size: 1rem;
-  //         color: var(--site-color);
-  //       }
-  //     }
-
-  //     &[id$="Color"]:before {
-  //       content: "Color";
-  //     }
-
-  //     &[id$="Background"]:before {
-  //       content: "Background";
-  //     }
-
-  //     &[id$="Border"]:before {
-  //       content: "Border";
-  //     }
-  //   }
-  // }
-
-  // selectedcontent {
-  //   white-space: nowrap;
-  //   text-overflow: ellipsis;
-  // }
-
-  // .option-wrapper {
-  //   margin-top: 0.5em;
-  //   border: var(--dropdown-border);
-  //   border-radius: var(--dropdown-border-radius);
-  //   padding: 0.5em 0.25em;
-  //   display: flex;
-  //   gap: 0.25em;
-  //   flex-direction: column;
-  // }
 </style>

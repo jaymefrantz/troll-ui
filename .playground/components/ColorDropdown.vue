@@ -170,6 +170,11 @@
           transition: opacity 0.25s, scale 0.25s;
         }
 
+        .check-icon {
+          left: 0.25rem;
+          translate: 0 -50%;
+        }
+
         .option-container > &:hover,
         .option-container > &:focus-visible {
           scale: none;

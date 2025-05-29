@@ -47,10 +47,8 @@
 
 <style scoped lang="scss">
   .extra-large-center-margin-wrap {
-    @include viewport($medium-large-viewport up) {
-      display: flex;
-      justify-content: space-between;
-    }
+    display: flex;
+    justify-content: space-between;
   }
 
   :global(body:has(.dark-theme) #logo) {
@@ -59,5 +57,17 @@
 
   :global(body:has(.light-theme) #logo) {
     color: var(--site-color-900);
+  }
+
+  header {
+    padding: 0 var(--side-padding);
+
+    .extra-large-center-margin-wrap {
+      padding: 1em 0;
+    }
+  }
+
+  #logo {
+    width: clamp(8.5rem, 20vw, 11rem);
   }
 </style>
