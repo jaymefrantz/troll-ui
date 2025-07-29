@@ -1,47 +1,50 @@
 <template lang="pug">
 div(ref="container").custom-dropdown
-	label(v-if="label !== ''" v-html="label" :id="`${id}-label`" @click="focusDropdown").default-label
-	div.dropdown-mobile-select-container
-		select(v-model="selectedValue" ref="dropdownSelect" :aria-describedby="`${id}-label`").dropdown-select-input
-			option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
-		<Icon :size="icon?.size.toString() ?? 'none'" :name="icon.name" class="dropdown-arrow"/>
-	button(type="button" ref="dropdownTrigger" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
-		@keydown.down.exact.prevent="goDown" 
-		@keydown.up.exact.prevent="goUp" 
-		@keydown.home.prevent="selectFirst" 
-		@keydown.end.prevent="selectLast" 
-		@keydown.alt.down.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)" 
-		@keydown.alt.up.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)"
-		@keydown.space.exact="() => { wasSpace = true }"
-		@click="!expanded ? openDropdown($event) : closeDropdown($event)"
-		@keydown.tab="() => { wasReservedKey = true }"
-		@keydown="keydown"
-	).dropdown-trigger
-		span.dropdown-trigger-label {{selectedLabel}}
-		<Icon :name="icon.name" :size="icon?.size.toString() ?? 'none'" class="dropdown-arrow"/>
-	<DropdownWrap :expanded="expanded" :isEnd="isEnd">
-		ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
-			li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
-				:aria-posinset="index + 1" 
-				:aria-setsize="dropdownOptions.length + 1" 
-				:aria-selected="option.value == selectedValue ? 'true' : 'false'"
-				@keydown.space.exact.prevent="spaceHit"
-				@click="selectOption(option)"
-				@keydown.enter.exact.prevent="selectOption(option)"
-				@keydown.escape.exact.prevent="closeDropdown"
-				@keydown.alt.up.exact.prevent="closeDropdown" 
-				@keydown.alt.down.exact.prevent="closeDropdown"
-				@keydown.tab.exact="closeDropdown"
-				@keydown.shift.tab.exact="closeDropdown" 
-				@keydown.up.exact.prevent="goUp"
-				@keydown.down.exact.prevent="goDown"
-				@keydown.home.exact.prevent="selectFirst" 
-				@keydown.end.exact.prevent="selectLast"
-				@keydown="keydown"
-			)
-				span.option-label {{option.label}}
-				span(:aria-hidden="option.value == selectedValue ? 'false' : 'true'").sr-only , Selected
-	</DropdownWrap>
+	label(v-if="label !== ''" v-html="label" :id="`${id}-label`" @click="focusDropdown").default-label.dropdown-label
+	div(ref="wrap" :class="clickFocused ? 'click-focused' : ''").dropdown-input-wrap
+		<slot name="before"></slot>
+		div.dropdown-mobile-select-container
+			select(v-model="selectedValue" ref="dropdownSelect" @mousedown="mobileMousedown = true" :aria-describedby="`${id}-label`").dropdown-select-input
+				option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
+			<Icon :size="icon?.size?.toString() ?? 'none'" :name="icon?.name" v-bind="icon?.attrs" class="dropdown-arrow"/>
+		button(type="button" ref="dropdownTrigger" @mousedown="desktopMousedown = true" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
+			@keydown.down.exact.prevent="goDown" 
+			@keydown.up.exact.prevent="goUp" 
+			@keydown.home.prevent="selectFirst" 
+			@keydown.end.prevent="selectLast" 
+			@keydown.alt.down.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)" 
+			@keydown.alt.up.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)"
+			@keydown.space.exact="() => { wasSpace = true }"
+			@click="!expanded ? openDropdown($event) : closeDropdown($event)"
+			@keydown.tab="() => { wasReservedKey = true }"
+			@keydown="keydown"
+		).dropdown-trigger
+			span.dropdown-trigger-label {{selectedLabel}}
+			<Icon :name="icon?.name" :size="icon?.size?.toString() ?? 'none'" v-bind="icon?.attrs" class="dropdown-arrow"/>
+		<TrollDropdownWrap ref="dropdownWrap" :expanded="expanded" :isEnd="isEnd">
+			ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
+				li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
+					:aria-posinset="index + 1" 
+					:aria-setsize="dropdownOptions.length + 1" 
+					:aria-selected="option.value == selectedValue ? 'true' : 'false'"
+					@keydown.space.exact.prevent="spaceHit"
+					@click="selectOption(option)"
+					@keydown.enter.exact.prevent="selectOption(option)"
+					@keydown.escape.exact.prevent="closeDropdown"
+					@keydown.alt.up.exact.prevent="closeDropdown" 
+					@keydown.alt.down.exact.prevent="closeDropdown"
+					@keydown.tab.exact="closeDropdown"
+					@keydown.shift.tab.exact="closeDropdown" 
+					@keydown.up.exact.prevent="goUp"
+					@keydown.down.exact.prevent="goDown"
+					@keydown.home.exact.prevent="selectFirst" 
+					@keydown.end.exact.prevent="selectLast"
+					@keydown="keydown"
+				)
+					span.option-label {{option.label}}
+					span(:aria-hidden="option.value == selectedValue ? 'false' : 'true'").sr-only , Selected
+		</TrollDropdownWrap>
+		<slot name="after"></slot>
 </template>
 
 <script setup lang="ts">
@@ -63,9 +66,55 @@ div(ref="container").custom-dropdown
   const dropdownTrigger = ref<null | HTMLButtonElement>(null)
   const dropdownList = ref<null | HTMLUListElement>(null)
   const listItemOptions = ref<null | HTMLLIElement[]>(null)
+  const wrap = ref<null | HTMLDivElement>(null)
+  const dropdownWrap = ref<null | HTMLDivElement>(null)
   const { arrivedState, y } = useScroll(dropdownList, { throttle: 200 })
   const { bottom } = toRefs(arrivedState)
   onClickOutside(container, () => (expanded.value = false))
+  const { height } = useElementBounding(wrap)
+  const mobileHover = useElementHover(dropdownSelect)
+  const desktopHover = useElementHover(dropdownTrigger)
+  const desktopMousedown = ref(false)
+  const mobileMousedown = ref(false)
+  const { focused: desktopFocused } = useFocus(dropdownTrigger)
+  const { focused: mobileFocused } = useFocus(dropdownSelect)
+  const desktopClickFocused = ref(false)
+  const mobileClickFocused = ref(false)
+
+  watch(desktopFocused, isFocused => {
+    if (isFocused && desktopMousedown.value) {
+      desktopClickFocused.value = true
+    }
+    if (!isFocused && desktopClickFocused.value) {
+      desktopClickFocused.value = false
+    }
+    desktopMousedown.value = false
+  })
+
+  watch(mobileFocused, isFocused => {
+    if (isFocused && mobileMousedown.value) {
+      mobileClickFocused.value = true
+    }
+    if (!isFocused && mobileClickFocused.value) {
+      mobileClickFocused.value = false
+    }
+    mobileMousedown.value = false
+  })
+
+  const clickFocused = computed(() => {
+    return isMobile.value ? mobileClickFocused.value : desktopClickFocused.value
+  })
+
+  const focused = computed(() => {
+    return isMobile.value ? mobileFocused.value : desktopFocused.value
+  })
+
+  watch(
+    () => isMobile.value,
+    () => {
+      if (isMobile.value) expanded.value = false
+    }
+  )
 
   watch(y, () => {
     isEnd.value = bottom.value
@@ -91,6 +140,7 @@ div(ref="container").custom-dropdown
       icon: {
         name: "material-symbols:keyboard-arrow-down-rounded",
         size: "1.25em",
+        attrs: {},
       },
     }
   )
@@ -99,7 +149,6 @@ div(ref="container").custom-dropdown
   const iconSize = computed(() => props.icon.size)
 
   const { options: dropdownOptions, label } = toRefs(props)
-
   const selectedLabel = computed(() => {
     if (dropdownOptions.value === null) return ""
     return dropdownOptions.value.find(option => option.value == selectedValue.value)?.label ?? ""
@@ -110,6 +159,7 @@ div(ref="container").custom-dropdown
       spaceHit(event)
       return
     }
+
     expanded.value = true
     previouslySelected.value = selectedValue.value
 
@@ -230,9 +280,18 @@ div(ref="container").custom-dropdown
     wasReservedKey.value = false
   }
 
+  const isHovered = computed(() => {
+    return isMobile.value ? mobileHover.value : desktopHover.value
+  })
+
   defineExpose({
     selectedValue,
-    props,
+    // props,
+    isHovered,
+    clickFocused,
+    focused,
+    expanded,
+    height: computed(() => Math.ceil(height.value + (dropdownWrap.value?.height ?? 0))),
   })
 </script>
 
@@ -241,6 +300,11 @@ div(ref="container").custom-dropdown
     position: relative;
     display: inline-block;
     width: 100%;
+    &:has(.dropdown-trigger:hover:not(:focus)) {
+      :deep(.dropdown-outer-wrap) {
+        --dropdown-border: var(--trigger-hover-border) !important;
+      }
+    }
   }
 
   .dropdown-trigger {
@@ -248,9 +312,11 @@ div(ref="container").custom-dropdown
     padding: var(--trigger-padding, 0.95em 1em 0.95em 1.5em);
     font-size: var(--trigger-font, 0.85em);
     letter-spacing: 0.075em;
+    transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
 
     &:hover:not(:focus) {
       color: var(--trigger-hover-color, $dark-grey);
+      border: var(--trigger-hover-border, 1px solid $grey);
     }
 
     &[aria-expanded="true"] {
@@ -262,6 +328,10 @@ div(ref="container").custom-dropdown
     &[aria-expanded="true"] {
       .dropdown-arrow {
         transform: rotate(180deg);
+      }
+
+      .dropdown-arrow {
+        transition-delay: var(--dropdown-arrow-delay, 0.15s);
       }
     }
 
@@ -277,7 +347,7 @@ div(ref="container").custom-dropdown
     height: v-bind(iconSize);
     margin-left: var(--arrow-left, 0.5em);
     display: block;
-    transition: transform 0.275s ease-in-out;
+    transition: var(--dropdown-arrow-transition, transform 0.275s ease-in-out);
   }
 
   .dropdown-trigger-label {
@@ -372,5 +442,9 @@ div(ref="container").custom-dropdown
         }
       }
     }
+  }
+
+  .dropdown-label {
+    color: var(--dropdown-label-color, currentColor);
   }
 </style>

@@ -1,18 +1,23 @@
 <template lang="pug">
 transition(name="dropdown-outer-wrap")
-  div(v-show="expanded" :class="{ 'end': isEnd }" ref="outer").dropdown-outer-wrap
-    div(ref="wrap").dropdown-inner-wrap
+  div(v-show="expanded" :class="{ 'end': isEnd, expanded }" ref="outer").dropdown-outer-wrap
+    //- pre {{JSON.stringify(size.height.value)}}
+    div.dropdown-inner-wrap
       <slot/>
 </template>
 
 <script setup lang="ts">
-  const wrap = ref<HTMLDivElement | null>(null)
+  const outer = ref<HTMLDivElement | null>(null)
+  const { height } = useElementBounding(outer)
 
   const props = defineProps<{
     expanded: boolean
     isEnd: boolean
   }>()
 
+  defineExpose({
+    height,
+  })
 </script>
 
 <style lang="scss">
@@ -25,16 +30,32 @@ transition(name="dropdown-outer-wrap")
     top: 100%;
     left: 0;
     width: 100%;
-    z-index: 20;
-    transition: all var(--transition-duration, $medium-fast) ease-in-out;
+    z-index: var(--dropdown-wrap-z-index, 20);
+    transition: var(
+      --dropdown-transition,
+      all var(--transition-duration, #{$medium-fast}) ease-in-out
+    );
     margin-top: 0.5em;
+    display: grid;
+    overflow: hidden;
+
+    &.expanded {
+      grid-template-rows: 1fr;
+    }
 
     &-enter-from,
     &-leave-to {
       opacity: 0;
       transform: var(--transform, translate(0 -0.5em));
-    }
+      margin-top: 0;
+      grid-template-rows: 0fr !important;
 
+      .dropdown-inner-wrap {
+        min-height: 0;
+        visibility: hidden;
+        padding: 0;
+      }
+    }
 
     &:after {
       content: "";
@@ -43,7 +64,10 @@ transition(name="dropdown-outer-wrap")
       left: 0.5em;
       width: calc(100% - 1.5em);
       height: 2.875em;
-      background: var(--dropdown-gradient, linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%));
+      background: var(
+        --dropdown-gradient,
+        linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)
+      );
       transition: opacity 0.15s;
       opacity: 1;
       pointer-events: none;
@@ -56,17 +80,20 @@ transition(name="dropdown-outer-wrap")
 
   .dropdown-inner-wrap {
     padding: var(--dropdown-inner-padding, 0.35rem 0.35rem 0.25rem 0);
+    overflow: hidden;
+    transition: all 0.1s ease-in-out;
 
     & > ul {
       overflow-y: auto;
       max-height: var(--dropdown-height, 10rem);
 
       &::-webkit-scrollbar {
-        width: var(--scollbar-width, 5px); 
+        width: var(--scollbar-width, 5px);
       }
 
       &::-webkit-scrollbar-thumb {
         background: var(--scrollbar-color, $grey);
+        border-radius: 5px;
       }
 
       & > li {
