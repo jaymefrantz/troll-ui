@@ -2,9 +2,10 @@
   div.map-container
     client-only
       <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom: 14, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
-        <Marker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
+        <TrollMarker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
       </GoogleMap>
-      ul(v-if="loaded").zoom-control-list
+      <slot v-if="loaded" name="zoomContol"/>
+      ul(v-if="loaded && !slots.zoomContol").zoom-control-list
         li
           button(type="button" @click="setZoom(zoom + 1)" :disabled="zoomInHidden").zoom-control-button
             span.sr-only Zoom in
@@ -23,6 +24,7 @@
 <script setup lang="ts">
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
   const { map } = useAppConfig()
+  const slots = useSlots()
   const isMobile = useTrollBreakpoints()?.smallerOrEqual("map") ?? false
   const gmap = ref(null)
   const center = { lat: 41.495, lng: -71.712 }
@@ -185,10 +187,30 @@
     props,
     setZoom,
     setCenter,
+    zoomControls: {
+      zoomInHidden,
+      zoomOutHidden,
+      zoom: zoom.value,
+      level: level.value,
+      zoomIn: () => {
+        if (zoom.value < mapOptions.maxZoom) {
+          setZoom(zoom.value + 1)
+        }
+      },
+      zoomOut: () => {
+        if (zoom.value > (isMobile.value ? 1 : 2)) {
+          setZoom(zoom.value - 1)
+        }
+      },
+    },
   })
 </script>
 
 <style lang="scss" scoped>
+  :global([title="Map camera controls"]) {
+    display: none !important;
+  }
+
   .map-container {
     position: relative;
     padding-top: var(--height, clamp(25rem, 50vw, 42.2rem));
