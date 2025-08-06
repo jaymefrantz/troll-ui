@@ -19,6 +19,9 @@ interface Polaroid {
 }
 
 const mapOptions = {
+  cameraControl: false,
+  overviewMapControl: false,
+  // disableDefaultUI: true,
   minZoom: 1,
   maxZoom: 16,
   mapTypeControl: false,
@@ -142,7 +145,7 @@ function initOverlay(google, map) {
 
         this.$el.style.left = `${x}px`
         this.$el.style.top = `${y}px`
-        this.$el.innerText = this.label
+        this.$el.innerHTML = this.label
       }
 
       Object.entries(this.previews).forEach(([id, preview]) => {
@@ -166,7 +169,7 @@ function initOverlay(google, map) {
       this.$el.style.top = `${y}px`
 
       setTimeout(() => {
-        this.$el.innerText = this.label
+        this.$el.innerHTML = this.label
         this.$el.classList.add("shown")
       }, 25)
     }
@@ -323,17 +326,19 @@ function polaroidMouseOver(marker: Marker, image, overlay: google.maps.OverlayVi
 
 function polaroidMouseOut(marker: Marker, overlay: google.maps.OverlayView) {
   marker.gmapMarker.marker.setZIndex(10)
-  overlay.removePreview(marker.id)
+  overlay?.removePreview(marker.id)
 }
 
 function locationMouseOver(marker: Marker, overlay: google.maps.OverlayView) {
+  // console.log("locationMouseOver", marker, overlay)
   marker.gmapMarker.marker.setZIndex(100)
-  overlay.showLabel(marker)
+  overlay?.showLabel(marker)
 }
 
 function locationMouseOut(marker: Marker, overlay: google.maps.OverlayView) {
+  // console.log("locationMouseOut", marker, overlay)
   marker.gmapMarker.marker.setZIndex(10)
-  overlay.hideLabel(marker)
+  overlay?.hideLabel(marker)
 }
 
 export {

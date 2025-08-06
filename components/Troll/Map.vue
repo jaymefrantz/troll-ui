@@ -1,7 +1,7 @@
 <template lang="pug">
   div.map-container
     client-only
-      <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom: 14, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
+      <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
         <TrollMarker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
       </GoogleMap>
       <slot v-if="loaded" name="zoomContol"/>
@@ -158,6 +158,7 @@
 
   const zoomChanged = useDebounceFn(() => {
     zoom.value = gmap.value?.map?.getZoom()
+
     if (fitBoundsLastCalled.value === null) fitBoundsLastCalled.value = new Date()
     const msSinceFitboundsCalled = new Date().getTime() - fitBoundsLastCalled.value.getTime()
 
@@ -183,6 +184,7 @@
     labelOverlay,
     fitbounds,
     ready,
+    loaded,
     options,
     props,
     setZoom,
@@ -190,8 +192,8 @@
     zoomControls: {
       zoomInHidden,
       zoomOutHidden,
-      zoom: zoom.value,
-      level: level.value,
+      zoom,
+      level,
       zoomIn: () => {
         if (zoom.value < mapOptions.maxZoom) {
           setZoom(zoom.value + 1)

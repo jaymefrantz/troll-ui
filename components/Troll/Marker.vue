@@ -55,6 +55,7 @@
         fontSize: size,
         fontWeight: "bold",
         color: color.value,
+        className: "marker-label",
       },
     }
   })
@@ -104,7 +105,6 @@
     --offset-y: calc((var(--size) * -1) - 8px);
     --offset-x: 20px;
     position: absolute;
-    visibility: hidden;
     opacity: 0;
     white-space: nowrap;
     background: var(--background, white);
@@ -115,9 +115,12 @@
     font-size: var(--font-size, 1em);
     transition: translate $fast ease-in-out, opacity $medium-fast ease-in-out;
 
+    &:not(.shown) {
+      translate: calc(var(--offset-x) / 2) var(--offset-y);
+    }
+
     &.shown {
       opacity: 1;
-      visibility: visible;
       translate: var(--offset-x) var(--offset-y);
     }
   }
@@ -140,7 +143,7 @@
       pointer-events: all;
 
       &:before {
-        transform: translateY(-50%) translateX(-1.625em);
+        transform: translateY(-50%) translateX(-1.5em);
       }
     }
 
@@ -165,7 +168,7 @@
       transition: transform 0.15s ease-out $medium-fast;
       border-width: var(--arrow-width, 1.875em 1.625em 1.875em 0);
       font-size: var(--arrow-size, 0.55rem);
-      color: var(--arrow-color, #fff);
+      color: var(--arrow-color, var(--preview-background, white));
     }
   }
   .marker-preview {
@@ -201,6 +204,7 @@
     img {
       width: 100%;
       aspect-ratio: 128/103;
+      display: block;
     }
   }
 </style>
