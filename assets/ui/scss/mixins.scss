@@ -1,13 +1,14 @@
 @use "sass:math";
 @use "sass:list";
+@use "sass:string";
 
 @function process-viewport($setting) {
   @if (list.nth($setting, 2) == up) {
-    @return unquote("(min-width: " + list.nth($setting, 1) + ")");
+    @return string.unquote("(min-width: " + list.nth($setting, 1) + ")");
   } @else if (list.nth($setting, 2) == down) {
-    @return unquote("(max-width: " + (list.nth($setting, 1) - 0.01rem) + ")");
+    @return string.unquote("(max-width: " + (list.nth($setting, 1) - 0.01rem) + ")");
   } @else {
-    @return unquote(
+    @return string.unquote(
       "(min-width: " + list.nth($setting, 1) + ") and ( max-width: " +
         (list.nth($setting, 3) - 0.01rem) + ")"
     );
