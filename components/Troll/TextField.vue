@@ -10,7 +10,6 @@
 
 <script setup lang="ts">
   const value = defineModel()
-  const attrs = useAttrs()
   const textBox = ref<HTMLInputElement | null>(null)
   const { focused } = useFocus(textBox)
   const isHovering = useElementHover(textBox)
@@ -24,12 +23,14 @@
       id?: string
       type?: string
       icon?: string
+      attrs?: Record<string, any>
     }>(),
     {
       placeholder: "",
       label: "",
       type: "text",
       icon: "",
+      attrs: {},
     }
   )
 

@@ -1,27 +1,32 @@
 <template lang="pug">
 div(ref="container").autocomplete-container
   label(v-if="label !== ''" v-html="label" :for="id").default-label
-  div.autocomplete-input-wrap
-    <Icon class="search-icon" :size="searchIcon?.size?.toString() ?? 'none'" :name="searchIcon.name"/>
-    input(type="text" v-model="query" :id="id"
-      ref="textInput"
-      @blur="blured"
-      @focus="focused"
-      @keydown.up.exact.prevent="goUp"
-      @keydown.down.exact.prevent="goDown"
-      @keydown.escape.exact.prevent="escaped"
-      @keydown.enter.exact.prevent="enterPressed"
-      @keydown="keydown"
-      autocomplete="off"
-      :placeholder="placeholder"
-    ).autocomplete-input
-    button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
-      <Icon class="close-icon" :size="closeIcon?.size?.toString() ?? 'none'" :name="closeIcon.name"/>
-  <DropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd">
-      ul(ref="resultList").autocomplete-results-list
-        li(v-for="(result, index) in results ?? []" :key="result.id" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
-          <component v-bind="result" :is="itemComponent"/>
-  </DropdownWrap>
+  div(ref="wrap" :class="clickFocused ? 'click-focused' : ''").autocomplete-wrap
+    <slot name="before"></slot>
+    div.autocomplete-input-wrap
+      <Icon class="search-icon" :size="searchIcon?.size?.toString() ?? 'none'" :name="searchIcon.name"/>
+      input(type="text" v-model="query" :id="id"
+        ref="textInput"
+        @blur="blured"
+        @focus="focused"
+        @keydown.up.exact.prevent="goUp"
+        @keydown.down.exact.prevent="goDown"
+        @keydown.escape.exact.prevent="escaped"
+        @keydown.enter.exact.prevent="enterPressed"
+        @keydown="keydown"
+        autocomplete="off"
+        :placeholder="placeholder"
+        @click="clickFocused = true" 
+        @mousedown="mouseDown = true"
+      ).autocomplete-input
+      button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
+        <Icon class="close-icon" :size="closeIcon?.size?.toString() ?? 'none'" :name="closeIcon.name"/>
+    <TrollDropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd" ref="dropdownWrap">
+        ul(ref="resultList").autocomplete-results-list
+          li(v-for="(result, index) in results ?? []" :key="result.id" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
+            <component v-bind="result" :is="itemComponent" :selected="query === result.name"/>
+    </TrollDropdownWrap>
+    <slot name="after"></slot>
 </template>
 
 <script setup lang="ts">
@@ -70,9 +75,17 @@ div(ref="container").autocomplete-container
   const resultListItems = ref<HTMLElement | null>(null)
   const container = ref<HTMLDivElement | null>(null)
   const resultList = ref<HTMLElement | null>(null)
+  const wrap = ref<HTMLElement | null>(null)
+  const dropdownWrap = ref<null | HTMLDivElement>(null)
   const isEnd = ref(false)
   const { arrivedState, y } = useScroll(resultList, { throttle: 200 })
   const { bottom } = toRefs(arrivedState)
+  const isHovered = useElementHover(textInput)
+  const { focused: inputFocused } = useFocus(textInput)
+  const mouseDown = ref(false)
+  const clickFocused = ref(false)
+  const { height } = useElementBounding(wrap)
+
   watch(y, () => {
     isEnd.value = bottom.value
   })
@@ -156,6 +169,8 @@ div(ref="container").autocomplete-container
         block: "center",
       })
     } else if (index === 0) {
+      console.log(resultListItems.value[0])
+
       resultListItems.value[0].scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -190,9 +205,25 @@ div(ref="container").autocomplete-container
     hideResults.value = true
   }
 
+  watch(inputFocused, isFocused => {
+    if (isFocused && mouseDown.value) {
+      clickFocused.value = true
+    }
+    if (!isFocused && clickFocused.value) {
+      clickFocused.value = false
+    }
+    mouseDown.value = false
+  })
+
   defineExpose({
     props,
+    wrap,
     query: typedSearch,
+    isHovered,
+    clickFocused,
+    focused: inputFocused,
+    expanded: computed(() => !hideResults.value && hasResults.value),
+    height: computed(() => Math.ceil(height.value + (dropdownWrap.value?.height ?? 0))),
   })
 </script>
 
@@ -212,8 +243,8 @@ div(ref="container").autocomplete-container
     justify-content: space-between;
 
     &:focus-within {
-      outline: 2px solid var(--focus-color);
-      outline-offset: 3px;
+      // outline: 2px solid var(--focus-color);
+      // outline-offset: 3px;
 
       color: var(--focus-color);
     }
@@ -253,6 +284,10 @@ div(ref="container").autocomplete-container
       &:not(.selected) > *:hover {
         background-color: var(--option-hover-background, $dark-grey);
         color: var(--option-hover-color, white);
+      }
+
+      & + li {
+        margin-top: var(--option-gap, 0.5em);
       }
     }
   }

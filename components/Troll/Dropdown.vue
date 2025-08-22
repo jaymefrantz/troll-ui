@@ -291,6 +291,7 @@ div(ref="container").custom-dropdown
     clickFocused,
     focused,
     expanded,
+    wrap: computed(() => wrap.value),
     height: computed(() => Math.ceil(height.value + (dropdownWrap.value?.height ?? 0))),
   })
 </script>

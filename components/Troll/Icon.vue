@@ -1,6 +1,7 @@
 <template lang="pug">
   div(:class="family").icon-container
-    <Icon v-if="name !== ''" :name="name" :size="size"/>
+    <Icon v-if="name" :name="name" :size="size"/>
+    <component v-else-if="componentName !== undefined" :is="componentName" aria-hidden="true" role="img" class="icon"/>
     <span v-if="label" class="icon-text" v-html="label"></span>
 </template>
 
@@ -20,9 +21,29 @@
       type: String,
       default: "currentColor",
     },
+    componentName: {
+      type: String,
+    },
   })
 
   const family = computed(() => (props.name !== undefined ? props?.name.split(":")[0] : null))
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .icon-container {
+    display: flex;
+    &:has(.icon-text) {
+      align-items: var(--icon-align, center);
+      gap: var(--icon-gap, 0.5em);
+    }
+  }
+
+  .icon-text {
+    flex: 1 1 auto;
+    display: block;
+  }
+
+  .icon {
+    flex-shrink: 0;
+  }
+</style>

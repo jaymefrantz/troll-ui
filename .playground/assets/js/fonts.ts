@@ -15,4 +15,5 @@ export default {
   Lato: [100, 300, 400, 700],
   Montserrat: "100..900",
   Merriweather: "300..900",
+  Epilogue: "100..900",
 }
