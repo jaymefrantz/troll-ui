@@ -36,7 +36,7 @@ const mapOptions = {
   },
 }
 
-const zoomLevels = {
+let zoomLevels = {
   country: 3,
   state: 5,
   polaroid: 9,
@@ -47,7 +47,9 @@ function getNextLevel(marker: Marker) {
   if (marker === null) return "country"
   const { level, title } = marker
 
-  if (level === "country") {
+  if (level === "continent") {
+    return "country"
+  } else if (level === "country") {
     if (title === "United States" || title === "Canada") {
       return "state"
     } else {
@@ -79,10 +81,7 @@ function initLabelOverlay(google, map) {
       const panes = this.getPanes()
       panes.overlayLayer.style["zIndex"] = 1001
 
-      panes.overlayLayer.insertAdjacentHTML(
-        "beforeend",
-        `<span id="marker-location-label">${this.label}</span>`
-      )
+      panes.overlayLayer.insertAdjacentHTML("beforeend", `<span id="marker-location-label">${this.label}</span>`)
     }
     draw() {
       const gMapPosition = new google.maps.LatLng(this.position)
@@ -345,7 +344,6 @@ export {
   mapOptions,
   mapStyles,
   mobileBreakpoint,
-  zoomLevels,
   getNextLevel,
   getTitle,
   initOverlay,

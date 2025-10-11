@@ -37,6 +37,12 @@
   const ready = ref(false)
   const hasIdled = ref(false)
   const loaded = ref(false)
+  let zoomLevels = map.zoomLevels ?? {
+    country: 3,
+    state: 5,
+    polaroid: 9,
+    city: 7,
+  }
 
   const water = map.styles.find(({ featureType }) => featureType === "water")
   if (water !== undefined) {
@@ -79,11 +85,13 @@
       overlay.value = initOverlay(google, gmap.value.map)
       labelOverlay.value = initLabelOverlay(google, gmap.value.map)
       emit("ready")
+      let first = ref(true)
 
       useResizeObserver(
         gmap.value.$el,
-        useDebounceFn(() => {
-          fitbounds()
+        useDebounceFn(([entry]) => {
+          if (!first.value) fitbounds()
+          first.value = false
         }, 250)
       )
     }
@@ -130,7 +138,7 @@
     } else if (props.markers.length !== 0) {
       const [marker] = props.markers
 
-      if (level.value === "country") {
+      if (level.value === "country" || level.value === "continent") {
         gmap.value?.map?.setZoom(2)
       } else if (level.value === "polaroid") {
         gmap.value?.map?.setZoom(14)
@@ -153,6 +161,7 @@
   }
 
   function setZoom(newZoom: number) {
+    // console.log("set zoom?", newZoom)
     gmap.value?.map.setZoom(newZoom)
   }
 
@@ -161,9 +170,10 @@
 
     if (fitBoundsLastCalled.value === null) fitBoundsLastCalled.value = new Date()
     const msSinceFitboundsCalled = new Date().getTime() - fitBoundsLastCalled.value.getTime()
-
     if (msSinceFitboundsCalled > 400) {
-      if (zoom.value <= zoomLevels.country && zoom.value < zoomLevels.state) {
+      if (zoomLevels.continent !== undefined && zoom.value <= zoomLevels.continent) {
+        level.value = "continent"
+      } else if (zoom.value <= zoomLevels.country && zoom.value < zoomLevels.state) {
         level.value = "country"
       } else if (zoom.value >= zoomLevels.polaroid) {
         level.value = "polaroid"
@@ -189,6 +199,7 @@
     props,
     setZoom,
     setCenter,
+    zoomLevels,
     zoomControls: {
       zoomInHidden,
       zoomOutHidden,
