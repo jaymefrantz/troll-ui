@@ -35,10 +35,6 @@
   @return math.div($pxAmount, 16) * 1em;
 }
 
-@function rem($pxAmount) {
-  @return math.div($pxAmount, 16) * 1rem;
-}
-
 @mixin placeholder {
   ::-webkit-input-placeholder {
     @content;
