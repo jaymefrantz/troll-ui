@@ -2,21 +2,7 @@
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.CLOUDINARY_FOLDER}`
-const cwd = process.cwd()
 const currentDir = dirname(fileURLToPath(import.meta.url))
-import defaultBreakpoints from "./assets/ui/js/breakpoints.ts"
-let breakpoints = defaultBreakpoints
-const configPath = `${cwd === currentDir ? `${cwd}/.playground` : cwd}/assets/js/breakpoints.ts`
-// console.log("defaultBreakpoints", defaultBreakpoints)
-
-try {
-  const appBreakpoints = await import(configPath)
-  breakpoints = { ...defaultBreakpoints, ...appBreakpoints.default }
-} catch (e) {
-  // console.log("no app config found at", configPath, e)
-}
-// console.log(generateScssVariables(breakpoints))
-
 /*
   TODO:
     bring over mixins, resets and maybe common-elements?
@@ -82,14 +68,3 @@ export default defineNuxtConfig({
     },
   },
 })
-
-function camelToKebab(str: string): string {
-  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()
-}
-
-// Generate SCSS variables
-function generateScssVariables(json: Record<string, string>): string {
-  return Object.entries(json)
-    .map(([key, value]) => `$${camelToKebab(key)}-viewport: ${value};`)
-    .join("\n")
-}
