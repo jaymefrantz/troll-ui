@@ -37,7 +37,8 @@
   const ready = ref(false)
   const hasIdled = ref(false)
   const loaded = ref(false)
-  let zoomLevels = map.zoomLevels ?? {
+
+  let zoomLevels = map?.zoomLevels ?? {
     country: 3,
     state: 5,
     polaroid: 9,
@@ -220,6 +221,8 @@
 </script>
 
 <style lang="scss" scoped>
+  // @use "@/assets/ui/scss/global.scss" as *;
+
   :global([title="Map camera controls"]) {
     display: none !important;
   }
