@@ -27,7 +27,7 @@
     h2.heading-xl Colors
     ul.colors-list
       li(v-for="(hex, name, index) in colors" :key="name")
-        button(type="button").color(:style="`background-color: var(${name})`" @click="copy(hex)")
+        button(type="button" :style="`background-color: var(${name})`" @click="copy(hex)").color
           Icon(:name="copyIcon" size="none" :style="`color: var(--${name.replace('--', '').split('-')[0]}-${(index % 10) < 4 ? 900 : 50})`").copy-icon
           span.sr-only Copy color hex
 </template>
@@ -38,10 +38,7 @@
   const source = ref("")
   const { text, copy, copied, isSupported } = useClipboard({ source })
 
-  const colors = Object.assign(
-    {},
-    ...Object.values(groupCSSVarsByPrefix(jsonToCSSVars(useAppConfig().colors)))
-  )
+  const colors = Object.assign({}, ...Object.values(groupCSSVarsByPrefix(jsonToCSSVars(useAppConfig().colors))))
 
   const copyIcon = computed(() => icons.value.copy ?? "qlementine-icons:ungroup-16")
   const iconLink = computed(() => {

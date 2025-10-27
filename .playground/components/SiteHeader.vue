@@ -2,7 +2,7 @@
   header
     div.extra-large-center-margin-wrap
       <logo id="logo"/>
-      //- <Styles/>
+      <Styles/>
 </template>
 
 <script setup lang="ts">

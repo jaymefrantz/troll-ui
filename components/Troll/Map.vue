@@ -45,7 +45,7 @@
     city: 7,
   }
 
-  const water = map.styles.find(({ featureType }) => featureType === "water")
+  const water = map?.styles.find(({ featureType }) => featureType === "water")
   if (water !== undefined) {
     options.backgroundColor = water.stylers[0].color
   }
@@ -63,7 +63,6 @@
   const props = withDefaults(
     defineProps<{
       markers: Marker[]
-      ready: boolean
       initialZoom?: number
       initialLevel?: string
       overrideOptions?: object
@@ -98,17 +97,13 @@
     }
   )
 
-  const watchProp = computed(() => {
-    return JSON.stringify({ ready: props.ready, hasIdled: hasIdled.value, mapReady: ready.value })
-  })
-
   watch(
-    () => watchProp.value,
+    () => JSON.stringify({ hasIdled: hasIdled.value, mapReady: ready.value }),
     useDebounceFn(async json => {
       if (loaded.value) return
 
-      if (ready.value && props.ready && !hasIdled.value) fitbounds()
-      if (hasIdled.value && ready.value && props.ready) {
+      if (ready.value && !hasIdled.value) fitbounds()
+      if (hasIdled.value && ready.value) {
         loaded.value = true
         emit("loaded")
       }

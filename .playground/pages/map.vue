@@ -3,7 +3,7 @@
 button(type="button" @click="refresh").refresh-button 
 	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
 	span refresh
-<TrollMap ref="map" :ready="true" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+<TrollMap ref="map" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 <Props :props="props" />
 </template>
 
@@ -19,9 +19,7 @@ button(type="button" @click="refresh").refresh-button
 
   const zoomedMarkers = computed(() => {
     if (map.value === null) return []
-    const polaroids = markers.value
-      .filter(marker => marker.level === "polaroid")
-      .map(({ id }) => id)
+    const polaroids = markers.value.filter(marker => marker.level === "polaroid").map(({ id }) => id)
 
     return getZoomedMarkers(map.value.level, markers.value).map(marker => {
       if (marker.level !== "polaroid") {
@@ -87,9 +85,7 @@ button(type="button" @click="refresh").refresh-button
   async function markerClick(marker: Marker) {
     if (map.value.level !== "polaroid") {
       map.value.overlay.hideLabel(marker)
-      markers.value = data.value.markers.filter(({ polaroids }) =>
-        polaroids.find(id => marker.polaroids.includes(id))
-      )
+      markers.value = data.value.markers.filter(({ polaroids }) => polaroids.find(id => marker.polaroids.includes(id)))
       map.value.level = getNextLevel(marker)
       await wait(100)
       map.value.fitbounds()
@@ -116,6 +112,7 @@ button(type="button" @click="refresh").refresh-button
       map.value.overlay.showLabel(marker)
     } else if (marker.level === "polaroid") {
       timeoutId = setTimeout(() => {
+        console.log(marker)
         map.value.overlay.addPolaroid({
           id: marker.id,
           image: marker.image,

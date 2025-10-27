@@ -1,8 +1,23 @@
-// @import "./mixins.scss";
-// @import "./viewports.scss";
-// @import "./design/colors.scss";
-// @import "./design/animations.scss";
-@use 'mixins' as *;
-@use 'viewports' as *;
-@use 'design/colors' as *;
-@use 'design/animations' as *;
+// @use '@ui/assets/ui/scss/mixins' as *;
+// @use '@ui/assets/ui/scss/viewports' as *;
+// @use '@ui/assets/ui/scss/design/colors' as *;
+// @use '@ui/assets/ui/scss/design/animations' as *;
+
+// @use '@/assets/ui/scss/mixins' as *;
+// @use '@/assets/ui/scss/viewports' as *;
+// @use '@/assets/ui/scss/design/colors' as *;
+// @use '@/assets/ui/scss/design/animations' as *;
+
+// @use 'mixins' as *;
+// @use 'viewports' as *;
+// @use 'design/colors' as *;
+// @use 'design/animations' as *;
+
+// @use './assets/ui/scss/mixins' as *;
+// @use './assets/ui/scss/viewports' as *;
+// @use './assets/ui/scss/design/colors' as *;
+// @use './assets/ui/scss/design/animations' as *;
+
+body {
+  border: 10px solid red;
+}
