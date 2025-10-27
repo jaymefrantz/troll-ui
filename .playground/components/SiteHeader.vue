@@ -2,7 +2,7 @@
   header
     div.extra-large-center-margin-wrap
       <logo id="logo"/>
-      <Styles/>
+      //- <Styles/>
 </template>
 
 <script setup lang="ts">
@@ -12,9 +12,7 @@
   const svgString = svgToBackground()
 
   const favicon = computed(() => {
-    return (
-      svgString?.replace(`var(--site-color)`, `${color.value?.replace("#", "%23") ?? ""}`) ?? ""
-    )
+    return svgString?.replace(`var(--site-color)`, `${color.value?.replace("#", "%23") ?? ""}`) ?? ""
   })
 
   function svgToBackground(): string {
