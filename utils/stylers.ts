@@ -13,12 +13,13 @@ export function jsonToCSSVars(obj: JSONObject, prefix = ""): string[] {
     const trimmed = val.trim()
 
     // Patterns that should not be quoted
-    const cssFunctions = /^(var|linear-gradient|calc|url)\(/
-    const cssUnits = /[\d.]+(px|rem|em|vw|vh|%)$/
+    const cssFunctions = /^(var|linear-gradient|calc|url|hsl)\(/
+    const cssUnits = /[\d.]+(px|rem|em|vw|vh|%|s|ms)$/
     const hexColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/
     const isKeyword = /^(inherit|initial|unset|auto|none)$/
 
     return !(
+      trimmed.includes("'") ||
       cssFunctions.test(trimmed) ||
       cssUnits.test(trimmed) ||
       hexColor.test(trimmed) ||
