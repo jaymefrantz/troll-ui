@@ -21,7 +21,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   alias: { "@": currentDir },
   runtimeConfig: {
-    breakpoints,
     public: {
       CLOUDINARY,
     },
