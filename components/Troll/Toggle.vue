@@ -93,7 +93,7 @@
   .toggle-label {
     display: flex;
     gap: var(--toggle-gap, 0.65rem);
-    transition: opacity $fast;
+    transition: opacity var(--troll-ui-ani-fast);
 
     .top & {
       flex-direction: column;
@@ -112,7 +112,7 @@
     width: var(--toggle-width, 2.5em);
     display: flex;
     align-items: center;
-    transition: all $medium-fast;
+    transition: all var(--troll-ui-ani-medium-fast);
   }
 
   .custom-toggle-knob {
@@ -123,6 +123,6 @@
     border-radius: var(--toggle-knob-border-radius, 2rem);
     aspect-ratio: 1;
     transform: translateX(var(--toggle-knob-translate, 0%));
-    transition: transform $medium-fast;
+    transition: transform var(--troll-ui-ani-medium-fast);
   }
 </style>

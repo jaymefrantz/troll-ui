@@ -85,7 +85,7 @@
     width: var(--checkbox-size, 1.5rem);
     height: var(--checkbox-size, 1.5rem);
     display: inline-flex;
-    transition: var(--checkbox-transition, all $medium-fast ease-in-out);
+    transition: var(--checkbox-transition, all var(--troll-ui-ani-medium-fast) ease-in-out);
 
     .checkbox-container:has(input[type="checkbox"]:checked) & {
       .checkbox-icon {
@@ -102,6 +102,6 @@
     translate: var(--checkbox-icon-position, -50% -50%);
     opacity: 0;
     scale: 0.5;
-    transition: var(--checkbox-icon-transition, all $medium-fast ease-in-out);
+    transition: var(--checkbox-icon-transition, all var(--troll-ui-ani-medium-fast) ease-in-out);
   }
 </style>

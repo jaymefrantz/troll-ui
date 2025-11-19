@@ -31,7 +31,7 @@ transition(name="dropdown-outer-wrap")
     left: 0;
     width: 100%;
     z-index: var(--dropdown-wrap-z-index, 20);
-    transition: var(--dropdown-transition, all var(--transition-duration, #{$medium-fast}) ease-in-out);
+    transition: var(--dropdown-transition, all var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out);
     margin-top: 0.5em;
     display: grid;
     overflow: hidden;

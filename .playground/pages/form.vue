@@ -32,9 +32,7 @@
   const check = ref(null)
   const activeCheckboxes = ref<string[]>(["two"])
   const checkboxes = ref<string[]>(["one", "two", "three"])
-  const checkProps = computed(() =>
-    Object.keys(check.value !== null ? check.value[0]?.props ?? {} : "")
-  )
+  const checkProps = computed(() => Object.keys(check.value !== null ? check.value[0]?.props ?? {} : ""))
 
   const toggle = ref(null)
   const toggleProps = computed(() => Object.keys(toggle.value?.props ?? {}))
@@ -120,7 +118,7 @@
       top: 50%;
       transform: translateY(-50%);
       left: var(--textbox-padding-x);
-      transition: transform $medium, top $medium;
+      transition: transform var(--troll-ui-ani-medium), top var(--troll-ui-ani-medium);
       z-index: 1;
     }
 

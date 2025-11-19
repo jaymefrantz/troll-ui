@@ -13,9 +13,7 @@
   }>()
 
   const icon = computed(() => {
-    return props.direction === "right"
-      ? "keyboard-double-arrow-right-rounded"
-      : "keyboard-double-arrow-left-rounded"
+    return props.direction === "right" ? "keyboard-double-arrow-right-rounded" : "keyboard-double-arrow-left-rounded"
   })
 </script>
 
@@ -28,7 +26,7 @@
     color: var(--dark-200);
     text-decoration: none;
     width: 100%;
-    transition: background-color $medium-fast;
+    transition: background-color var(--troll-ui-ani-medium-fast);
     display: block;
 
     &:hover {
@@ -48,7 +46,7 @@
   .icon-container {
     position: relative;
     color: var(--near-white);
-    transition: all $fast;
+    transition: all var(--troll-ui-ani-fast);
     border-radius: 100%;
     border: 1px solid var(--dark-600);
     overflow: hidden;
@@ -65,7 +63,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      transition: background-color $fast;
+      transition: background-color var(--troll-ui-ani-fast);
     }
   }
 

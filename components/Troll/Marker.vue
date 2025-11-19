@@ -132,7 +132,8 @@
     opacity: 0;
     position: absolute;
     pointer-events: none;
-    transition: opacity $medium-fast ease-in-out, translate $medium-fast ease-in-out;
+    transition: opacity var(--troll-ui-ani-medium-fast) ease-in-out,
+      translate var(--troll-ui-ani-medium-fast) ease-in-out;
     translate: var(--offset-x) var(--offset-y);
 
     &:not(.shown):not(.leave) {
@@ -150,7 +151,7 @@
 
     &.leave {
       transition-duration: 0s !important;
-      transition: opacity $fast !important;
+      transition: opacity var(--troll-ui-ani-fast) !important;
       opacity: 0 !important;
       // border: 2px solid red;
     }
@@ -166,7 +167,7 @@
       transform: translateY(-50%) translateX(0);
       top: 50%;
       z-index: 0;
-      transition: transform 0.15s ease-out $medium-fast;
+      transition: transform 0.15s ease-out var(--troll-ui-ani-medium-fast);
       border-width: var(--arrow-width, 1.875em 1.625em 1.875em 0);
       font-size: var(--arrow-size, 0.55rem);
       color: var(--arrow-color, var(--preview-background, white));

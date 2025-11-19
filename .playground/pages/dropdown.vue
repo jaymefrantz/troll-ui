@@ -102,7 +102,7 @@ ul.dropdowns
 
   .dropdown-trigger,
   .dropdown-mobile-select-container {
-    transition: background-color $medium;
+    transition: background-color var(--troll-ui-ani-medium);
 
     &:hover {
       background-color: var(--dark-800);

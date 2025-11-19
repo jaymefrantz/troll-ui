@@ -49,7 +49,7 @@
     a {
       color: var(--dark-400);
       text-decoration: none;
-      transition: color $medium;
+      transition: color var(--troll-ui-ani-medium);
 
       &:hover {
         color: var(--near-white);

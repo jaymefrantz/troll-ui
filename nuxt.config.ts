@@ -63,7 +63,6 @@ export default defineNuxtConfig({
             @use "sass:math";
             @use "@ui/assets/ui/scss/mixins.scss" as *;
             @use "@ui/assets/ui/scss/viewports.scss" as *;
-            @use "@ui/assets/ui/scss/design/animations.scss" as *;
           `,
         },
       },

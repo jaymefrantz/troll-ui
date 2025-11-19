@@ -418,7 +418,7 @@ div(ref="container").custom-dropdown
     display: flex;
     width: 100%;
     align-items: center;
-    transition: color $fast;
+    transition: color var(--troll-ui-ani-fast);
     justify-content: space-between;
     font-family: var(--trigger-font, arial);
     font-weight: var(--trigger-font-weight, inherit);

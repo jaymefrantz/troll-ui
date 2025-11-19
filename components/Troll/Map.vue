@@ -230,7 +230,7 @@
   :deep(.mapdiv) {
     position: absolute !important;
     inset: 0;
-    transition: opacity $slow;
+    transition: opacity var(--troll-ui-ani-slow);
   }
 
   .zoom-control-list {
@@ -281,7 +281,7 @@
     border: none;
     font-size: 1em;
     color: var(--color, var(--troll-ui-grey));
-    transition: color $medium;
+    transition: color var(--troll-ui-ani-medium);
     --focus-offset: -0.35em;
 
     @include viewport($medium-viewport down) {

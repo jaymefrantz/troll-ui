@@ -76,13 +76,13 @@
 //   @include viewport ( 30em to 40em ) {
 //     background-color: blue
 //   }
-//   @include viewport ( 50em down ) {
+//   @include viewport ( $medium-viewport down ) {
 //     background-color: yellow;
 //   }
-//   @include viewport ( 50em up ) {
+//   @include viewport ( $large-viewport up ) {
 //     background-color: green;
 //   }
-//   @include viewport ( 50em up, 20em down, 30em to 40em ) {
+//   @include viewport ( $extra-large-viewport up, $small-viewport down, $medium-viewport to $large-viewport ) {
 //     background-color: red;
 //   }
 // }

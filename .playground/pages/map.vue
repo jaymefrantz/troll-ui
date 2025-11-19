@@ -158,13 +158,13 @@ button(type="button" @click="refresh").refresh-button
     border-radius: var(--border-radius);
     font-size: 0.875em;
     color: var(--dark-200);
-    transition: background-color $medium-fast;
+    transition: background-color var(--troll-ui-ani-medium-fast);
     display: inline-block;
     background: transparent;
 
     .icon {
       margin-right: 0.5em;
-      transition: all $medium-fast;
+      transition: all var(--troll-ui-ani-medium-fast);
     }
 
     &:hover {
