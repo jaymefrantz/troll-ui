@@ -26,7 +26,11 @@ export default defineNuxtConfig({
     },
   },
   modules: ["@vueuse/nuxt", "nuxt-icon"],
-  css: [join(currentDir, "./assets/ui/scss/resets.css"), join(currentDir, "./assets/ui/scss/common-elements.scss")],
+  css: [
+    join(currentDir, "./assets/ui/scss/resets.css"),
+    join(currentDir, "./assets/ui/scss/common-elements.scss"),
+    join(currentDir, "./assets/ui/scss/root.css"),
+  ],
   imports: {
     dirs: ["utils"],
   },
@@ -59,7 +63,6 @@ export default defineNuxtConfig({
             @use "sass:math";
             @use "@ui/assets/ui/scss/mixins.scss" as *;
             @use "@ui/assets/ui/scss/viewports.scss" as *;
-            @use "@ui/assets/ui/scss/design/colors.scss" as *;
             @use "@ui/assets/ui/scss/design/animations.scss" as *;
           `,
         },

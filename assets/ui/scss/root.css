@@ -1,0 +1,11 @@
+:root {
+  --troll-ui-grey: #73767b;
+  --troll-ui-dark-grey: #393e45;
+  --troll-ui-lightest-grey: #e0e1e3;
+  --troll-ui-ani-fast: 0.2s;
+  --troll-ui-ani-medium-fast: 0.25s;
+ --troll-ui-ani-medium: 0.35s;
+  --troll-ui-ani-slow: 0.5s; 
+  --troll-ui-ani-slower: 0.75s;
+  --troll-ui-ani-slowest: 1s;
+}

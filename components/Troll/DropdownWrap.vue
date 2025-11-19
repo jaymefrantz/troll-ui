@@ -31,10 +31,7 @@ transition(name="dropdown-outer-wrap")
     left: 0;
     width: 100%;
     z-index: var(--dropdown-wrap-z-index, 20);
-    transition: var(
-      --dropdown-transition,
-      all var(--transition-duration, #{$medium-fast}) ease-in-out
-    );
+    transition: var(--dropdown-transition, all var(--transition-duration, #{$medium-fast}) ease-in-out);
     margin-top: 0.5em;
     display: grid;
     overflow: hidden;
@@ -92,7 +89,7 @@ transition(name="dropdown-outer-wrap")
       }
 
       &::-webkit-scrollbar-thumb {
-        background: var(--scrollbar-color, $grey);
+        background: var(--scrollbar-color, var(--troll-ui-grey));
         border-radius: 5px;
       }
 
@@ -101,7 +98,7 @@ transition(name="dropdown-outer-wrap")
         padding: var(--option-padding, 0.2em 0.75em 0.15em);
         margin: var(--option-margin, 0.2em 0.35em 0.2em 0.1em);
         transition: var(--option-transition, all 0.15s ease-in-out);
-        color: var(--option-color, $grey);
+        color: var(--option-color, var(--troll-ui-grey));
       }
     }
   }

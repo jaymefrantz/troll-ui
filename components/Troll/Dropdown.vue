@@ -261,9 +261,7 @@ div(ref="container").custom-dropdown
         searchable = [...duplicate.splice(index + 1), ...duplicate]
       }
 
-      const foundItem = searchable.find(({ label }) =>
-        label.toLowerCase().startsWith(typedText.value)
-      )
+      const foundItem = searchable.find(({ label }) => label.toLowerCase().startsWith(typedText.value))
 
       if (typeof foundItem !== "undefined") {
         selectedValue.value = foundItem.value
@@ -316,8 +314,8 @@ div(ref="container").custom-dropdown
     transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
 
     &:hover:not(:focus) {
-      color: var(--trigger-hover-color, $dark-grey);
-      border: var(--trigger-hover-border, 1px solid $grey);
+      color: var(--trigger-hover-color, var(--troll-ui-dark-grey));
+      border: var(--trigger-hover-border, 1px solid var(--troll-ui-grey));
     }
 
     &[aria-expanded="true"] {
@@ -361,8 +359,8 @@ div(ref="container").custom-dropdown
 
   .dropdown-mobile-select-container {
     position: relative;
-    color: var(--dropdown-color, $grey);
-    background-color: var(--dropdown-background, $grey);
+    color: var(--dropdown-color, var(--troll-ui-grey));
+    background-color: var(--dropdown-background, var(--troll-ui-grey));
 
     .dropdown-arrow {
       position: absolute;
@@ -391,7 +389,7 @@ div(ref="container").custom-dropdown
     font-size: var(--trigger-font-size, 0.85em);
     letter-spacing: 0.075em;
     background-color: transparent;
-    color: var(--dropdown-color, $grey);
+    color: var(--dropdown-color, var(--troll-ui-grey));
   }
 
   .dropdown-list {
@@ -399,12 +397,12 @@ div(ref="container").custom-dropdown
       //letter-spacing: 0.02em; //tt specific
 
       &[aria-selected="true"] {
-        background-color: var(--option-selected-background, $grey);
+        background-color: var(--option-selected-background, var(--troll-ui-grey));
         --focus-color: var(--option-selected-color, white);
       }
 
       &:not([aria-selected="true"]):hover {
-        background-color: var(--option-hover-background, $dark-grey);
+        background-color: var(--option-hover-background, var(--troll-ui-dark-grey));
         color: var(--option-hover-color, white);
       }
     }
@@ -413,8 +411,8 @@ div(ref="container").custom-dropdown
   .dropdown-trigger,
   .dropdown-mobile-select-container {
     background-color: var(--dropdown-background, white);
-    border: var(--dropdown-border, 1px solid $grey);
-    color: var(--dropdown-color, $grey);
+    border: var(--dropdown-border, 1px solid var(--troll-ui-grey));
+    color: var(--dropdown-color, var(--troll-ui-grey));
     text-align: left;
     position: relative;
     display: flex;
@@ -430,13 +428,13 @@ div(ref="container").custom-dropdown
 
   .dropdown-option {
     font-size: var(--option-size, 0.9em);
-    color: var(--option-color, $grey);
+    color: var(--option-color, var(--troll-ui-grey));
   }
 
   .dropdown-inner-wrap {
     & > ul {
       & > li {
-        color: var(--option-color, $grey);
+        color: var(--option-color, var(--troll-ui-grey));
 
         &:first-child {
           margin-top: 0.5rem;

@@ -105,8 +105,8 @@
 
   .custom-toggle {
     position: relative;
-    background: var(--toggle-background, $grey);
-    border: var(--toggle-border, 1px solid $dark-grey);
+    background: var(--toggle-background, var(--troll-ui-grey));
+    border: var(--toggle-border, 1px solid var(--troll-ui-dark-grey));
     border-radius: var(--toggle-border-radius, 2rem);
     padding: var(--toggle-padding-y, 0.25rem) var(--toggle-padding-x, 0.25rem);
     width: var(--toggle-width, 2.5em);
@@ -119,7 +119,7 @@
     display: inline-block;
     width: var(--toggle-knob-width, 50%);
     background: var(--toggle-knob-background, white);
-    border: var(--toggle-knob-border, $grey);
+    border: var(--toggle-knob-border, var(--troll-ui-grey));
     border-radius: var(--toggle-knob-border-radius, 2rem);
     aspect-ratio: 1;
     transform: translateX(var(--toggle-knob-translate, 0%));

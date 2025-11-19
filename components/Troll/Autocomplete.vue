@@ -234,8 +234,8 @@ div(ref="container").autocomplete-container
 
   .autocomplete-input-wrap {
     background-color: var(--autocomplete-background, white);
-    border: var(--autocomplete-border, 1px solid $grey);
-    color: var(--autocomplete-color, $grey);
+    border: var(--autocomplete-border, 1px solid var(--troll-ui-grey));
+    color: var(--autocomplete-color, var(--troll-ui-grey));
     border-radius: var(--autocomplete-border-radius, 1.75rem);
     padding: var(--autocomplete-wrap-padding, 0 0.5em);
     display: flex;
@@ -277,12 +277,12 @@ div(ref="container").autocomplete-container
   .autocomplete-results-list {
     & > li {
       &.selected {
-        background-color: var(--option-selected-background, $grey);
+        background-color: var(--option-selected-background, var(--troll-ui-grey));
         color: var(--option-selected-color, white);
       }
 
       &:not(.selected) > *:hover {
-        background-color: var(--option-hover-background, $dark-grey);
+        background-color: var(--option-hover-background, var(--troll-ui-dark-grey));
         color: var(--option-hover-color, white);
       }
 

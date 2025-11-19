@@ -78,9 +78,9 @@
 
   .checkbox {
     background: var(--checkbox-background, transparent);
-    border: var(--checkbox-border, 1px solid $grey);
+    border: var(--checkbox-border, 1px solid var(--troll-ui-grey));
     border-radius: var(--checkbox-border-radius, 0.25rem);
-    color: var(--checkbox-color, $dark-grey);
+    color: var(--checkbox-color, var(--troll-ui-dark-grey));
     position: relative;
     width: var(--checkbox-size, 1.5rem);
     height: var(--checkbox-size, 1.5rem);

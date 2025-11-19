@@ -65,8 +65,8 @@
   .textbox-wrap {
     position: relative;
     &:hover:not(:focus-within):not([disabled]) .textbox-input {
-      color: var(--textbox-hover-color, $dark-grey);
-      border-color: var(--textbox-hover-border-color, $grey);
+      color: var(--textbox-hover-color, var(--troll-ui-dark-grey));
+      border-color: var(--textbox-hover-border-color, var(--troll-ui-grey));
     }
   }
 
@@ -82,9 +82,9 @@
 
   .textbox-input {
     background: var(--textbox-background, transparent);
-    border: var(--textbox-border, 1px solid $grey);
+    border: var(--textbox-border, 1px solid var(--troll-ui-grey));
     border-radius: var(--textbox-border-radius, 0.25rem);
-    color: var(--textbox-color, $dark-grey);
+    color: var(--textbox-color, var(--troll-ui-dark-grey));
     font-size: var(--textbox-font-size, 1rem);
     font-family: var(--textbox-font, inherit);
     font-weight: var(--textbox-weight, 400);
@@ -94,8 +94,7 @@
 
     .textbox-wrap:has(.textbox-icon-container) & {
       padding-left: calc(
-        var(--textbox-padding-x, 0.5rem) + var(--textbox-icon-size, 1.5rem) +
-          var(--textbox-icon-padding, 1rem)
+        var(--textbox-padding-x, 0.5rem) + var(--textbox-icon-size, 1.5rem) + var(--textbox-icon-padding, 1rem)
       );
     }
 
@@ -103,7 +102,7 @@
     #main &:-webkit-autofill,
     #main &:is(:-webkit-autofill, :autofill) {
       -webkit-box-shadow: 0 0 0px 1000px var(--textbox-background, transparent) inset;
-      -webkit-text-fill-color: var(--textbox-color, $dark-grey);
+      -webkit-text-fill-color: var(--textbox-color, var(--troll-ui-dark-grey));
     }
 
     &[disabled] {

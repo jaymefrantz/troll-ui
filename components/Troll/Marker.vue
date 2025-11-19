@@ -111,9 +111,10 @@
     padding: var(--padding, 0.4rem);
     border: var(--border, 2px solid #e3e3e3);
     translate: calc(var(--offset-x) - 4px) var(--offset-y);
-    color: var(--color, $grey);
+    color: var(--color, var(--troll-ui-grey));
     font-size: var(--font-size, 1em);
-    transition: translate $fast ease-in-out, opacity $medium-fast ease-in-out;
+    transition: translate var(--ani-medium-fast, var(--troll-ui-ani-medium-fast)) ease-in-out,
+      opacity var(--ani-medium-fast, var(--troll-ui-ani-medium-fast)) ease-in-out;
 
     &:not(.shown) {
       translate: calc(var(--offset-x) / 2) var(--offset-y);

@@ -241,7 +241,7 @@
     right: var(--position-x, 1rem);
     padding: var(--list-padding, 0.2rem 0);
     background-color: var(--background, white);
-    border: var(--border, 1px solid #{$lightest-grey});
+    border: var(--border, 1px solid var(--troll-ui-lightest-grey));
     font-size: var(--size, clamp(0.7rem, 1.35vw, 0.9rem));
 
     @include viewport($medium-viewport up) {
@@ -256,7 +256,7 @@
 
         &:last-child {
           padding-left: 0.35em;
-          border-left: var(--divider, 2px solid #{$lightest-grey});
+          border-left: var(--divider, 2px solid var(--troll-ui-lightest-grey));
         }
       }
 
@@ -264,11 +264,10 @@
         margin: 0.25em 0;
 
         &:last-child {
-          //border-top: 2px solid $lightest-grey;
           &:before {
             content: "";
             display: block;
-            border-top: var(--divider, 2px solid #{$lightest-grey});
+            border-top: var(--divider, 2px solid var(--troll-ui-lightest-grey));
             margin: 0 5px;
             transform: translateY(-2px);
           }
@@ -281,7 +280,7 @@
     background: transparent;
     border: none;
     font-size: 1em;
-    color: var(--color, $grey);
+    color: var(--color, var(--troll-ui-grey));
     transition: color $medium;
     --focus-offset: -0.35em;
 
@@ -298,7 +297,7 @@
     }
 
     &:not([disabled]):hover {
-      color: var(--hover-color, #{$dark-grey});
+      color: var(--hover-color, var(--troll-ui-dark-grey));
     }
     svg {
       width: var(--icon-size, 2em);
