@@ -48,7 +48,7 @@
 
   .border-radius-column {
     grid-column: span 2;
-    @include viewport($medium-small-viewport up) {
+    @viewport (medium-small-viewport up) {
       grid-column: span 4;
     }
   }

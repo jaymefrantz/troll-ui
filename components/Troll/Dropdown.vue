@@ -334,7 +334,7 @@ div(ref="container").custom-dropdown
       }
     }
 
-    @include viewport($dropdown-mobile-viewport down) {
+    @viewport (dropdown-mobile-viewport down) {
       .custom-dropdown & {
         display: none;
       }
@@ -370,7 +370,7 @@ div(ref="container").custom-dropdown
       right: var(--dropdown-container-padding-right, 1em);
     }
 
-    @include viewport($dropdown-mobile-viewport up) {
+    @viewport (dropdown-mobile-viewport up) {
       #main & {
         display: none;
       }

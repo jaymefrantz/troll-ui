@@ -71,7 +71,7 @@
     align-items: flex-end;
     gap: 1em;
 
-    @include viewport($medium-large-viewport up) {
+    @viewport (medium-large-viewport up) {
       grid-template-columns: 1fr 1fr 12rem;
       // grid-template-columns: repeat(6, 1fr);
 

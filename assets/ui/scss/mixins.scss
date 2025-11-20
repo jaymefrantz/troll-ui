@@ -70,19 +70,19 @@
 }
 
 // .test {
-//   @include viewport ( 10em to 20em, 30em to 40em ) {
+//   @viewport(10em to 20em, 30em to 40em) {
 //     background-color: purple
 //   }
-//   @include viewport ( 30em to 40em ) {
+//   @viewport(30em to 40em) {
 //     background-color: blue
 //   }
-//   @include viewport ( $medium-viewport down ) {
+//   @viewport(medium-viewport down) {
 //     background-color: yellow;
 //   }
-//   @include viewport ( $large-viewport up ) {
+//   @viewport(large-viewport up) {
 //     background-color: green;
 //   }
-//   @include viewport ( $extra-large-viewport up, $small-viewport down, $medium-viewport to $large-viewport ) {
+//   @viewport(extra-large-viewport up, small-viewport down, medium-viewport to large-viewport) {
 //     background-color: red;
 //   }
 // }

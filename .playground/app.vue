@@ -18,16 +18,15 @@
   useHead({
     style: [
       {
-        innerHTML: `:root {${jsonToCSSVars(useAppConfig().root).join("\n")} ${jsonToCSSVars(
-          useAppConfig().colors
-        ).join("\n")}`,
+        innerHTML: `:root {${jsonToCSSVars(useAppConfig().root).join("\n")} ${jsonToCSSVars(useAppConfig().colors).join(
+          "\n"
+        )}`,
       },
     ],
   })
 </script>
 
 <style lang="scss">
-  // @import "@/assets/scss/design/colors.scss"; //this shouldn't happen, but vite additionalData might not be working?
   :root {
     // --textbox-border: 2px solid var(--site-color-200);
     --textbox-font-size: 0.875em;

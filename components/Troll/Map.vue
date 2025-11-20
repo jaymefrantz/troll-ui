@@ -244,12 +244,12 @@
     border: var(--border, 1px solid var(--troll-ui-lightest-grey));
     font-size: var(--size, clamp(0.7rem, 1.35vw, 0.9rem));
 
-    @include viewport($medium-viewport up) {
+    @viewport (medium-viewport up) {
       flex-direction: column;
     }
 
     & > li {
-      @include viewport($medium-viewport down) {
+      @viewport (medium-viewport down) {
         &:first-child {
           padding-right: 0.35em;
         }
@@ -260,7 +260,7 @@
         }
       }
 
-      @include viewport($medium-viewport up) {
+      @viewport (medium-viewport up) {
         margin: 0.25em 0;
 
         &:last-child {
@@ -284,11 +284,11 @@
     transition: color var(--troll-ui-ani-medium);
     --focus-offset: -0.35em;
 
-    @include viewport($medium-viewport down) {
+    @viewport (medium-viewport down) {
       padding: var(--mobile-button-padding, 0.5em 1.15em);
     }
 
-    @include viewport($medium-viewport up) {
+    @viewport (medium-viewport up) {
       padding: var(--desktop-button-padding, 0.35em 0.65em);
     }
 

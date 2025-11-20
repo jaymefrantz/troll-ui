@@ -78,7 +78,7 @@
     padding: 0;
     margin: 4em 0 2em;
 
-    @include viewport($medium-viewport up) {
+    @viewport (medium-viewport up) {
       display: flex;
       align-items: center;
       justify-content: space-between;

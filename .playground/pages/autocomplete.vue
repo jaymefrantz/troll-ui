@@ -49,9 +49,7 @@
         .reverse()
         .reduce((unique, item) => {
           //needs this reduce cause string similarity is doing some weird stuff and adding duplicates even though autocompleteItems are unique and clean
-          return !unique.map(({ target }) => target).includes(item.target)
-            ? [...unique, item]
-            : unique
+          return !unique.map(({ target }) => target).includes(item.target) ? [...unique, item] : unique
         }, [])
         .splice(0, 12)
         .map(({ target }) => target)
@@ -115,15 +113,15 @@
     column-count: var(--column, 1);
     margin: 0 -0.875rem;
 
-    @include viewport($medium-small-viewport up) {
+    @viewport (medium-small-viewport up) {
       --column: 2;
     }
 
-    @include viewport($medium-large-viewport up) {
+    @viewport (medium-large-viewport up) {
       --column: 3;
     }
 
-    @include viewport($extra-large-viewport up) {
+    @viewport (extra-large-viewport up) {
       --column: 4;
     }
 

@@ -262,17 +262,17 @@
       width: 100%;
     }
 
-    @include viewport($medium-small-viewport + 5rem up) {
+    @viewport (medium-small-viewport + 5rem up) {
       grid-template-columns: repeat(4, 1fr);
     }
 
-    @include viewport($medium-viewport up) {
+    @viewport (medium-viewport up) {
       grid-template-columns: repeat(6, 1fr);
       --lg-column: 3;
       --xl-column: 6;
     }
 
-    @include viewport($large-viewport + 5rem up) {
+    @viewport (large-viewport + 5rem up) {
       grid-template-columns: repeat(12, 1fr);
     }
 

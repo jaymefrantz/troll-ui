@@ -83,11 +83,7 @@
   const backgroundHex = computed(() => colors[storage.value.background])
 
   const theme = computed(() => {
-    return `${
-      parseInt(storage.value.background.replace("--", "").split("-").at(-1)) > 300
-        ? "dark"
-        : "light"
-    }-theme`
+    return `${parseInt(storage.value.background.replace("--", "").split("-").at(-1)) > 300 ? "dark" : "light"}-theme`
   })
 
   const activeColorFamily = computed(() => {
@@ -101,18 +97,14 @@
       border-radius: ${storage.value.buttonStyle.borderRadius}px;
       background: var(${background !== "--transparent" ? background : "--site-background"});
       color: var(${storage.value.buttonStyle.color});
-      border: ${storage.value.buttonStyle.borderWidth}px solid var(${
-      storage.value.buttonStyle.border
-    });`
+      border: ${storage.value.buttonStyle.borderWidth}px solid var(${storage.value.buttonStyle.border});`
   })
 
   const formFieldStyles = computed(() => {
     const background = storage.value.formStyle.background
     return `
    	--textbox-background: var(${background !== "--transparent" ? background : "--site-background"});
-   	--textbox-border: ${storage.value.formStyle.borderWidth}px solid var(${
-      storage.value.formStyle.border
-    });
+   	--textbox-border: ${storage.value.formStyle.borderWidth}px solid var(${storage.value.formStyle.border});
    	--textbox-color: var(${storage.value.formStyle.color});
    	--textbox-border-radius: ${storage.value.formStyle.borderRadius}px;
     --textbox-padding-x: ${storage.value.formStyle.borderRadius / 4}px;
@@ -146,10 +138,7 @@
   const dropdownLink = computed(() => {
     const [family, name] = dropdownIcon.value.name.split(":")
     const color = colors[storage.value.formStyle.color]
-    return `url(https://api.iconify.design/${family}/${name}.svg?width=1.75em&color=${color.replace(
-      "#",
-      "%23"
-    )})`
+    return `url(https://api.iconify.design/${family}/${name}.svg?width=1.75em&color=${color.replace("#", "%23")})`
   })
 
   const checkLink = computed(() => {
@@ -160,18 +149,13 @@
 
     const color = colors[storage.value.formStyle.color]
     const [family, name] = icon.split(":")
-    return `url(https://api.iconify.design/${family}/${name}.svg?height=1.75em&color=${color.replace(
-      "#",
-      "%23"
-    )})`
+    return `url(https://api.iconify.design/${family}/${name}.svg?height=1.75em&color=${color.replace("#", "%23")})`
   })
 
   const rootStyles = computed(() => {
     return `
    		--body-font: ${
-        storage.value.bodyFont.includes("+")
-          ? `"${storage.value.bodyFont.replace("+", " ")}"`
-          : storage.value.bodyFont
+        storage.value.bodyFont.includes("+") ? `"${storage.value.bodyFont.replace("+", " ")}"` : storage.value.bodyFont
       };
    		--heading-font: ${
         storage.value.headingFont.includes("+")
@@ -382,11 +366,11 @@
     gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
 
-    @include viewport($small-viewport + 5rem up) {
+    @viewport (small-viewport + 5rem up) {
       --sm-column: 1;
     }
 
-    @include viewport($medium-small-viewport up) {
+    @viewport (medium-small-viewport up) {
       grid-template-columns: repeat(6, 1fr);
       --sm-column: 2;
       --md-column: 3;

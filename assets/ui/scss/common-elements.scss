@@ -73,11 +73,3 @@ body *:focus-visible {
   overflow: hidden;
   position: relative;
 }
-
-$center-margin-wraps: (medium, $medium-viewport), (medium-large, $medium-large-viewport), (large, $large-viewport), (extra-large, $extra-large-viewport);
-
-@each $name, $size in $center-margin-wraps {
-  .#{ $name }-center-margin-wrap {
-    --wrap-size: #{$size};
-  }
-}
