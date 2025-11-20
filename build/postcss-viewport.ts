@@ -27,29 +27,111 @@ function createViewportPlugin(options: ViewportPluginOptions): PluginCreator<voi
     return token.replace(/-viewport$/, "").trim()
   }
 
-  // Map token -> value (from breakpoints or literal CSS length)
+  // Parse "12rem" -> { value: 12, unit: "rem" }
+  function parseLength(value: string): { value: number; unit: string } | null {
+    const m = value.trim().match(/^(-?\d*\.?\d+)([a-z%]+)$/i)
+    if (!m) return null
+    return { value: parseFloat(m[1]), unit: m[2] }
+  }
+
+  /**
+   * Resolve:
+   *   - "medium-viewport"
+   *   - "medium-viewport + 2rem"
+   *   - "medium-viewport - 2rem"
+   * to a concrete CSS length string.
+   * Anything else is returned unchanged.
+   */
   function resolveValue(rawToken: string): string {
-    const token = normalizeToken(rawToken)
+    const trimmed = rawToken.trim()
+
+    // Pattern: "<name>-viewport +/- <number><unit>"
+    const exprMatch = trimmed.match(/^([A-Za-z_][\w-]*-viewport)\s*([+-])\s*(-?\d*\.?\d+[a-z%]+)$/i)
+
+    if (exprMatch) {
+      const baseTokenWithSuffix = exprMatch[1] // e.g. "medium-small-viewport"
+      const op = exprMatch[2] as "+" | "-"
+      const offsetStr = exprMatch[3] // e.g. "2rem"
+
+      const baseName = normalizeToken(baseTokenWithSuffix) // "medium-small"
+      const baseVal = breakpoints[baseName]
+
+      if (baseVal) {
+        const baseLen = parseLength(baseVal)
+        const offsetLen = parseLength(offsetStr)
+
+        if (baseLen && offsetLen && baseLen.unit === offsetLen.unit) {
+          const result = op === "+" ? baseLen.value + offsetLen.value : baseLen.value - offsetLen.value
+
+          return `${result}${baseLen.unit}`
+        }
+      }
+      // if anything fails, fall through to normal handling
+    }
+
+    // Fallback: plain "<name>-viewport" or literal CSS length
+    const token = normalizeToken(trimmed)
     if (breakpoints[token]) return breakpoints[token]
-    return rawToken // treat as literal (e.g. "40rem", "821px")
+    return rawToken
   }
 
   // For legacy max-width: subtract epsilon from numeric part
   function subtractEpsilon(value: string): string {
-    const m = value.trim().match(/^(-?\d*\.?\d+)([a-z%]*)$/i)
-    if (!m) return value
-    const num = parseFloat(m[1])
-    const unit = m[2] || ""
-    return `${num - epsilon}${unit}`
+    const len = parseLength(value)
+    if (!len) return value
+    return `${len.value - epsilon}${len.unit}`
+  }
+
+  // For legacy strict greater-than: add epsilon
+  function addEpsilon(value: string): string {
+    const len = parseLength(value)
+    if (!len) return value
+    return `${len.value + epsilon}${len.unit}`
   }
 
   // Build a single clause from something like:
   // "medium-viewport up"
   // "large-viewport down"
   // "small-viewport to medium-viewport"
-  // "40rem to 60rem"
+  // "medium-viewport + 2rem up"
+  // "width > medium-small-viewport"
+  // "inline-size <= medium-viewport + 2rem"
   function buildClause(clause: string): string {
-    const tokens = clause.trim().split(/\s+/)
+    const trimmed = clause.trim()
+
+    // 1) Comparison operators: width / inline-size with > >= < <=
+    const compMatch = trimmed.match(/^(width|inline-size)\s*(>=|<=|>|<)\s*(.+)$/)
+    if (compMatch) {
+      const prop = compMatch[1] as "width" | "inline-size"
+      const op = compMatch[2] as ">=" | "<=" | ">" | "<"
+      const rhsExpr = compMatch[3]
+
+      const val = resolveValue(rhsExpr) // supports foo-viewport +/- offset
+
+      if (useModernRanges) {
+        // Keep operator, just resolve RHS
+        return `(${prop} ${op} ${val})`
+      } else {
+        // Legacy: turn into min-/max- feature
+        const dim = prop === "inline-size" ? "inline-size" : "width"
+
+        switch (op) {
+          case ">":
+            // strictly greater → min-dim: val + epsilon
+            return `(min-${dim}: ${addEpsilon(val)})`
+          case ">=":
+            return `(min-${dim}: ${val})`
+          case "<":
+            // strictly less → max-dim: val - epsilon
+            return `(max-${dim}: ${subtractEpsilon(val)})`
+          case "<=":
+            return `(max-${dim}: ${val})`
+        }
+      }
+    }
+
+    // 2) up / down / to syntax
+    const tokens = trimmed.split(/\s+/)
     const hasTo = tokens.includes("to")
     const hasUp = tokens.includes("up")
     const hasDown = tokens.includes("down")
@@ -100,7 +182,7 @@ function createViewportPlugin(options: ViewportPluginOptions): PluginCreator<voi
       }
     }
 
-    // bare value or name: treat as "up from here"
+    // 3) bare value or name: treat as "up from here"
     const val = resolveValue(tokens.join(" "))
 
     if (useModernRanges) {
@@ -129,8 +211,8 @@ function createViewportPlugin(options: ViewportPluginOptions): PluginCreator<voi
     postcssPlugin: "postcss-viewport-and-container",
 
     AtRule: {
+      // @viewport (large-viewport up) { ... }
       // @viewport(large-viewport up) { ... }
-      // or @viewport(large-viewport up) { ... }
       viewport(atRule: AtRule) {
         const raw = extractParams(atRule.params)
         if (!raw) return
@@ -141,7 +223,7 @@ function createViewportPlugin(options: ViewportPluginOptions): PluginCreator<voi
       },
 
       // @container (medium-viewport up) { ... }
-      // @container sidebar (small-viewport to medium-viewport) { ... }
+      // @container field-container (width > medium-small-viewport) { ... }
       container(atRule: AtRule) {
         const params = atRule.params.trim()
         const open = params.lastIndexOf("(")
@@ -154,11 +236,15 @@ function createViewportPlugin(options: ViewportPluginOptions): PluginCreator<voi
         const inner = params.slice(open + 1, close).trim() // our custom syntax
 
         // Only touch if it looks like our syntax; otherwise leave it as-is
-        if (!/-viewport\b/.test(inner) && !/\b(up|down|to)\b/.test(inner)) {
+        if (
+          !/-viewport\b/.test(inner) &&
+          !/\b(up|down|to)\b/.test(inner) &&
+          !/^(width|inline-size)\s*(>=|<=|>|<)\s*/.test(inner)
+        ) {
           return
         }
 
-        const mq = buildQuery(inner) // "(width >= 40rem)" etc
+        const mq = buildQuery(inner)
         atRule.params = before ? `${before} ${mq}` : mq
       },
     },

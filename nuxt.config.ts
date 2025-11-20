@@ -39,9 +39,9 @@ export default defineNuxtConfig({
     head: {
       style: [
         {
-          innerHTML: ["medium-small", "medium", "medium-large", "large", "extra-large"]
+          innerHTML: `${["medium-small", "medium", "medium-large", "large", "extra-large"]
             .map(b => `.${b}-center-margin-wrap { --wrap-size: ${breakpoints[b]}}`)
-            .join("\n"),
+            .join("\n")}`,
         },
       ],
     },
