@@ -216,8 +216,6 @@
 </script>
 
 <style lang="scss" scoped>
-  // @use "@/assets/ui/scss/global.scss" as *;
-
   :global([title="Map camera controls"]) {
     display: none !important;
   }

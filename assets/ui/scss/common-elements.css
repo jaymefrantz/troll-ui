@@ -1,7 +1,4 @@
 :root {
-  // @each $name, $size in $center-margin-wraps {
-  //   --#{ $name }-viewport: #{$size};
-  // }
   --focus-weight: 2px;
   --focus-offset: calc(0.5 * var(--focus-weight));
 }
@@ -30,11 +27,11 @@ body *:focus-visible {
   color: var(--focus-color) !important;
 }
 
-//.page-wrap
+/* .page-wrap */
 #__nuxt {
   position: relative;
   overflow: hidden;
-  min-width: $small-viewport;
+  min-width: 24rem;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
