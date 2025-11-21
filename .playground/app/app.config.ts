@@ -1,7 +1,7 @@
-import map from "./assets/js/map.ts"
-import colors from "./assets/js/colors.ts"
-import icons from "./assets/js/icons.ts"
-import fonts from "./assets/js/fonts.ts"
+import map from "./assets/js/map.js"
+import colors from "./assets/js/colors.js"
+import icons from "./assets/js/icons.js"
+import fonts from "./assets/js/fonts.js"
 
 export default defineAppConfig({
   colors,

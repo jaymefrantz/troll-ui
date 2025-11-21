@@ -1,7 +1,7 @@
 type ProdLayer = [string, { install: boolean }]
 type DevLayer = [string]
 
-import fonts from "./assets/js/fonts.ts"
+import fonts from "./app/assets/js/fonts.js"
 import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
@@ -46,7 +46,7 @@ export default defineNuxtConfig({
     // "@@": "@"
   },
 
-  css: ["./assets/scss/common-elements.scss"], //this relative isn't going to work when it gets pushed to github
+  css: [join(currentDir, "./app/assets/scss/common-elements.scss")], //this relative isn't going to work when it gets pushed to github
   //css: ["trollUI/assets/scss/resets.scss", "trollUI/assets/scss/common-elements.scss", "./assets/scss/common-elements.scss"],
   vite: {
     // resolve: {
@@ -88,6 +88,8 @@ export default defineNuxtConfig({
       }),
     ],
   },
-
+  devtools: {
+    enabled: false,
+  },
   compatibilityDate: "2024-10-14",
 })

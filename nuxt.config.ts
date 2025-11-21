@@ -4,8 +4,8 @@ import { dirname, join } from "path"
 const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.CLOUDINARY_FOLDER}`
 const currentDir = dirname(fileURLToPath(import.meta.url))
 const cwd = process.cwd()
-import defaultBreakpoints from "./assets/ui/js/breakpoints.ts"
-import createViewportPlugin from "./build/postcss-viewport.ts"
+import defaultBreakpoints from "./app/assets/ui/js/breakpoints.js"
+import createViewportPlugin from "./build/postcss-viewport.js"
 let breakpoints = defaultBreakpoints.breakpoints
 let useModernRanges = defaultBreakpoints.useModernRanges
 const configPath = `${cwd === currentDir ? `${cwd}/.playground` : cwd}/assets/js/breakpoints.ts`
@@ -41,7 +41,9 @@ export default defineNuxtConfig({
         {
           innerHTML: `${["medium-small", "medium", "medium-large", "large", "extra-large"]
             .map(b => `.${b}-center-margin-wrap { --wrap-size: ${breakpoints[b]}}`)
-            .join("\n")}`,
+            .join("\n")}:root {${["medium-small", "medium", "medium-large", "large", "extra-large"]
+            .map(b => `--${b}-viewport: ${breakpoints[b]};`)
+            .join("\n")}}`,
         },
       ],
     },
@@ -54,11 +56,11 @@ export default defineNuxtConfig({
       CLOUDINARY,
     },
   },
-  modules: ["@vueuse/nuxt", "nuxt-icon"],
+  modules: ["@vueuse/nuxt", "@nuxt/icon"],
   css: [
-    join(currentDir, "./assets/ui/scss/resets.css"),
-    join(currentDir, "./assets/ui/scss/common-elements.css"),
-    join(currentDir, "./assets/ui/scss/root.css"),
+    join(currentDir, "./app/assets/ui/scss/resets.css"),
+    join(currentDir, "./app/assets/ui/scss/common-elements.css"),
+    join(currentDir, "./app/assets/ui/scss/root.css"),
   ],
   imports: {
     dirs: ["utils"],
