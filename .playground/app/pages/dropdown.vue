@@ -1,7 +1,7 @@
 <template lang="pug">
 ul.dropdowns
   li
-    <TrollDropdown v-model="yearSelection" class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em' }" />
+    <TrollDropdown v-model="yearSelection" class="year-dropdown" ref="yearDropdown" :options="yearOptions" label="Year" :icon="{ size: '1.35em', name: check.value }" />
     clientOnly
       p selected year: {{ yearSelection }}
   li
@@ -16,6 +16,9 @@ ul.dropdowns
   const cheeseDropdown = ref(null)
   const cheeseSelection = ref("SmellyCheese")
   const yearSelection = ref("")
+  const icons = useState("icons")
+  const check = computed(() => icons?.value?.check ?? "")
+  // console.log("check", { size: "1.35em", name: check.value })
 
   const yearOptions = [
     { label: "Any year", value: "" },

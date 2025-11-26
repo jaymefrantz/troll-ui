@@ -6,7 +6,7 @@ div(ref="container").custom-dropdown
 		div.dropdown-mobile-select-container
 			select(v-model="selectedValue" ref="dropdownSelect" @mousedown="mobileMousedown = true" :aria-describedby="`${id}-label`").dropdown-select-input
 				option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
-			<Icon :size="icon?.size?.toString() ?? 'none'" :name="icon?.name" v-bind="icon?.attrs" class="dropdown-arrow"/>
+			<Icon v-if="icon?.name" :size="icon?.size?.toString() ?? 'none'" :name="icon?.name" v-bind="icon?.attrs" class="dropdown-arrow"/>
 		button(type="button" ref="dropdownTrigger" @mousedown="desktopMousedown = true" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
 			@keydown.down.exact.prevent="goDown" 
 			@keydown.up.exact.prevent="goUp" 
@@ -20,7 +20,7 @@ div(ref="container").custom-dropdown
 			@keydown="keydown"
 		).dropdown-trigger
 			span.dropdown-trigger-label {{selectedLabel}}
-			<Icon :name="icon?.name" :size="icon?.size?.toString() ?? 'none'" v-bind="icon?.attrs" class="dropdown-arrow"/>
+			<Icon v-if="icon?.name" :name="icon?.name" :size="icon?.size?.toString() ?? 'none'" v-bind="icon?.attrs" class="dropdown-arrow"/>
 		<TrollDropdownWrap ref="dropdownWrap" :expanded="expanded" :isEnd="isEnd">
 			ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
 				li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 

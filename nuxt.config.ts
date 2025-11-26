@@ -65,6 +65,9 @@ export default defineNuxtConfig({
   imports: {
     dirs: ["utils"],
   },
+  icon: {
+    mode: "svg",
+  },
   vite: {
     resolve: {
       alias: {
