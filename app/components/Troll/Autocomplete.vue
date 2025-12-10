@@ -4,7 +4,7 @@ div(ref="container").autocomplete-container
   div(ref="wrap" :class="clickFocused ? 'click-focused' : ''").autocomplete-wrap
     <slot name="before"></slot>
     div.autocomplete-input-wrap
-      <Icon class="search-icon" :size="searchIcon?.size?.toString() ?? 'none'" :name="searchIcon.name"/>
+      <Icon class="search-icon" :size="searchIcon?.size?.toString()" :name="searchIcon.name"/>
       input(type="text" v-model="query" :id="id"
         ref="textInput"
         @blur="blured"
@@ -20,7 +20,7 @@ div(ref="container").autocomplete-container
         @mousedown="mouseDown = true"
       ).autocomplete-input
       button(type="button" @click="close" v-show="query?.split('').length > 0").autocomplete-close-button
-        <Icon class="close-icon" :size="closeIcon?.size?.toString() ?? 'none'" :name="closeIcon.name"/>
+        <Icon class="close-icon" :size="closeIcon?.size?.toString()" :name="closeIcon.name"/>
     <TrollDropdownWrap :expanded="!hideResults && hasResults" :isEnd="isEnd" ref="dropdownWrap">
         ul(ref="resultList").autocomplete-results-list
           li(v-for="(result, index) in results ?? []" :key="result.id" @click="selected(result)" ref="resultListItems" :class="{ 'selected': index === focusedIndex }")
@@ -51,11 +51,11 @@ div(ref="container").autocomplete-container
       searchedProp: "text",
       searchIcon: {
         name: "material-symbols-light:search-rounded",
-        size: "20",
+        size: "1.5em",
       },
       closeIcon: {
         name: "material-symbols-light:close-rounded",
-        size: "20",
+        size: "1.5em",
       },
     }
   )
@@ -248,6 +248,14 @@ div(ref="container").autocomplete-container
 
       color: var(--focus-color);
     }
+
+    & > *:not(input.autocomplete-input) {
+      flex: 0 0 auto;
+    }
+  }
+
+  .autocomplete-wrap {
+    position: relative;
   }
 
   .autocomplete-input {
@@ -261,6 +269,7 @@ div(ref="container").autocomplete-container
     width: 100%;
     border: 0;
     outline: 0;
+    flex: 1 1 auto;
 
     &::placeholder {
       color: currentColor;
@@ -272,6 +281,12 @@ div(ref="container").autocomplete-container
     border: 0;
     padding: 0;
     color: currentColor;
+    font-size: 1em;
+
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 
   .autocomplete-results-list {

@@ -342,8 +342,6 @@ div(ref="container").custom-dropdown
   }
 
   .dropdown-arrow {
-    width: v-bind(iconSize);
-    height: v-bind(iconSize);
     margin-left: var(--arrow-left, 0.5em);
     display: block;
     transition: var(--dropdown-arrow-transition, transform 0.275s ease-in-out);
@@ -386,7 +384,7 @@ div(ref="container").custom-dropdown
     padding: var(--trigger-padding, 0.95em 1em 0.95em 1.5em);
     padding-right: calc(v-bind(iconSize) + var(--dropdown-container-padding-right, 1em) + 0.5em);
     font-family: var(--trigger-font, arial);
-    font-size: var(--trigger-font-size, 0.85em);
+    font-size: 1em;
     letter-spacing: 0.075em;
     background-color: transparent;
     color: var(--dropdown-color, var(--troll-ui-grey));

@@ -1,5 +1,5 @@
 <template lang="pug">
-  div(:class="labelPosition").toggle-container
+  div.toggle-container
     input(:id="id" :disabled="disabled" type="checkbox" v-model="boolean")
     label(:for="id").toggle-label
       span(v-if="labelPosition === 'top' || labelPosition === 'left'" v-html="text").toggle-text
@@ -49,17 +49,8 @@
   .toggle-container {
     position: relative;
     display: inline-block;
-
-    &:not(.left):has(input[type="checkbox"]:checked) {
+    &:not(:has(input[type="checkbox"]:checked)) {
       --toggle-knob-translate: 100%;
-    }
-
-    &.left {
-      --toggle-knob-translate: 0;
-
-      &:has(input[type="checkbox"]:checked) {
-        --toggle-knob-translate: 100%;
-      }
     }
   }
 
