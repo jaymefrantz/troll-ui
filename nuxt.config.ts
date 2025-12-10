@@ -1,20 +1,25 @@
 // import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
+import fs from "node:fs"
 const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${process.env.CLOUDINARY_FOLDER}`
 const currentDir = dirname(fileURLToPath(import.meta.url))
-const cwd = process.cwd()
-import defaultBreakpoints from "./app/assets/ui/js/breakpoints.js"
+const cwd = process.cwd() + "/app"
+import defaultBreakpoints from "./app/assets/ui/js/breakpoints.ts"
 import createViewportPlugin from "./build/postcss-viewport.js"
 let breakpoints = defaultBreakpoints.breakpoints
 let useModernRanges = defaultBreakpoints.useModernRanges
 const configPath = `${cwd === currentDir ? `${cwd}/.playground` : cwd}/assets/js/breakpoints.ts`
-import fs from "node:fs"
+let centerMarginWraps = ["medium-small", "medium", "medium-large", "large", "extra-large"]
+
 if (fs.existsSync(configPath)) {
   try {
     const { default: appBreakpoints } = await import(configPath)
     breakpoints = { ...breakpoints, ...appBreakpoints.breakpoints }
     useModernRanges = appBreakpoints?.useModernRanges ?? useModernRanges
+    if (appBreakpoints.centerMarginWraps) {
+      centerMarginWraps = appBreakpoints.centerMarginWraps
+    }
   } catch (e) {
     console.log("breakpoint config file failed to load", configPath, e)
   }
@@ -39,17 +44,15 @@ export default defineNuxtConfig({
     head: {
       style: [
         {
-          innerHTML: `${["medium-small", "medium", "medium-large", "large", "extra-large"]
+          innerHTML: `${centerMarginWraps
             .map(b => `.${b}-center-margin-wrap { --wrap-size: ${breakpoints[b]}}`)
-            .join("\n")}:root {${["medium-small", "medium", "medium-large", "large", "extra-large"]
-            .map(b => `--${b}-viewport: ${breakpoints[b]};`)
-            .join("\n")}}`,
+            .join("\n")}:root {${centerMarginWraps.map(b => `--${b}-viewport: ${breakpoints[b]};`).join("\n")}}`,
         },
       ],
     },
   },
   devtools: { enabled: true },
-  alias: { "@": currentDir },
+  // alias: { "@": currentDir },
   runtimeConfig: {
     public: {
       breakpoints,
@@ -71,7 +74,7 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        "@ui": join(currentDir, "./"),
+        "@ui": join(currentDir, "./app/assets/ui/"),
       },
     },
     // plugins: [
