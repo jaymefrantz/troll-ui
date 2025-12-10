@@ -1,5 +1,5 @@
 <template lang="pug">
-  <GoogleMarker :options="markerOptions" ref="gmapMarker" @click="handleEvent('markerClick')" @dragend="dragend" @mouseover="handleEvent('markerMouseOver'); hovered = true" @mouseout="handleEvent('markerMouseOut'); hovered = false"/>
+  <GoogleMarker :options="markerOptions" ref="gmapMarker" @click="handleEvent('markerClick')" @dragend="dragend" @mouseover="handleMouseOver" @mouseout="handleMouseOut"/>
 </template>
 
 <script setup lang="ts">
@@ -35,7 +35,7 @@
     }
   )
 
-  const { position, level, polaroids: polaroidIds, link, title, color } = toRefs(marker)
+  const { position, level, polaroids: polaroidIds, link, title, color, options } = toRefs(marker)
   const hovered = ref(false)
 
   const label = computed(() => {
@@ -65,7 +65,7 @@
     anchor: new google.maps.Point(18, 48),
     labelOrigin: new google.maps.Point(18, 19),
     scaledSize: new google.maps.Size(36, 48),
-    optimized: false,
+    optimized: true, // Changed to true for better click detection
   }
 
   // if(marker.iconOptions?.size) {
@@ -81,20 +81,33 @@
   // }
 
   const markerOptions = computed(() => {
-    let obj = { draggable: false, position: position.value, clickable: true, ...label.value }
+    let obj = { position: position.value, clickable: true, ...label.value }
     const icon = hovered.value && marker.hoverIcon !== undefined ? marker.hoverIcon : marker.icon
     if (icon !== undefined) {
       obj.icon = { url: icon, ...iconOptions }
     }
 
-    return { ...obj, ...marker.options }
+    return { ...obj, ...options.value }
   })
 
-  function dragend({ latLng }) {
-    handleEvent("markerDragend", { newPosition: { lat: latLng.lat(), lng: latLng.lng() } })
+  function dragend({ latLng }: { latLng: google.maps.LatLng }) {
+    if (latLng) {
+      handleEvent("markerDragend", { newPosition: { lat: latLng.lat(), lng: latLng.lng() } })
+    }
+  }
+
+  function handleMouseOver() {
+    hovered.value = true
+    handleEvent("markerMouseOver")
+  }
+
+  function handleMouseOut() {
+    hovered.value = false
+    handleEvent("markerMouseOut")
   }
 
   function handleEvent(name: string, additional: any = {}) {
+    // console.log("emit", name, { ...marker, gmapMarker: gmapMarker.value, ...additional })
     emit("emit", { name, marker: { ...marker, gmapMarker: gmapMarker.value, ...additional } })
   }
 </script>

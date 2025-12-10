@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- pre {{JSON.stringify(markers, null, 2)}}
   div.map-container
     client-only
       <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
@@ -152,8 +153,8 @@
     }
   }
 
-  function setCenter(center: google.maps.LatLngLiteral) {
-    gmap.value?.map.setCenter(new google.maps.LatLng(center))
+  function setCenter(center: { lat: number; lng: number }) {
+    gmap.value?.map.setCenter(center)
   }
 
   function setZoom(newZoom: number) {

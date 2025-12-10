@@ -189,14 +189,13 @@ function initOverlay(google, map) {
 
       if (this.previews[id] === undefined) {
         const panes = this.getPanes()
-        let splitImage = image.split("/upload/")
 
         panes.floatPane.insertAdjacentHTML(
           "beforeend",
           `<div class="marker-preview-container" id="preview-${id}"><div class="marker-preview">
               <button type="button" class="close-preview-button"></button>
               <div class="marker-preview-image-wrap">
-                <img src="${`${splitImage[0]}/upload/w_228,h_202,f_auto,dpr_auto/${splitImage[1]}`}" width="128" height="102">
+                <img src="${image}" width="128" height="102">
               </div>
             </div></div>`
         )
