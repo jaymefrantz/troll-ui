@@ -31,7 +31,7 @@ body *:focus-visible {
 #__nuxt {
   position: relative;
   overflow: hidden;
-  min-width: 24rem;
+  min-width: var(--min-width, 24rem);
   display: flex;
   flex-direction: column;
   margin: 0 auto;
