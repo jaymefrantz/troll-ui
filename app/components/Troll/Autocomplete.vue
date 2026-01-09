@@ -227,7 +227,7 @@ div(ref="container").autocomplete-container
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .autocomplete-container {
     position: relative;
   }
@@ -243,9 +243,6 @@ div(ref="container").autocomplete-container
     justify-content: space-between;
 
     &:focus-within {
-      // outline: 2px solid var(--focus-color);
-      // outline-offset: 3px;
-
       color: var(--focus-color);
     }
 

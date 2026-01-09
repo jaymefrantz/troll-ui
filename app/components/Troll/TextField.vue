@@ -57,7 +57,7 @@
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .textbox-label {
     color: var(--textbox-label-color, currentColor);
   }

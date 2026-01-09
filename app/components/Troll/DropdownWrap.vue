@@ -20,7 +20,7 @@ transition(name="dropdown-outer-wrap")
   })
 </script>
 
-<style lang="scss">
+<style>
   .dropdown-outer-wrap {
     background-color: var(--dropdown-background, white);
     padding: var(--dropdown-outer-padding, 0.5em 0.35em);
