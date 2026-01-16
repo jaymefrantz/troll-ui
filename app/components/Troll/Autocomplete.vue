@@ -202,7 +202,7 @@ div(ref="container").autocomplete-container
   async function blured() {
     await wait(100)
     wasReservedKey.value = true
-    hideResults.value = true
+    // hideResults.value = true
   }
 
   watch(inputFocused, isFocused => {
@@ -224,6 +224,7 @@ div(ref="container").autocomplete-container
     focused: inputFocused,
     expanded: computed(() => !hideResults.value && hasResults.value),
     height: computed(() => Math.ceil(height.value + (dropdownWrap.value?.height ?? 0))),
+    textInput: textInput,
   })
 </script>
 
