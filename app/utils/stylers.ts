@@ -11,21 +11,28 @@ export function jsonToCSSVars(obj: JSONObject, prefix = ""): string[] {
     if (typeof val !== "string") return false
 
     const trimmed = val.trim()
+    // If the value uses backtick convention (`...`) consider it raw CSS
+    if (trimmed.startsWith("`") && trimmed.endsWith("`")) return false
 
-    // Patterns that should not be quoted
-    const cssFunctions = /^(var|linear-gradient|calc|url|hsl)\(/
-    const cssUnits = /[\d.]+(px|rem|em|vw|vh|%|s|ms)$/
-    const hexColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/
-    const isKeyword = /^(inherit|initial|unset|auto|none)$/
+    // Patterns that should not be quoted anywhere in the string
+    const cssFunctionAnywhere = /\b(var|linear-gradient|calc|url|hsl|rgb|rgba|hsla)\(/i
+    const cssUnitAnywhere = /[\d.]+(px|rem|em|vw|vh|%|ch|vmin|vmax|s|ms)\b/i
+    const hexColor = /#[0-9A-Fa-f]{3,6}\b/
+    const isKeyword = /^(inherit|initial|unset|auto|none)$/i
 
-    return !(
-      trimmed.includes("'") ||
-      cssFunctions.test(trimmed) ||
-      cssUnits.test(trimmed) ||
-      hexColor.test(trimmed) ||
-      isKeyword.test(trimmed) ||
-      /^[\d.]+$/.test(trimmed)
-    )
+    // If it already contains a single quote assume it's intended as a string
+    if (trimmed.includes("'")) return false
+
+    // If it contains CSS functions or units anywhere, don't quote it
+    if (cssFunctionAnywhere.test(trimmed) || cssUnitAnywhere.test(trimmed) || hexColor.test(trimmed)) {
+      return false
+    }
+
+    // Also allow common keywords and plain numbers without quotes
+    if (isKeyword.test(trimmed) || /^[\d.]+$/.test(trimmed)) return false
+
+    // Otherwise, quote
+    return true
   }
 
   const walk = (curr: JSONValue, path: string): void => {
@@ -33,8 +40,16 @@ export function jsonToCSSVars(obj: JSONObject, prefix = ""): string[] {
       curr.forEach((val, index) => {
         const name = index === 0 ? "50" : `${index * 100}`
         const fullName = `${path}-${name}`
-        const wrappedVal = needsQuotes(val) ? `"${val}"` : val
-        result.push(`--${fullName}: ${wrappedVal};`)
+        let out: string | number | boolean | null = val
+        if (typeof val === "string") {
+          const t = val.trim()
+          if (t.startsWith("`") && t.endsWith("`")) {
+            out = t.slice(1, -1)
+          } else if (needsQuotes(val)) {
+            out = `"${val}"`
+          }
+        }
+        result.push(`--${fullName}: ${out};`)
       })
     } else if (typeof curr === "object" && curr !== null) {
       Object.entries(curr).forEach(([key, val]) => {
@@ -42,8 +57,16 @@ export function jsonToCSSVars(obj: JSONObject, prefix = ""): string[] {
         walk(val, newPath)
       })
     } else {
-      const wrappedVal = needsQuotes(curr) ? `"${curr}"` : curr
-      result.push(`--${path}: ${wrappedVal};`)
+      let out: string | number | boolean | null = curr
+      if (typeof curr === "string") {
+        const t = curr.trim()
+        if (t.startsWith("`") && t.endsWith("`")) {
+          out = t.slice(1, -1)
+        } else if (needsQuotes(curr)) {
+          out = `"${curr}"`
+        }
+      }
+      result.push(`--${path}: ${out};`)
     }
   }
 
