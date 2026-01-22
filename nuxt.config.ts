@@ -6,7 +6,8 @@ const CLOUDINARY = `https://res.cloudinary.com/travelingtroll/image/upload/${pro
 const currentDir = dirname(fileURLToPath(import.meta.url))
 const cwd = process.cwd() + "/app"
 import defaultBreakpoints from "./app/assets/ui/js/breakpoints.ts"
-import createViewportPlugin from "./build/postcss-viewport.js"
+import createViewportPlugin from "./build/postcss-viewport.ts"
+import createRGBAPlugin from "./build/postcss-rgba.ts"
 let breakpoints = defaultBreakpoints.breakpoints
 let useModernRanges = defaultBreakpoints.useModernRanges
 const configPath = `${cwd === currentDir ? `${cwd}/.playground` : cwd}/assets/js/breakpoints.ts`
@@ -94,7 +95,7 @@ export default defineNuxtConfig({
     // ],
     css: {
       postcss: {
-        plugins: [createViewportPlugin({ breakpoints, useModernRanges })],
+        plugins: [createViewportPlugin({ breakpoints, useModernRanges }), createRGBAPlugin()],
       },
     },
   },

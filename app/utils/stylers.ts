@@ -4,6 +4,28 @@ interface JSONObject {
 }
 interface JSONArray extends Array<JSONValue> {}
 
+/**
+ * Transform rgba(hex|var, opacity) to color-mix()
+ * @example
+ * rgbaToColorMix('rgba(#fff, 50%)') // 'color-mix(in lab, #fff 50%, transparent)'
+ * rgbaToColorMix('rgba(var(--color), 0.5)') // 'color-mix(in lab, var(--color) 50%, transparent)'
+ */
+export function rgbaToColorMix(value: string): string {
+  const rgbaPattern = /rgba\(\s*((?:#[0-9a-fA-F]{3,8}|var\([^)]+\)))\s*,\s*([0-9.]+%?)\s*\)/g
+
+  return value.replace(rgbaPattern, (match, color, opacity) => {
+    let opacityPercent = opacity.trim()
+
+    if (!opacityPercent.endsWith("%")) {
+      const decimal = parseFloat(opacityPercent)
+      if (isNaN(decimal)) return match
+      opacityPercent = `${Math.round(decimal * 100)}%`
+    }
+
+    return `color-mix(in lab, ${color} ${opacityPercent}, transparent)`
+  })
+}
+
 export function jsonToCSSVars(obj: JSONObject, prefix = ""): string[] {
   const result: string[] = []
 
