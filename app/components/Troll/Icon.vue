@@ -29,7 +29,7 @@
   const family = computed(() => (props.name !== undefined ? props?.name.split(":")[0] : null))
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .icon-container {
     display: flex;
     &:has(.icon-text) {
