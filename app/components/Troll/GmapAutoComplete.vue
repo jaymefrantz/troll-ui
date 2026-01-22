@@ -21,9 +21,11 @@ TrollAutocomplete(
   interface PlaceDetails {
     placeId: string
     addressComponents: any[]
-    location: { lat: number; lng: number }
+    lat: number
+    lng: number
     displayName: string
     formattedAddress?: string
+    parsedAddressComponents?: Record<string, string>
   }
 
   interface GoogleOptions {
@@ -105,6 +107,7 @@ TrollAutocomplete(
       placeDetails = {
         placeId: id,
         addressComponents: place.addressComponents || [],
+        parsedAddressComponents: parseGmapAddressComponents(place.addressComponents || []),
         lat: place.location?.lat() ?? 0,
         lng: place.location?.lng() ?? 0,
         displayName: place.displayName || name,
