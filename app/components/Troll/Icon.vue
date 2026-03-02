@@ -22,7 +22,7 @@
       default: "currentColor",
     },
     componentName: {
-      type: String,
+      type: [String, Object],
     },
   })
 
