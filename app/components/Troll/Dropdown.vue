@@ -311,7 +311,9 @@ div(ref="container").custom-dropdown
     padding: var(--trigger-padding, 0.95em 1em 0.95em 1.5em);
     font-size: var(--trigger-font, 0.85em);
     letter-spacing: 0.075em;
-    transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
+    transition:
+      color 0.2s ease-in-out,
+      border 0.2s ease-in-out;
 
     &:hover:not(:focus) {
       color: var(--trigger-hover-color, var(--troll-ui-dark-grey));
@@ -357,8 +359,8 @@ div(ref="container").custom-dropdown
 
   .dropdown-mobile-select-container {
     position: relative;
-    color: var(--dropdown-color, var(--troll-ui-grey));
-    background-color: var(--dropdown-background, var(--troll-ui-grey));
+    color: var(--dropdown-color, var(--textbox-color, var(--troll-ui-dark-grey)));
+    background-color: var(--dropdown-background, var(--textbox-background, transparent));
 
     .dropdown-arrow {
       position: absolute;
@@ -387,7 +389,7 @@ div(ref="container").custom-dropdown
     font-size: 1em;
     letter-spacing: 0.075em;
     background-color: transparent;
-    color: var(--dropdown-color, var(--troll-ui-grey));
+    color: var(--dropdown-color, var(--textbox-color, var(--troll-ui-dark-grey)));
   }
 
   .dropdown-list {
@@ -408,9 +410,9 @@ div(ref="container").custom-dropdown
 
   .dropdown-trigger,
   .dropdown-mobile-select-container {
-    background-color: var(--dropdown-background, white);
-    border: var(--dropdown-border, 1px solid var(--troll-ui-grey));
-    color: var(--dropdown-color, var(--troll-ui-grey));
+    background-color: var(--dropdown-background, var(--textbox-background, transparent));
+    border: var(--dropdown-border, var(--textbox-border, 1px solid var(--troll-ui-grey)));
+    color: var(--dropdown-color, var(--textbox-color, var(--troll-ui-dark-grey)));
     text-align: left;
     position: relative;
     display: flex;
@@ -421,18 +423,18 @@ div(ref="container").custom-dropdown
     font-family: var(--trigger-font, arial);
     font-weight: var(--trigger-font-weight, inherit);
     font-size: var(--trigger-font-size, 0.85em);
-    border-radius: var(--dropdown-border-radius, 1.75rem);
+    border-radius: var(--dropdown-border-radius, var(--textbox-border-radius, 0.25rem));
   }
 
   .dropdown-option {
     font-size: var(--option-size, 0.9em);
-    color: var(--option-color, var(--troll-ui-grey));
+    color: var(--option-color, var(--textbox-color, var(--troll-ui-dark-grey)));
   }
 
   .dropdown-inner-wrap {
     & > ul {
       & > li {
-        color: var(--option-color, var(--troll-ui-grey));
+        color: var(--option-color, var(--textbox-color, var(--troll-ui-dark-grey)));
 
         &:first-child {
           margin-top: 0.5rem;
@@ -442,6 +444,6 @@ div(ref="container").custom-dropdown
   }
 
   .dropdown-label {
-    color: var(--dropdown-label-color, currentColor);
+    color: var(--dropdown-label-color, var(--textbox-label-color));
   }
 </style>

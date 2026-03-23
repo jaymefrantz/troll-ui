@@ -234,10 +234,10 @@ div(ref="container").autocomplete-container
   }
 
   .autocomplete-input-wrap {
-    background-color: var(--autocomplete-background, white);
-    border: var(--autocomplete-border, 1px solid var(--troll-ui-grey));
-    color: var(--autocomplete-color, var(--troll-ui-grey));
-    border-radius: var(--autocomplete-border-radius, 1.75rem);
+    background-color: var(--autocomplete-background, var(--textbox-background, transparent));
+    border: var(--autocomplete-border, var(--textbox-border, 1px solid var(--troll-ui-grey)));
+    color: var(--autocomplete-color, var(--textbox-color, var(--troll-ui-dark-grey)));
+    border-radius: var(--autocomplete-border-radius, var(--textbox-border-radius, 0.25rem));
     padding: var(--autocomplete-wrap-padding, 0 0.5em);
     display: flex;
     align-items: center;
@@ -261,7 +261,7 @@ div(ref="container").autocomplete-container
     font-family: var(--autocomplete-font, arial);
     font-size: var(--autocomplete-font-size, 0.85em);
     font-weight: var(--autocomplete-font-weight, inherit);
-    padding: var(--autocomplete-padding, 0.95em 1em 0.95em 0.5em);
+    padding: var(--autocomplete-padding, var(--textbox-padding-y, 0.5rem) 0.5em var(--textbox-padding-y, 0.5rem) 0.5em);
     background: transparent;
     display: block;
     width: 100%;
