@@ -19,7 +19,7 @@ if (fs.existsSync(configPath)) {
     breakpoints = { ...breakpoints, ...appBreakpoints.breakpoints }
     useModernRanges = appBreakpoints?.useModernRanges ?? useModernRanges
     if (appBreakpoints.centerMarginWraps) {
-      centerMarginWraps = appBreakpoints.centerMarginWraps
+      centerMarginWraps = [...centerMarginWraps, ...appBreakpoints.centerMarginWraps]
     }
   } catch (e) {
     console.log("breakpoint config file failed to load", configPath, e)
