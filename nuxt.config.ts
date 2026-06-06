@@ -47,7 +47,9 @@ export default defineNuxtConfig({
         {
           innerHTML: `${centerMarginWraps
             .map(b => `.${b}-center-margin-wrap { --wrap-size: ${breakpoints[b]}}`)
-            .join("\n")}:root {${centerMarginWraps.map(b => `--${b}-viewport: ${breakpoints[b]};`).join("\n")}}`,
+            .join("\n")}:root {${Object.entries(breakpoints)
+            .map(([b, value]) => `--${b}-viewport: ${value};`)
+            .join("\n")}}`,
         },
       ],
     },

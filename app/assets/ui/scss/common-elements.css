@@ -30,7 +30,7 @@ body *:focus-visible {
 /* .page-wrap */
 #__nuxt {
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
   min-width: var(--min-width, 24rem);
   display: flex;
   flex-direction: column;
