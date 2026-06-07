@@ -1,6 +1,7 @@
 :root {
   --focus-weight: 2px;
   --focus-offset: calc(0.5 * var(--focus-weight));
+  interpolate-size: allow-keywords;
 }
 
 html, body, #__nuxt, #__layout, .content-wrap {
@@ -69,4 +70,9 @@ body *:focus-visible {
   display: block;
   overflow: hidden;
   position: relative;
+}
+
+summary {
+  list-style: none;
+  cursor: pointer;
 }
