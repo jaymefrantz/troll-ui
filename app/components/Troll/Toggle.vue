@@ -45,12 +45,16 @@
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .toggle-container {
     position: relative;
     display: inline-block;
     &:not(:has(input[type="checkbox"]:checked)) {
       --toggle-knob-translate: 100%;
+
+      &.custom-toggle {
+        background: var(--toggle-background-checked, var(--toggle-background, var(--troll-ui-grey)));
+      }
     }
   }
 
