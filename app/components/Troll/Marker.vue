@@ -112,7 +112,7 @@
   }
 </script>
 
-<style lang="scss">
+<style>
   #marker-location-label {
     --size: var(--marker-size, 32px);
     --offset-y: calc((var(--size) * -1) - 8px);
@@ -126,7 +126,8 @@
     translate: calc(var(--offset-x) - 4px) var(--offset-y);
     color: var(--color, var(--troll-ui-grey));
     font-size: var(--font-size, 1em);
-    transition: translate var(--ani-medium-fast, var(--troll-ui-ani-medium-fast)) ease-in-out,
+    transition:
+      translate var(--ani-medium-fast, var(--troll-ui-ani-medium-fast)) ease-in-out,
       opacity var(--ani-medium-fast, var(--troll-ui-ani-medium-fast)) ease-in-out;
 
     &:not(.shown) {
@@ -145,7 +146,8 @@
     opacity: 0;
     position: absolute;
     pointer-events: none;
-    transition: opacity var(--troll-ui-ani-medium-fast) ease-in-out,
+    transition:
+      opacity var(--troll-ui-ani-medium-fast) ease-in-out,
       translate var(--troll-ui-ani-medium-fast) ease-in-out;
     translate: var(--offset-x) var(--offset-y);
 
@@ -166,7 +168,6 @@
       transition-duration: 0s !important;
       transition: opacity var(--troll-ui-ani-fast) !important;
       opacity: 0 !important;
-      // border: 2px solid red;
     }
 
     &:before {

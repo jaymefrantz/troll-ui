@@ -154,9 +154,8 @@ TrollAutocomplete(
         request.excludedPrimaryTypes = props.googleOptions.excludedPrimaryTypes
       }
 
-      const { suggestions } = await google.value.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(
-        request
-      )
+      const { suggestions } =
+        await google.value.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request)
 
       results.value = suggestions.map((suggestion: any) => ({
         name: suggestion.placePrediction.text.toString(),

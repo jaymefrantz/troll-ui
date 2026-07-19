@@ -1,6 +1,16 @@
 <template lang="pug">
-transition(name="dropdown-outer-wrap")
-  div(v-show="expanded" :class="{ 'end': isEnd, expanded }" ref="outer").dropdown-outer-wrap
+transition(name="dropdown-outer-wrap"
+    @before-enter="isTransitioning = true"
+    @after-enter="isTransitioning = false"
+    @enter-cancelled="isTransitioning = false"
+    @before-leave="isTransitioning = true"
+    @after-leave="isTransitioning = false"
+    @leave-cancelled="isTransitioning = false"
+  )
+  div(v-if="expanded" :class="{ 'end': isEnd, expanded }" ref="outer"
+    :data-open="expanded ? 'true' : null"
+    :data-present="isPresent ? 'true' : null"
+  ).dropdown-outer-wrap
     //- pre {{JSON.stringify(size.height.value)}}
     div.dropdown-inner-wrap
       <slot/>
@@ -9,11 +19,14 @@ transition(name="dropdown-outer-wrap")
 <script setup lang="ts">
   const outer = ref<HTMLDivElement | null>(null)
   const { height } = useElementBounding(outer)
+  const isTransitioning = ref(false)
 
   const props = defineProps<{
     expanded: boolean
     isEnd: boolean
   }>()
+
+  const isPresent = computed(() => props.expanded || isTransitioning.value)
 
   defineExpose({
     height,
@@ -22,6 +35,11 @@ transition(name="dropdown-outer-wrap")
 
 <style>
   .dropdown-outer-wrap {
+    --troll-ui-default-transition:
+      opacity var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out,
+      transform var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out,
+      margin-top var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out,
+      grid-template-rows var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out;
     background-color: var(--dropdown-background, white);
     padding: var(--dropdown-outer-padding, 0.5em 0.35em);
     border-radius: var(--dropdown-border-radius);
@@ -31,28 +49,13 @@ transition(name="dropdown-outer-wrap")
     left: 0;
     width: 100%;
     z-index: var(--dropdown-wrap-z-index, 20);
-    transition: var(--dropdown-transition, all var(--transition-duration, var(--troll-ui-ani-medium-fast)) ease-in-out);
+    transition: var(--dropdown-transition, var(--troll-ui-default-transition));
     margin-top: 0.5em;
     display: grid;
+    grid-template-rows: 1fr;
     overflow: hidden;
-
-    &.expanded {
-      grid-template-rows: 1fr;
-    }
-
-    &-enter-from,
-    &-leave-to {
-      opacity: 0;
-      transform: var(--transform, translate(0 -0.5em));
-      margin-top: 0;
-      grid-template-rows: 0fr !important;
-
-      .dropdown-inner-wrap {
-        min-height: 0;
-        visibility: hidden;
-        padding: 0;
-      }
-    }
+    opacity: 1;
+    transform: translateY(0);
 
     &:after {
       content: "";
@@ -75,10 +78,32 @@ transition(name="dropdown-outer-wrap")
     }
   }
 
+  .dropdown-outer-wrap-enter-active,
+  .dropdown-outer-wrap-leave-active {
+    transition: var(--dropdown-transition, var(--troll-ui-default-transition));
+    will-change: opacity, transform, margin-top, grid-template-rows;
+  }
+
+  .dropdown-outer-wrap-enter-to,
+  .dropdown-outer-wrap-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0.5em;
+    grid-template-rows: 1fr;
+  }
+
+  .dropdown-outer-wrap-enter-from,
+  .dropdown-outer-wrap-leave-to {
+    opacity: 0;
+    transform: var(--transform, translateY(-0.5em));
+    margin-top: 0;
+    grid-template-rows: 0fr;
+  }
+
   .dropdown-inner-wrap {
+    min-height: 0;
     padding: var(--dropdown-inner-padding, 0.35rem 0.35rem 0.25rem 0);
     overflow: hidden;
-    transition: all 0.1s ease-in-out;
 
     & > ul {
       overflow-y: auto;

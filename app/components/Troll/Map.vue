@@ -216,7 +216,7 @@
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   :global([title="Map camera controls"]) {
     display: none !important;
   }
