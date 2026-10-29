@@ -43,7 +43,8 @@
     display: block;
   }
 
-  .icon {
+  .icon,
+  :deep(svg) {
     flex-shrink: 0;
     width: var(--icon-size, 1em);
     height: var(--icon-size, 1em);
