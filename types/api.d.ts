@@ -1,3 +1,5 @@
+type TrollPolaroidMapMarker = import("../app/types/gmap").PolaroidMapMarker
+
 interface Polaroid {
   id: string
   place?: string
@@ -8,17 +10,7 @@ interface Polaroid {
   country: number
 }
 
-interface Marker {
-  id: string
-  title: string
-  link?: string
-  polaroids: string[]
-  position: {
-    lat: number
-    lng: number
-  }
-  level: string
-}
+interface Marker extends TrollPolaroidMapMarker {}
 
 interface Icon {
   name: string

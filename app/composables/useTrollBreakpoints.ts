@@ -3,7 +3,7 @@ import { useBreakpoints as vueUseBreakpoints } from "@vueuse/core"
 export const useTrollBreakpoints = () => {
   const cssBreakpoints = useRuntimeConfig().public.breakpoints
   const breakpoints = vueUseBreakpoints(
-    Object.entries(cssBreakpoints).reduce((sizes, [value, size]) => {
+    Object.entries(cssBreakpoints).reduce<Record<string, number>>((sizes, [value, size]) => {
       const formattedSize = size.endsWith("px")
         ? parseInt(size.replace("px", ""))
         : parseInt(size.replace("rem", "")) * 16

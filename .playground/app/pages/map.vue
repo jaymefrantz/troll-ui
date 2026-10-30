@@ -3,11 +3,12 @@
 button(type="button" @click="refresh").refresh-button 
 	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
 	span refresh
-<TrollMap ref="map" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
+<TrollMap ref="map" :overlay-component="PolaroidOverlay" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 <Props :props="props" />
 </template>
 
 <script setup lang="ts">
+  import PolaroidOverlay from "../../../../app/components/Troll/PolaroidOverlay.vue"
   import icon from "./assets/svg/map-marker.svg?url"
   const { data, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroids/random`, {
     pick: ["markers"],
@@ -90,7 +91,7 @@ button(type="button" @click="refresh").refresh-button
       await wait(100)
       map.value.fitbounds()
     } else if (map.value.level === "polaroid") {
-      map.value.overlay.polaroidClicked(marker.id)
+      map.value.overlay.addPolaroid({ id: marker.id, image: marker.image, position: marker.position }, true)
     }
   }
 
@@ -193,7 +194,7 @@ button(type="button" @click="refresh").refresh-button
     border-radius: 0.25rem;
   }
 
-  #marker-location-label {
+  .marker-location-label {
     border-radius: 4px;
     --background: #111;
     --padding: 0.4rem 0.6rem;

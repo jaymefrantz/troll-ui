@@ -2,8 +2,9 @@
   //- pre {{JSON.stringify(markers, null, 2)}}
   div.map-container
     client-only
-      <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" ref="gmap" id="gmap" v-bind="{...options, zoom, minZoom: isMobile ? 1 : 2, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
-        <TrollMarker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="({ marker, name }) => emit(name, marker)"/>
+      <GoogleMap :api-key="useRuntimeConfig().public.GMAPS_KEY" :api-promise="apiPromise" ref="gmap" id="gmap" v-bind="{...options, zoom, minZoom, ...overrideOptions}" @zoom_changed="zoomChanged" @idle="handleIdle">
+        <TrollMarker v-if="ready" v-for="marker in markers" v-bind="marker" :key="marker.id" @emit="event => emit(event.name, { ...marker, ...event.marker })"/>
+        <component v-if="ready && overlayComponent" :is="overlayComponent" ref="overlay" v-bind="overlayProps" :map="gmap?.map" :api="gmap?.api" />
       </GoogleMap>
       <slot v-if="loaded" name="zoomContol"/>
       ul(v-if="loaded && !slots.zoomContol").zoom-control-list
@@ -23,87 +24,104 @@
 </template>
 
 <script setup lang="ts">
-  import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
+  import { computed, nextTick, ref, shallowRef, useSlots, watch } from "vue"
+  import type { Component, ComponentPublicInstance } from "vue"
+  import { GoogleMap } from "vue3-google-map"
+  import { useDebounceFn, useResizeObserver } from "@vueuse/core"
+  import { useAppConfig, useRuntimeConfig } from "#imports"
+  import { useTrollBreakpoints } from "../../composables/useTrollBreakpoints"
+  import { mapOptions } from "../../utils/gmap"
+  import { getNextLevel } from "../../utils/gmap/polaroids"
+  import type { MapMarker, MapMarkerEvent, MapPosition } from "../../types/gmap"
+
+  const props = withDefaults(
+    defineProps<{
+      markers?: MapMarker[]
+      initialZoom?: number
+      initialLevel?: string
+      overrideOptions?: google.maps.MapOptions
+      overlayComponent?: Component | null
+      overlayProps?: Record<string, unknown>
+      apiPromise?: Promise<typeof google>
+    }>(),
+    {
+      markers: () => [],
+      initialZoom: 2,
+      initialLevel: "country",
+      overrideOptions: () => ({}),
+      overlayComponent: null,
+      overlayProps: () => ({}),
+    }
+  )
+
   const { map } = useAppConfig()
   const slots = useSlots()
-  const isMobile = useTrollBreakpoints()?.smallerOrEqual("map") ?? false
-  const gmap = ref(null)
-  const center = { lat: 41.495, lng: -71.712 }
+  const isMobile = useTrollBreakpoints()?.smallerOrEqual("map") ?? ref(false)
+  const gmap = shallowRef<InstanceType<typeof GoogleMap> | null>(null)
   const options = { ...mapOptions, ...map }
-  const zoomInHidden = computed(() => zoom.value >= mapOptions.maxZoom)
-  const zoomOutHidden = computed(() => zoom.value <= (isMobile.value ? 1 : 2))
-  const fitBoundsLastCalled = ref<null | Date>(null)
-  const overlay = ref<null | google.maps.OverlayView>(null)
-  const labelOverlay = ref<null | google.maps.OverlayView>(null)
+  const overlay = shallowRef<ComponentPublicInstance | null>(null)
   const ready = ref(false)
   const hasIdled = ref(false)
   const loaded = ref(false)
+  const zoom = ref(props.initialZoom)
+  const level = ref(props.initialLevel)
+  const fitBoundsLastCalled = ref<Date | null>(null)
+  const minZoom = computed(() => props.overrideOptions.minZoom ?? map?.minZoom ?? (isMobile.value ? 1 : 2))
+  const maxZoom = computed(() => props.overrideOptions.maxZoom ?? options.maxZoom ?? mapOptions.maxZoom)
+  const zoomInHidden = computed(() => zoom.value >= maxZoom.value)
+  const zoomOutHidden = computed(() => zoom.value <= minZoom.value)
 
-  let zoomLevels = map?.zoomLevels ?? {
+  const zoomLevels: Record<string, number> = {
     country: 3,
     state: 5,
     polaroid: 9,
     city: 7,
+    ...map?.zoomLevels,
   }
 
-  const water = map?.styles.find(({ featureType }) => featureType === "water")
-  if (water !== undefined) {
-    options.backgroundColor = water.stylers[0].color
-  }
+  const water = map?.styles?.find(({ featureType }) => featureType === "water")
+  const waterStyle = water?.stylers?.[0]
+  if (waterStyle && "color" in waterStyle && typeof waterStyle.color === "string") options.backgroundColor = waterStyle.color
 
   const emit = defineEmits<{
     (e: "ready"): void
     (e: "loaded"): void
-    (e: "zoomChanged", { zoom, level }: { zoom: number; level: string }): void
-    (e: "markerClick", marker: Marker): void
-    (e: "markerMouseOver", marker: Marker): void
-    (e: "markerMouseOut", marker: Marker): void
-    (e: "markerDragend", marker: Marker): void
+    (e: "zoomChanged", value: { zoom: number; level: string }): void
+    (e: "markerClick" | "markerMouseOver" | "markerMouseOut" | "markerDragend", marker: MapMarkerEvent): void
   }>()
-
-  const props = withDefaults(
-    defineProps<{
-      markers: Marker[]
-      initialZoom?: number
-      initialLevel?: string
-      overrideOptions?: object
-    }>(),
-    {
-      initialZoom: 2,
-      initialLevel: "country",
-      overrideOptions: {},
-    }
-  )
-
-  const zoom = ref(props.initialZoom)
-  const level = ref(props.initialLevel)
 
   watch(
     () => gmap.value?.ready,
-    value => {
+    async (value, _previous, onCleanup) => {
+      ready.value = Boolean(value)
       if (!value) return
-      ready.value = true
-      overlay.value = initOverlay(google, gmap.value.map)
-      labelOverlay.value = initLabelOverlay(google, gmap.value.map)
+      fitbounds()
+      let active = true
+      let stopResize: (() => void) | undefined
+      onCleanup(() => {
+        active = false
+        stopResize?.()
+      })
+      // A synchronously imported preset is mounted before the ready event reaches the app.
+      await nextTick()
+      if (!active || !gmap.value) return
       emit("ready")
-      let first = ref(true)
-
-      useResizeObserver(
+      let first = true
+      const observer = useResizeObserver(
         gmap.value.$el,
-        useDebounceFn(([entry]) => {
-          if (!first.value) fitbounds()
-          first.value = false
+        useDebounceFn(() => {
+          if (!first) fitbounds()
+          first = false
         }, 250)
       )
+      stopResize = observer.stop
     }
   )
 
   watch(
-    () => JSON.stringify({ hasIdled: hasIdled.value, mapReady: ready.value }),
-    useDebounceFn(async json => {
+    [hasIdled, ready],
+    useDebounceFn(() => {
       if (loaded.value) return
-
-      if (ready.value && !hasIdled.value) fitbounds()
       if (hasIdled.value && ready.value) {
         loaded.value = true
         emit("loaded")
@@ -112,83 +130,71 @@
   )
 
   function fitbounds() {
-    let now = new Date()
-    let minutes = now.getMinutes()
-    let seconds = now.getSeconds()
-    let formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
-    if (props.markers === undefined || props.markers?.length === 0) return
-
+    const nativeMap = gmap.value?.map
+    const api = gmap.value?.api
+    if (!nativeMap || !api || props.markers.length === 0) return
     fitBoundsLastCalled.value = new Date()
 
     if (props.markers.length > 1) {
-      const bounds = new google.maps.LatLngBounds()
-      for (let marker of props.markers) {
-        bounds.extend(marker.position)
-      }
-
-      now = new Date()
-      minutes = now.getMinutes()
-      seconds = now.getSeconds()
-      formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
-
-      gmap.value?.map?.fitBounds(bounds)
-    } else if (props.markers.length !== 0) {
-      const [marker] = props.markers
-
-      if (level.value === "country" || level.value === "continent") {
-        gmap.value?.map?.setZoom(2)
-      } else if (level.value === "polaroid") {
-        gmap.value?.map?.setZoom(14)
-      } else {
-        gmap.value?.map?.setZoom(zoomLevels[getNextLevel(marker)] - 1)
-      }
-
-      gmap.value?.map?.setCenter(marker.position)
+      const bounds = new api.LatLngBounds()
+      for (const marker of props.markers) bounds.extend(marker.position)
+      nativeMap.fitBounds(bounds)
+      return
     }
+
+    const [marker] = props.markers
+    if (marker.level === undefined) {
+      // A plain marker has no location hierarchy; keep the current map zoom.
+      nativeMap.setZoom(zoom.value)
+    } else if (level.value === "country" || level.value === "continent") {
+      nativeMap.setZoom(2)
+    } else if (level.value === "polaroid") {
+      nativeMap.setZoom(14)
+    } else {
+      const nextLevel = getNextLevel({ level: marker.level, title: marker.title ?? "" })
+      nativeMap.setZoom((zoomLevels[nextLevel] ?? props.initialZoom + 1) - 1)
+    }
+    nativeMap.setCenter(marker.position)
   }
 
   function handleIdle() {
-    if (!hasIdled.value) {
-      hasIdled.value = true
-    }
+    hasIdled.value = true
   }
 
-  function setCenter(center: { lat: number; lng: number }) {
-    gmap.value?.map.setCenter(center)
+  function setCenter(center: MapPosition) {
+    gmap.value?.map?.setCenter(center)
   }
 
   function setZoom(newZoom: number) {
-    // console.log("set zoom?", newZoom)
-    gmap.value?.map.setZoom(newZoom)
+    gmap.value?.map?.setZoom(newZoom)
   }
 
   const zoomChanged = useDebounceFn(() => {
-    zoom.value = gmap.value?.map?.getZoom()
-
+    const currentZoom = gmap.value?.map?.getZoom()
+    if (currentZoom === undefined) return
+    zoom.value = currentZoom
     if (fitBoundsLastCalled.value === null) fitBoundsLastCalled.value = new Date()
-    const msSinceFitboundsCalled = new Date().getTime() - fitBoundsLastCalled.value.getTime()
-    if (msSinceFitboundsCalled > 400) {
-      if (zoomLevels.continent !== undefined && zoom.value <= zoomLevels.continent) {
-        level.value = "continent"
-      } else if (zoom.value <= zoomLevels.country && zoom.value < zoomLevels.state) {
-        level.value = "country"
-      } else if (zoom.value >= zoomLevels.polaroid) {
-        level.value = "polaroid"
-      } else if (zoom.value <= zoomLevels.state) {
-        level.value = "state"
-      } else {
-        level.value = "city"
-      }
+    const msSinceFitboundsCalled = Date.now() - fitBoundsLastCalled.value.getTime()
+    if (msSinceFitboundsCalled <= 400) return
 
-      emit("zoomChanged", { zoom: zoom.value, level: level.value })
+    if (zoomLevels.continent !== undefined && zoom.value <= zoomLevels.continent) {
+      level.value = "continent"
+    } else if (zoom.value <= zoomLevels.country && zoom.value < zoomLevels.state) {
+      level.value = "country"
+    } else if (zoom.value >= zoomLevels.polaroid) {
+      level.value = "polaroid"
+    } else if (zoom.value <= zoomLevels.state) {
+      level.value = "state"
+    } else {
+      level.value = "city"
     }
+    emit("zoomChanged", { zoom: zoom.value, level: level.value })
   }, 200)
 
   defineExpose({
     gmap,
     level,
     overlay,
-    labelOverlay,
     fitbounds,
     ready,
     loaded,
@@ -202,16 +208,8 @@
       zoomOutHidden,
       zoom,
       level,
-      zoomIn: () => {
-        if (zoom.value < mapOptions.maxZoom) {
-          setZoom(zoom.value + 1)
-        }
-      },
-      zoomOut: () => {
-        if (zoom.value > (isMobile.value ? 1 : 2)) {
-          setZoom(zoom.value - 1)
-        }
-      },
+      zoomIn: () => { if (!zoomInHidden.value) setZoom(zoom.value + 1) },
+      zoomOut: () => { if (!zoomOutHidden.value) setZoom(zoom.value - 1) },
     },
   })
 </script>
