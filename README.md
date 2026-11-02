@@ -4,11 +4,22 @@ Create Nuxt extendable layer with this GitHub template.
 
 ## Setup
 
-Make sure to install the dependencies:
+This repository targets Nuxt 4.6.3. Use Node 22.23.1 (`nvm use` reads the
+checked-in `.nvmrc`), or another runtime satisfying the `engines.node` range in
+`package.json`. Node 24.10.0 is too old for this Nuxt release.
+
+The root layer and playground have separate dependency installations. With npm,
+install the playground first, then the layer (whose postinstall prepares it):
 
 ```bash
-pnpm install
+nvm use
+npm install --prefix .playground
+npm install
+npm run dev
 ```
+
+Use `npm run typecheck` for the playground's Vue/TypeScript checks. The baseline
+and upgrade validation reports in `docs/` record existing failures and checks.
 
 ## Working on your theme
 

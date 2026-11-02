@@ -61,4 +61,4 @@ export {
   locationMouseOut,
 } from "./gmap/polaroids"
 
-export { parseGmapAddressComponents, mapOptions, mapStyles, mobileBreakpoint }
+export { parseGmapAddressComponents, mapOptions, mobileBreakpoint }

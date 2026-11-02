@@ -1,21 +1,24 @@
 <template lang="pug">
 //- pre {{ markers.filter(({ level }) => level === "polaroid").map(({ title }) => title) }}
-button(type="button" @click="refresh").refresh-button 
+button(type="button" @click="refresh()" :disabled="status === 'pending'").refresh-button
 	<Icon class="icon" size="18" name="material-symbols-light:refresh-rounded" />
-	span refresh
+	span {{ status === 'pending' ? 'Loading…' : error ? 'Try again' : 'Refresh' }}
+p(v-if="error" role="alert") We couldn’t load the map locations. Please try again.
+p(v-else-if="status === 'pending'" role="status") Loading map locations…
 <TrollMap ref="map" :overlay-component="PolaroidOverlay" :markers="zoomedMarkers.map(marker => ({ ...marker, icon, color: '#e4e4e7' }))" @markerClick="markerClick" @markerMouseOver="markerMouseOver" @markerMouseOut="markerMouseOut"/>
 <Props :props="props" />
 </template>
 
 <script setup lang="ts">
-  import PolaroidOverlay from "../../../../app/components/Troll/PolaroidOverlay.vue"
-  import icon from "./assets/svg/map-marker.svg?url"
-  const { data, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroids/random`, {
+  import PolaroidOverlay from "../../../app/components/Troll/PolaroidOverlay.vue"
+  import icon from "../assets/svg/map-marker.svg?url"
+  const { data, error, status, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroids/random`, {
     pick: ["markers"],
   })
 
   const map = ref(null)
-  const markers = ref(data.value.markers)
+  const availableMarkers = computed(() => data.value?.markers ?? [])
+  const markers = ref(availableMarkers.value)
   let timeoutId: ReturnType<typeof setTimeout> //this is needed for delaying the show of previews on hover
 
   const zoomedMarkers = computed(() => {
@@ -84,9 +87,10 @@ button(type="button" @click="refresh").refresh-button
   // ])
 
   async function markerClick(marker: Marker) {
+    if (!map.value) return
     if (map.value.level !== "polaroid") {
       map.value.overlay.hideLabel(marker)
-      markers.value = data.value.markers.filter(({ polaroids }) => polaroids.find(id => marker.polaroids.includes(id)))
+      markers.value = availableMarkers.value.filter(({ polaroids }) => polaroids.find(id => marker.polaroids.includes(id)))
       map.value.level = getNextLevel(marker)
       await wait(100)
       map.value.fitbounds()
@@ -124,13 +128,14 @@ button(type="button" @click="refresh").refresh-button
   }
 
   watch(
-    () => data.value.markers,
+    availableMarkers,
     async value => {
-      map.value.overlay.removeAllPreviews()
-      await wait(10)
       markers.value = value
+      if (!map.value) return
+      map.value.overlay?.removeAllPreviews()
       map.value.level = "country"
-      map.value.gmap.map.setZoom(2)
+      await nextTick()
+      map.value?.gmap?.map?.setZoom(2)
     }
   )
 

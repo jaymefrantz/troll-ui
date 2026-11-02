@@ -185,7 +185,7 @@
 
         span {
           font-size: 0.875rem;
-          //padding-left: 2rem;
+          /* padding-left: 2rem; */
         }
       }
     }

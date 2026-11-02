@@ -2,6 +2,7 @@ type ProdLayer = [string, { install: boolean }]
 type DevLayer = [string]
 
 import fonts from "./app/assets/js/fonts.js"
+import iconSets from "./app/assets/js/icons.js"
 import svgLoader from "vite-svg-loader"
 import { fileURLToPath } from "url"
 import { dirname, join } from "path"
@@ -38,6 +39,17 @@ export default defineNuxtConfig({
       },
     ],
   ],
+
+  icon: {
+    serverBundle: {
+      collections: [...new Set([
+        ...Object.values(iconSets).flatMap(({ icons }) => Object.values(icons).map(name => name.split(":")[0])),
+        "heroicons-outline",
+        "material-symbols-light",
+        "fluent-emoji-high-contrast",
+      ])],
+    },
+  },
 
   alias: {
     //"~": "./",
