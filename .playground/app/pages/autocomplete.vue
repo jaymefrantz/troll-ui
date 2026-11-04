@@ -60,12 +60,11 @@
   }
 </script>
 
-<style lang="scss">
+<style>
   .autocomplete-container {
     --dropdown-height: 14rem;
     --option-padding: 0.75rem;
     --option-margin: 0 0.35em 0 0.1em;
-
     max-width: 30rem;
     --focus-color: var(--dark-200);
   }
@@ -89,20 +88,18 @@
     border: 1px solid var(--primary);
     min-width: 36rem;
     border-radius: var(--border-radius);
-
-    img {
-      height: 6em;
-      width: 6em;
-      object-fit: cover;
-      object-position: bottom;
-      border-radius: 0.05rem;
-    }
-
-    h2 {
-      padding-top: 1.25em;
-      padding-left: 1em;
-      font-size: 1em;
-    }
+  }
+  .movie-card img {
+    height: 6em;
+    width: 6em;
+    object-fit: cover;
+    object-position: bottom;
+    border-radius: 0.05rem;
+  }
+  .movie-card h2 {
+    padding-top: 1.25em;
+    padding-left: 1em;
+    font-size: 1em;
   }
 
   * + .options-container {
@@ -112,23 +109,25 @@
   .options-list {
     column-count: var(--column, 1);
     margin: 0 -0.875rem;
-
-    @viewport (medium-small-viewport up) {
+  }
+  @viewport (medium-small-viewport up) {
+    .options-list {
       --column: 2;
     }
-
-    @viewport (medium-large-viewport up) {
+  }
+  @viewport (medium-large-viewport up) {
+    .options-list {
       --column: 3;
     }
-
-    @viewport (extra-large-viewport up) {
+  }
+  @viewport (extra-large-viewport up) {
+    .options-list {
       --column: 4;
     }
-
-    & > li {
-      font-size: 0.875em;
-      line-height: 1.6;
-      padding: 0.35rem 0.875rem;
-    }
+  }
+  .options-list > li {
+    font-size: 0.875em;
+    line-height: 1.6;
+    padding: 0.35rem 0.875rem;
   }
 </style>

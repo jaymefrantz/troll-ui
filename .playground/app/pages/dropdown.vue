@@ -75,20 +75,15 @@ ul.dropdowns
   ]
 </script>
 
-<style lang="scss">
-  .dropdowns {
-    & > li {
-      & + li {
-        padding-top: 2em;
-        margin-top: 3em;
-        border-top: var(--border);
-      }
-    }
+<style>
+  .dropdowns > li + li {
+    padding-top: 2em;
+    margin-top: 3em;
+    border-top: var(--border);
   }
 
   .custom-dropdown {
     --focus-offset: 0.05rem;
-    //background-color: var(--dark-800);
   }
 
   .year-dropdown {
@@ -106,22 +101,11 @@ ul.dropdowns
   .dropdown-trigger,
   .dropdown-mobile-select-container {
     transition: background-color var(--troll-ui-ani-medium);
-
-    &:hover {
-      background-color: var(--dark-800);
-    }
   }
-
-  // .dropdown-select-input {
-  //   border-radius: 1.75rem;
-  // }
-  // //--option-hover-background: $lightest-magenta
-  // // --option-selected-background: map-get($magenta, shadow)
-  // //need font weight
-  // .dropdown-mobile-select-container {
-  //   padding-right: 2rem;
-  //   padding-left: 0.25rem;
-  // }
+  .dropdown-trigger:hover,
+  .dropdown-mobile-select-container:hover {
+    background-color: var(--dark-800);
+  }
 
   .dropdown-list > li {
     border-radius: 0.2em;

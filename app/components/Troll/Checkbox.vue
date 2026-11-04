@@ -36,7 +36,7 @@
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .checkbox-container {
     position: relative;
     display: inline-block;
@@ -47,13 +47,12 @@
     align-items: center;
     gap: var(--checkbox-gap, 0.65em);
     cursor: pointer;
-
-    .checkbox-container:has(input[type="checkbox"]:disabled) & {
-      cursor: not-allowed;
-    }
+  }
+  .checkbox-container:has(input[type=checkbox]:disabled) .checkbox-label {
+    cursor: not-allowed;
   }
 
-  input[type="checkbox"] {
+  input[type=checkbox] {
     position: absolute;
     top: 0;
     left: 0;
@@ -61,19 +60,16 @@
     height: 100%;
     opacity: 0;
     cursor: pointer;
-
-    .checkbox-container:has(input[type="checkbox"]:disabled) & {
-      cursor: not-allowed;
-    }
-
-    &:focus-visible {
-      outline: none;
-
-      & + label .checkbox {
-        outline: var(--focus-weight) solid var(--focus-outline-color);
-        outline-offset: calc(var(--focus-offset) + 0.05rem);
-      }
-    }
+  }
+  .checkbox-container:has(input[type=checkbox]:disabled) input[type=checkbox] {
+    cursor: not-allowed;
+  }
+  input[type=checkbox]:focus-visible {
+    outline: none;
+  }
+  input[type=checkbox]:focus-visible + label .checkbox {
+    outline: var(--focus-weight) solid var(--focus-outline-color);
+    outline-offset: calc(var(--focus-offset) + 0.05rem);
   }
 
   .checkbox {
@@ -86,13 +82,10 @@
     height: var(--checkbox-size, 1.5rem);
     display: inline-flex;
     transition: var(--checkbox-transition, all var(--troll-ui-ani-medium-fast) ease-in-out);
-
-    .checkbox-container:has(input[type="checkbox"]:checked) & {
-      .checkbox-icon {
-        opacity: 1;
-        scale: 1;
-      }
-    }
+  }
+  .checkbox-container:has(input[type=checkbox]:checked) .checkbox .checkbox-icon {
+    opacity: 1;
+    scale: 1;
   }
 
   .checkbox-icon {

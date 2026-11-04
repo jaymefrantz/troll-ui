@@ -294,16 +294,14 @@ div(ref="container").custom-dropdown
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .custom-dropdown {
     position: relative;
     display: inline-block;
     width: 100%;
-    &:has(.dropdown-trigger:hover:not(:focus)) {
-      :deep(.dropdown-outer-wrap) {
-        --dropdown-border: var(--trigger-hover-border) !important;
-      }
-    }
+  }
+  .custom-dropdown:has(.dropdown-trigger:hover:not(:focus)) :deep(.dropdown-outer-wrap) {
+    --dropdown-border: var(--trigger-hover-border) !important;
   }
 
   .dropdown-trigger {
@@ -311,35 +309,24 @@ div(ref="container").custom-dropdown
     padding: var(--trigger-padding, 0.95em 1em 0.95em 1.5em);
     font-size: var(--trigger-font, 0.85em);
     letter-spacing: 0.075em;
-    transition:
-      color 0.2s ease-in-out,
-      border 0.2s ease-in-out;
-
-    &:hover:not(:focus) {
-      color: var(--trigger-hover-color, var(--troll-ui-dark-grey));
-      border: var(--trigger-hover-border, 1px solid var(--troll-ui-grey));
-    }
-
-    &[aria-expanded="true"] {
-      & + .dropdown-outer-wrap {
-        opacity: 1;
-      }
-    }
-
-    &[aria-expanded="true"] {
-      .dropdown-arrow {
-        transform: rotate(180deg);
-      }
-
-      .dropdown-arrow {
-        transition-delay: var(--dropdown-arrow-delay, 0.15s);
-      }
-    }
-
-    @viewport (dropdown-mobile-viewport down) {
-      .custom-dropdown & {
-        display: none;
-      }
+    transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
+  }
+  .dropdown-trigger:hover:not(:focus) {
+    color: var(--trigger-hover-color, var(--troll-ui-dark-grey));
+    border: var(--trigger-hover-border, 1px solid var(--troll-ui-grey));
+  }
+  .dropdown-trigger[aria-expanded=true] + .dropdown-outer-wrap {
+    opacity: 1;
+  }
+  .dropdown-trigger[aria-expanded=true] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  .dropdown-trigger[aria-expanded=true] .dropdown-arrow {
+    transition-delay: var(--dropdown-arrow-delay, 0.15s);
+  }
+  @viewport (dropdown-mobile-viewport down) {
+    .custom-dropdown .dropdown-trigger {
+      display: none;
     }
   }
 
@@ -361,19 +348,17 @@ div(ref="container").custom-dropdown
     position: relative;
     color: var(--dropdown-color, var(--textbox-color, var(--troll-ui-dark-grey)));
     background-color: var(--dropdown-background, var(--textbox-background, transparent));
-
-    .dropdown-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: v-bind(iconSize);
-      right: var(--dropdown-container-padding-right, 1em);
-    }
-
-    @viewport (dropdown-mobile-viewport up) {
-      #main & {
-        display: none;
-      }
+  }
+  .dropdown-mobile-select-container .dropdown-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: v-bind(iconSize);
+    right: var(--dropdown-container-padding-right, 1em);
+  }
+  @viewport (dropdown-mobile-viewport up) {
+    #main .dropdown-mobile-select-container {
+      display: none;
     }
   }
 
@@ -392,20 +377,13 @@ div(ref="container").custom-dropdown
     color: var(--dropdown-color, var(--textbox-color, var(--troll-ui-dark-grey)));
   }
 
-  .dropdown-list {
-    & > li {
-      //letter-spacing: 0.02em; //tt specific
-
-      &[aria-selected="true"] {
-        background-color: var(--option-selected-background, var(--troll-ui-grey));
-        --focus-color: var(--option-selected-color, white);
-      }
-
-      &:not([aria-selected="true"]):hover {
-        background-color: var(--option-hover-background, var(--troll-ui-dark-grey));
-        color: var(--option-hover-color, white);
-      }
-    }
+  .dropdown-list > li[aria-selected=true] {
+    background-color: var(--option-selected-background, var(--troll-ui-grey));
+    --focus-color: var(--option-selected-color, white);
+  }
+  .dropdown-list > li:not([aria-selected=true]):hover {
+    background-color: var(--option-hover-background, var(--troll-ui-dark-grey));
+    color: var(--option-hover-color, white);
   }
 
   .dropdown-trigger,
@@ -431,16 +409,11 @@ div(ref="container").custom-dropdown
     color: var(--option-color, var(--textbox-color, var(--troll-ui-dark-grey)));
   }
 
-  .dropdown-inner-wrap {
-    & > ul {
-      & > li {
-        color: var(--option-color, var(--textbox-color, var(--troll-ui-dark-grey)));
-
-        &:first-child {
-          margin-top: 0.5rem;
-        }
-      }
-    }
+  .dropdown-inner-wrap > ul > li {
+    color: var(--option-color, var(--textbox-color, var(--troll-ui-dark-grey)));
+  }
+  .dropdown-inner-wrap > ul > li:first-child {
+    margin-top: 0.5rem;
   }
 
   .dropdown-label {

@@ -64,28 +64,23 @@
   const bodySizes = ["lg", "md", "sm", "xs"]
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   section:not(.components) {
     margin-top: 4em;
-
-    &:has(button:hover) button:not(:hover),
-    &:has(button:focus-visible) button:not(:focus-visible) {
-      opacity: 0.5;
-      scale: 0.75;
-    }
-
-    button {
-      transition: opacity 0.25s, scale 0.25s;
-      &:hover,
-      &:focus-visible {
-        opacity: 1;
-        scale: 1.125;
-
-        svg.copy-icon {
-          opacity: 1;
-        }
-      }
-    }
+  }
+  section:not(.components):has(button:hover) button:not(:hover), section:not(.components):has(button:focus-visible) button:not(:focus-visible) {
+    opacity: 0.5;
+    scale: 0.75;
+  }
+  section:not(.components) button {
+    transition: opacity 0.25s, scale 0.25s;
+  }
+  section:not(.components) button:hover, section:not(.components) button:focus-visible {
+    opacity: 1;
+    scale: 1.125;
+  }
+  section:not(.components) button:hover svg.copy-icon, section:not(.components) button:focus-visible svg.copy-icon {
+    opacity: 1;
   }
 
   svg.copy-icon {
@@ -97,14 +92,13 @@
     display: flex;
     align-items: flex-start;
     margin-top: 1em;
-
-    a {
-      display: block;
-      width: 0.65em;
-      transform: translateY(-0.25em);
-      margin-left: 0.15em;
-      color: currentColor;
-    }
+  }
+  .icon-set-name a {
+    display: block;
+    width: 0.65em;
+    transform: translateY(-0.25em);
+    margin-left: 0.15em;
+    color: currentColor;
   }
 
   .typography p {
@@ -116,37 +110,17 @@
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 0.25em;
-    //grid-template-rows: repeat(auto-fill, 3rem);
-
-    // &:has(.color:hover) .color:not(:hover),
-    // &:has(.color:focus-visible) .color:not(:focus-visible) {
-    //   opacity: 0.5;
-    //   scale: 0.875;
-    // }
   }
 
   .color {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4/3;
     width: 100%;
     border: 0;
     display: block;
-
-    svg {
-      width: 70%;
-      max-width: 3rem;
-      // opacity: 0;
-      // transition: opacity 0.25s;
-    }
-
-    // &:hover,
-    // &:focus-visible {
-    //   opacity: 1;
-    //   scale: 1.125;
-
-    //   svg {
-    //     opacity: 1;
-    //   }
-    // }
+  }
+  .color svg {
+    width: 70%;
+    max-width: 3rem;
   }
 
   .icons-list {
@@ -154,28 +128,22 @@
     grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
     gap: 0.25em;
     margin-top: 1rem;
-
-    button {
-      width: 100%;
-      background: transparent;
-      border: 0;
-      position: relative;
-
-      &:hover,
-      &:focus-visible {
-        svg:not(.copy-icon) {
-          opacity: 0.25;
-        }
-      }
-    }
-
-    .copy-icon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      translate: -50% -50%;
-      width: 3rem;
-    }
+  }
+  .icons-list button {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    position: relative;
+  }
+  .icons-list button:hover svg:not(.copy-icon), .icons-list button:focus-visible svg:not(.copy-icon) {
+    opacity: 0.25;
+  }
+  .icons-list .copy-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 3rem;
   }
 
   .icon-name {
@@ -195,11 +163,9 @@
 
   .pages-list {
     max-width: 30rem;
-    //margin-top: 2rem;
-
-    & > li {
-      margin-top: 1.4em;
-    }
+  }
+  .pages-list > li {
+    margin-top: 1.4em;
   }
 
   :deep(.nav-link) {
@@ -213,9 +179,4 @@
     top: 50%;
     translate: 0 -50%;
   }
-
-  // a {
-  //   text-decoration: none;
-  //   color:
-  // }
 </style>

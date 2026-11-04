@@ -39,22 +39,20 @@
   // })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .breadcrumbs {
     display: flex;
     align-items: center;
     --focus-color: var(--dark-200);
     --focus-offset: 0.2rem;
-
-    a {
-      color: var(--dark-400);
-      text-decoration: none;
-      transition: color var(--troll-ui-ani-medium);
-
-      &:hover {
-        color: var(--near-white);
-      }
-    }
+  }
+  .breadcrumbs a {
+    color: var(--dark-400);
+    text-decoration: none;
+    transition: color var(--troll-ui-ani-medium);
+  }
+  .breadcrumbs a:hover {
+    color: var(--near-white);
   }
 
   .text {
@@ -77,34 +75,31 @@
   .nav-link-list {
     padding: 0;
     margin: 4em 0 2em;
-
-    @viewport (medium-viewport up) {
+  }
+  @viewport (medium-viewport up) {
+    .nav-link-list {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1.2em;
-
-      & > li {
-        width: 50%;
-      }
     }
-
-    & > li {
-      display: flex;
-      align-items: center;
-      max-width: 30rem;
+    .nav-link-list > li {
       width: 50%;
-
-      &.previous {
-        margin-right: auto;
-        text-align: left;
-      }
-
-      &.next {
-        margin-left: auto;
-        text-align: right;
-      }
     }
+  }
+  .nav-link-list > li {
+    display: flex;
+    align-items: center;
+    max-width: 30rem;
+    width: 50%;
+  }
+  .nav-link-list > li.previous {
+    margin-right: auto;
+    text-align: left;
+  }
+  .nav-link-list > li.next {
+    margin-left: auto;
+    text-align: right;
   }
 
   :deep(.nav-link .text) {

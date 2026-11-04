@@ -38,17 +38,20 @@
   )
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .styles .default-label {
     --label-size: 1rem;
   }
+
   .border-width-column {
     grid-column: span 2;
   }
 
   .border-radius-column {
     grid-column: span 2;
-    @viewport (medium-small-viewport up) {
+  }
+  @viewport (medium-small-viewport up) {
+    .border-radius-column {
       grid-column: span 4;
     }
   }

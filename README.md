@@ -29,6 +29,26 @@ The `.playground` directory should help you on trying your theme during developm
 
 Running `pnpm dev` will prepare and boot `.playground` directory, which imports your theme itself.
 
+## Styling conventions
+
+The shared components and playground use plain CSS; Sass is no longer a layer
+requirement. Keep design settings in `app.config.ts` and imported token files.
+Use TypeScript helpers for repeated values and calculations, then emit shared
+CSS once through `app.head.style` or `useHead()`. Keep app palettes and defaults
+in the consuming app. `jsonToCSSVars()` and the generated breakpoint/wrapper
+styles in `nuxt.config.ts` are existing examples.
+
+The layer still supports its `@viewport`/container shorthand and `rgba()` color
+conveniences through PostCSS. Use explicit selectors where nesting would change
+Vue scoped-style behavior, especially around `:deep()`, grouped selectors and
+child components. Verify compiled selectors and interactive states when migrating
+styles. Use standard `::placeholder` for placeholder styling.
+
+The unused `app/assets/ui/scss/mixins.scss` placeholder mixin has been removed.
+Consumers importing that internal file must replace `@include placeholder` with
+`::placeholder` rules. The existing `app/assets/ui/scss/*.css` paths remain valid.
+Apps with their own SCSS must declare their own Sass compiler dependency.
+
 ## Distributing your theme
 
 Your Nuxt layer is shaped exactly the same as any other Nuxt project, except you can publish it on NPM.

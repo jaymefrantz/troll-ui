@@ -43,7 +43,7 @@
   })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .extra-large-center-margin-wrap {
     display: flex;
     justify-content: space-between;
@@ -59,10 +59,9 @@
 
   header {
     padding: 0 var(--side-padding);
-
-    .extra-large-center-margin-wrap {
-      padding: 1em 0;
-    }
+  }
+  header .extra-large-center-margin-wrap {
+    padding: 1em 0;
   }
 
   #logo {

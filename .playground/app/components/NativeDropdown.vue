@@ -19,5 +19,3 @@
     return props?.id || `Select-${useId()}`
   })
 </script>
-
-<style lang="scss" scoped></style>

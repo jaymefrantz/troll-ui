@@ -210,62 +210,41 @@
   }
 </script>
 
-<style lang="scss">
-  .styles {
-    // padding: 0 var(--side-padding);
-    // width: 100%;
-    // margin-top: 0;
-
-    // margin: 1rem;
-    // width: 100%;
-    // max-width: 32rem;
-
-    .default-label {
-      --label-size: 0.875rem;
-      --label-weight: 500;
-    }
-
-    .container {
-      width: 100%;
-    }
-
-    .expanding-outer {
-      // position: absolute;
-      // z-index: 1;
-      position-anchor: --tooltip;
-      position: absolute;
-      position-area: span-left bottom;
-      max-width: 30rem;
-      width: 100%;
-      margin-top: 0.5rem;
-      margin-right: 0;
-      border: 0;
-      background: transparent;
-    }
-
-    .expanding-inner {
-      & > .default-label {
-        margin-top: 1rem;
-      }
-    }
+<style>
+  .styles .default-label {
+    --label-size: 0.875rem;
+    --label-weight: 500;
+  }
+  .styles .container {
+    width: 100%;
+  }
+  .styles .expanding-outer {
+    position-anchor: --tooltip;
+    position: absolute;
+    position-area: span-left bottom;
+    max-width: 30rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-right: 0;
+    border: 0;
+    background: transparent;
+  }
+  .styles .expanding-inner > .default-label {
+    margin-top: 1rem;
   }
 
-  [popovertarget="stylePopover"] {
+  [popovertarget=stylePopover] {
     display: block;
     background: transparent;
     border: 0;
     color: var(--site-color);
     anchor-name: --tooltip;
-
-    &:hover {
-      .dark-theme & {
-        color: var(--site-color-100);
-      }
-
-      .light-theme & {
-        color: var(--site-color-800);
-      }
-    }
+  }
+  .dark-theme [popovertarget=stylePopover]:hover {
+    color: var(--site-color-100);
+  }
+  .light-theme [popovertarget=stylePopover]:hover {
+    color: var(--site-color-800);
   }
 
   select {
@@ -278,66 +257,52 @@
     text-overflow: ellipsis;
     width: 100%;
     align-items: center;
-
-    &:not(.color) {
-      font-size: 1rem;
-      padding: 0.375rem calc(0.75rem + var(--textbox-padding-x));
-
-      .option-container {
-        padding: calc(0.5rem + var(--textbox-padding-x)) 0;
-      }
-    }
-
-    &,
-    &::picker(select) {
-      appearance: base-select;
-    }
-
-    &::picker(select) {
-      background: var(--site-background); //here?
-      border: 0;
-      transition: display allow-discrete 1s, opacity 0.25s, overlay 1s allow-discrete;
-    }
-
-    &:not(:open)::picker(select) {
+  }
+  select:not(.color) {
+    font-size: 1rem;
+    padding: 0.375rem calc(0.75rem + var(--textbox-padding-x));
+  }
+  select:not(.color) .option-container {
+    padding: calc(0.5rem + var(--textbox-padding-x)) 0;
+  }
+  select, select::picker(select) {
+    appearance: base-select;
+  }
+  select::picker(select) {
+    background: var(--site-background);
+    border: 0;
+    transition: display allow-discrete 1s, opacity 0.25s, overlay 1s allow-discrete;
+  }
+  select:not(:open)::picker(select) {
+    opacity: 0;
+  }
+  select:open::picker(select) {
+    opacity: 1;
+  }
+  @starting-style {
+    select:open::picker(select) {
       opacity: 0;
     }
-
-    &:open::picker(select) {
-      opacity: 1;
-
-      @starting-style {
-        opacity: 0;
-      }
-    }
-
-    &::picker-icon {
-      content: "";
-      background: v-bind(dropdownLink);
-      background-position: center center;
-      height: 1.5rem;
-      width: 1.5rem;
-      transition: transform 0.25s ease-in-out;
-    }
-
-    &:open {
-      &::picker-icon {
-        transform: rotate(180deg);
-      }
-    }
-
-    ::checkmark {
-      content: v-bind(checkLink);
-    }
-
-    &.native {
-      option {
-        color: var(--dropdown-color);
-        & + option {
-          margin-top: 2px;
-        }
-      }
-    }
+  }
+  select::picker-icon {
+    content: "";
+    background: v-bind(dropdownLink);
+    background-position: center center;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: transform 0.25s ease-in-out;
+  }
+  select:open::picker-icon {
+    transform: rotate(180deg);
+  }
+  select ::checkmark {
+    content: v-bind(checkLink);
+  }
+  select.native option {
+    color: var(--dropdown-color);
+  }
+  select.native option + option {
+    margin-top: 2px;
   }
 
   .option-container {
@@ -350,8 +315,9 @@
   selectedcontent > * {
     transition: transform 1s var(--ease-spring-4), display 1s allow-discrete, opacity 1s;
     opacity: 1;
-
-    @starting-style {
+  }
+  @starting-style {
+    selectedcontent > * {
       opacity: 0;
       transform: translateY(10px);
     }
@@ -365,32 +331,30 @@
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(2, 1fr);
-
-    @viewport (small-viewport + 5rem up) {
+  }
+  @viewport (small-viewport + 5rem up) {
+    .styles-list {
       --sm-column: 1;
     }
-
-    @viewport (medium-small-viewport up) {
+  }
+  @viewport (medium-small-viewport up) {
+    .styles-list {
       grid-template-columns: repeat(6, 1fr);
       --sm-column: 2;
       --md-column: 3;
       --lg-column: 6;
     }
-
-    .large-column {
-      grid-column: span var(--lg-column);
-    }
-
-    .medium-column {
-      grid-column: span var(--md-column);
-    }
-
-    .small-column {
-      grid-column: span var(--sm-column);
-    }
-
-    & > li {
-      width: 100%;
-    }
+  }
+  .styles-list .large-column {
+    grid-column: span var(--lg-column);
+  }
+  .styles-list .medium-column {
+    grid-column: span var(--md-column);
+  }
+  .styles-list .small-column {
+    grid-column: span var(--sm-column);
+  }
+  .styles-list > li {
+    width: 100%;
   }
 </style>

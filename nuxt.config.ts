@@ -28,9 +28,7 @@ if (fs.existsSync(configPath)) {
 
 /*
   TODO:
-    bring over mixins, resets and maybe common-elements?
     composables/useObjectSort.ts
-    what to do about breakpoints.module.scss
     utils/wait.ts
     need gmap api key
     components:

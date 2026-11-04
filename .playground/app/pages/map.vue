@@ -142,7 +142,7 @@ p(v-else-if="status === 'pending'" role="status") Loading map locations…
   const props = computed(() => Object.keys(map.value?.props ?? {}))
 </script>
 
-<style lang="scss">
+<style>
   .map-container {
     padding: 0.5rem;
     border: 1px solid var(--primary);
@@ -167,28 +167,18 @@ p(v-else-if="status === 'pending'" role="status") Loading map locations…
     transition: background-color var(--troll-ui-ani-medium-fast);
     display: inline-block;
     background: transparent;
-
-    .icon {
-      margin-right: 0.5em;
-      transition: all var(--troll-ui-ani-medium-fast);
-    }
-
-    &:hover {
-      background-color: var(--dark-800);
-
-      .icon {
-        color: var(--primary);
-        rotate: 90deg;
-      }
-    }
   }
-
-  // .marker-preview-container {
-  // 	box-shadow: 0.1rem 0.3rem 0 rgb(0 0 0 / 8%), -0.125rem -0.125rem 0 rgb(0 0 0 / 5%), 0.4rem 0.15rem 0 rgb(0 0 0 / 5%);
-  // 	&:before {
-  // 		filter: drop-shadow(0.1em 0.3em 0 rgba(0, 0, 0, 0.08)) drop-shadow(-0.125em -0.125em 0 rgba(0, 0, 0, 0.05)) drop-shadow(0.4em 0.15em 0 rgba(0, 0, 0, 0.05));
-  // 	}
-  // }
+  .refresh-button .icon {
+    margin-right: 0.5em;
+    transition: all var(--troll-ui-ani-medium-fast);
+  }
+  .refresh-button:hover {
+    background-color: var(--dark-800);
+  }
+  .refresh-button:hover .icon {
+    color: var(--primary);
+    rotate: 90deg;
+  }
 
   .marker-preview-image-wrap {
     border-radius: 1px;
@@ -225,19 +215,8 @@ p(v-else-if="status === 'pending'" role="status") Loading map locations…
     --divider: 1px solid var(--dark-600);
     --hover-color: white;
     border-radius: 0.35rem;
-
-    & > li {
-      position: relative;
-
-      // &:last-child:after {
-      // 	content: "";
-      // 	position: absolute;
-      // 	top: -1px;
-      // 	display: block;
-      // 	border-top: 1px solid var(--dark-400);
-      // 	right: 6px;
-      // 	left: 6px;
-      // }
-    }
+  }
+  .zoom-control-list > li {
+    position: relative;
   }
 </style>

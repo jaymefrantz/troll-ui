@@ -58,39 +58,23 @@
   }
 </script>
 
-<style lang="scss" scoped>
-  .disabled-checkbox {
-    & + * {
-      margin-top: 1em;
-    }
+<style scoped>
+  .disabled-checkbox + * {
+    margin-top: 1em;
   }
 
   .textbox-list {
     display: grid;
-
     align-items: flex-end;
     gap: 1em;
-
-    @viewport (medium-large-viewport up) {
+  }
+  @viewport (medium-large-viewport up) {
+    .textbox-list {
       grid-template-columns: 1fr 1fr 12rem;
-      // grid-template-columns: repeat(6, 1fr);
-
-      // .name {
-      //   grid-column: 1 / 3;
-      // }
-
-      // .email {
-      //   grid-column: 3 / 6;
-      // }
-
-      // .phone {
-      //   grid-column: 6 / 6;
-      // }
     }
-
-    :deep(input) {
-      width: 100%;
-    }
+  }
+  .textbox-list :deep(input) {
+    width: 100%;
   }
 
   .textbox-container {
@@ -104,57 +88,46 @@
     --textbox-padding-y: 0.75rem;
     --textbox-border: 1px solid var(--dark-400);
     position: relative;
-
-    ::placeholder {
-      color: var(--dark-400);
-    }
-
-    &:has(input:not(.floating)) :deep(.textbox-wrap) {
-      margin-top: 0.35em;
-    }
-
-    &:has(input.floating) :deep(label) {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      left: var(--textbox-padding-x);
-      transition: transform var(--troll-ui-ani-medium), top var(--troll-ui-ani-medium);
-      z-index: 1;
-    }
-
-    //this means that there's some content
-    &:has(.floating:not(:placeholder-shown)) :deep(label) {
-      top: 0;
-      transform: translateY(-50%) scale(0.75) translateX(calc(0.5em * -0.75));
-      padding: 0 0.5em;
-      background: var(--site-background);
-    }
-
-    &:has(input:hover:not([disabled])) {
-      --textbox-border: 1px solid var(--primary);
-    }
-
-    &:has(input[disabled]) {
-      --textbox-color: var(--dark-400);
-      --textbox-border: 1px solid var(--dark-400);
-      color: var(--dark-400);
-
-      ::placeholder {
-        color: var(--dark-600);
-      }
-    }
-
-    #main &:has(input:focus-visible) :deep(input) {
-      --textbox-border: 1px solid var(--primary);
-      color: var(--dark-200) !important;
-      outline: 0;
-    }
+  }
+  .textbox-container ::placeholder {
+    color: var(--dark-400);
+  }
+  .textbox-container:has(input:not(.floating)) :deep(.textbox-wrap) {
+    margin-top: 0.35em;
+  }
+  .textbox-container:has(input.floating) :deep(label) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: var(--textbox-padding-x);
+    transition: transform var(--troll-ui-ani-medium), top var(--troll-ui-ani-medium);
+    z-index: 1;
+  }
+  .textbox-container:has(.floating:not(:placeholder-shown)) :deep(label) {
+    top: 0;
+    transform: translateY(-50%) scale(0.75) translateX(-0.375em);
+    padding: 0 0.5em;
+    background: var(--site-background);
+  }
+  .textbox-container:has(input:hover:not([disabled])) {
+    --textbox-border: 1px solid var(--primary);
+  }
+  .textbox-container:has(input[disabled]) {
+    --textbox-color: var(--dark-400);
+    --textbox-border: 1px solid var(--dark-400);
+    color: var(--dark-400);
+  }
+  .textbox-container:has(input[disabled]) ::placeholder {
+    color: var(--dark-600);
+  }
+  #main .textbox-container:has(input:focus-visible) :deep(input) {
+    --textbox-border: 1px solid var(--primary);
+    color: var(--dark-200) !important;
+    outline: 0;
   }
 
-  .checkbox-list {
-    & > li + li {
-      margin-top: 0.35em;
-    }
+  .checkbox-list > li + li {
+    margin-top: 0.35em;
   }
 
   .checkbox-container {
@@ -164,44 +137,38 @@
     --checkbox-color: var(--dark-200);
     --checkbox-icon-y: 50%;
     --checkbox-icon-x: calc(50% + 0.05em);
-
-    &:has(input[type="checkbox"]:checked) {
-      --checkbox-background: var(--primary);
-      --checkbox-border: 1px solid var(--primary);
-    }
-
-    &:has(input[type="checkbox"]:not(:checked):not([disabled]):hover) {
-      --checkbox-border: 1px solid var(--primary);
-      & :deep(.checkbox) {
-        box-shadow: 0 0 0 1px var(--primary);
-      }
-    }
-
-    &:has(input[type="checkbox"][disabled]:checked) {
-      --checkbox-background: var(--dark-400);
-      --checkbox-border: 1px solid var(--dark-400);
-      --checkbox-color: var(--dark-200);
-      color: var(--dark-400);
-    }
-
-    &:has(input[type="checkbox"][disabled]:not(:checked)) {
-      --checkbox-color: var(--dark-400);
-      --checkbox-border: 1px solid var(--dark-400);
-      color: var(--dark-400);
-    }
+  }
+  .checkbox-container:has(input[type=checkbox]:checked) {
+    --checkbox-background: var(--primary);
+    --checkbox-border: 1px solid var(--primary);
+  }
+  .checkbox-container:has(input[type=checkbox]:not(:checked):not([disabled]):hover) {
+    --checkbox-border: 1px solid var(--primary);
+  }
+  .checkbox-container:has(input[type=checkbox]:not(:checked):not([disabled]):hover) :deep(.checkbox) {
+    box-shadow: 0 0 0 1px var(--primary);
+  }
+  .checkbox-container:has(input[type=checkbox][disabled]:checked) {
+    --checkbox-background: var(--dark-400);
+    --checkbox-border: 1px solid var(--dark-400);
+    --checkbox-color: var(--dark-200);
+    color: var(--dark-400);
+  }
+  .checkbox-container:has(input[type=checkbox][disabled]:not(:checked)) {
+    --checkbox-color: var(--dark-400);
+    --checkbox-border: 1px solid var(--dark-400);
+    color: var(--dark-400);
   }
 
-  .toggle-list {
-    & > li + li {
-      margin-top: 1.5em;
-    }
+  .toggle-list > li + li {
+    margin-top: 1.5em;
   }
 
   .rounded {
     --toggle-background: linear-gradient(-45deg, #e8e8e8 0%, #979797 100%);
-    &:has(input:checked) {
-      --toggle-background: linear-gradient(-45deg, #fe519f 0%, #a274fe 100%);
-    }
+  }
+  .rounded:has(input:checked) {
+    --toggle-background: linear-gradient(-45deg, #fe519f 0%, #a274fe 100%);
   }
 
   .rectangle {
@@ -212,26 +179,22 @@
     --toggle-knob-background: transparent;
     --toggle-knob-border: none;
     --toggle-padding-x: 0.75rem;
-
-    :deep(.custom-toggle-knob) {
-      display: inline-flex;
-      align-items: center;
-    }
-
-    &:hover:not([disabled]) :deep(.custom-toggle) {
-      //--toggle-border: 2px solid var(--dark-600);
-      box-shadow: 0 0 0 1px var(--dark-400);
-      --toggle-border: 1px solid var(--dark-400);
-    }
+  }
+  .rectangle :deep(.custom-toggle-knob) {
+    display: inline-flex;
+    align-items: center;
+  }
+  .rectangle:hover:not([disabled]) :deep(.custom-toggle) {
+    box-shadow: 0 0 0 1px var(--dark-400);
+    --toggle-border: 1px solid var(--dark-400);
   }
 
   .props-container {
     margin-top: 1.5em;
-
-    & + * {
-      border-top: 1px solid var(--dark-400);
-      padding-top: 4em;
-      margin-top: 4em;
-    }
+  }
+  .props-container + * {
+    border-top: 1px solid var(--dark-400);
+    padding-top: 4em;
+    margin-top: 4em;
   }
 </style>

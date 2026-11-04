@@ -17,10 +17,11 @@ div.props-container
   )
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .props-container {
     margin-top: 3em;
   }
+
   .props-list {
     background-color: var(--dark-800);
     padding: 1em;
@@ -28,9 +29,8 @@ div.props-container
     border-radius: 0.15em;
     font-family: courier, monospace;
     letter-spacing: 0.1px;
-
-    & > li + li {
-      margin-top: 0.75em;
-    }
+  }
+  .props-list > li + li {
+    margin-top: 0.75em;
   }
 </style>

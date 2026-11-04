@@ -4,10 +4,7 @@ type DevLayer = [string]
 import fonts from "./app/assets/js/fonts.js"
 import iconSets from "./app/assets/js/icons.js"
 import svgLoader from "vite-svg-loader"
-import { fileURLToPath } from "url"
-import { dirname, join } from "path"
 
-const currentDir = dirname(fileURLToPath(import.meta.url))
 const layer: ProdLayer | DevLayer =
   process.env.ENV === "PROD"
     ? [
@@ -58,25 +55,7 @@ export default defineNuxtConfig({
     // "@@": "@"
   },
 
-  css: [join(currentDir, "./app/assets/scss/common-elements.scss")], //this relative isn't going to work when it gets pushed to github
-  //css: ["trollUI/assets/scss/resets.scss", "trollUI/assets/scss/common-elements.scss", "./assets/scss/common-elements.scss"],
   vite: {
-    // resolve: {
-    //   alias: {
-    //     "@@": join(currentDir, "./"),
-    //     // "trollUI": "@",
-    //   },
-    // },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: "modern-compiler",
-          // additionalData: `
-          //   @import "@@/assets/scss/design/colors.scss";
-          // `,
-        },
-      },
-    },
     vue: {
       template: {
         compilerOptions: {

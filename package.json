@@ -31,8 +31,6 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "@types/google.maps": "^3.55.7",
     "@vueuse/components": "^10.9.0",
-    "sass": "^1.79.5",
-    "sass-loader": "^14.2.1",
     "vue3-google-map": "^0.20.0"
   },
   "engines": {

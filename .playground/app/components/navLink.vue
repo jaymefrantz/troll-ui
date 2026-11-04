@@ -17,7 +17,7 @@
   })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .nav-link {
     padding: 1em 1.5em;
     border: var(--border);
@@ -28,19 +28,16 @@
     width: 100%;
     transition: background-color var(--troll-ui-ani-medium-fast);
     display: block;
-
-    &:hover {
-      background-color: var(--dark-800);
-
-      .icon-container {
-        border-color: var(--primary);
-        color: var(--primary);
-
-        &:before {
-          background-color: var(--primary);
-        }
-      }
-    }
+  }
+  .nav-link:hover {
+    background-color: var(--dark-800);
+  }
+  .nav-link:hover .icon-container {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .nav-link:hover .icon-container:before {
+    background-color: var(--primary);
   }
 
   .icon-container {
@@ -55,16 +52,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    &:before {
-      content: "";
-      background-color: var(--dark-800);
-      opacity: 0.15;
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      transition: background-color var(--troll-ui-ani-fast);
-    }
+  }
+  .icon-container:before {
+    content: "";
+    background-color: var(--dark-800);
+    opacity: 0.15;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    transition: background-color var(--troll-ui-ani-fast);
   }
 
   .icon {
