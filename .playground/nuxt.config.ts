@@ -1,15 +1,16 @@
-type ProdLayer = [string, { install: boolean }]
-type DevLayer = [string]
+type Layer = string | [string, { install: boolean }]
 
 import fonts from "./app/assets/js/fonts.js"
 import iconSets from "./app/assets/js/icons.js"
 import svgLoader from "vite-svg-loader"
 
-const layer: ProdLayer | DevLayer =
+const layer: Layer[] =
   process.env.ENV === "PROD"
     ? [
-        "github:jaymefrantz/troll-ui", // GitHub Remote Source
-        { install: true },
+        [
+          "github:jaymefrantz/troll-ui", // GitHub Remote Source
+          { install: true },
+        ],
       ]
     : [".."]
 
