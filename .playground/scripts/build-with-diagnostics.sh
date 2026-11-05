@@ -30,7 +30,8 @@ cgroup_memory() {
     done
   else
     relative=$(awk -F: '$2 ~ /(^|,)memory(,|$)/ { print $3 }' /proc/self/cgroup)
-    for directory in "/sys/fs/cgroup/memory${relative}" /sys/fs/cgroup/memory; do
+    directory="/sys/fs/cgroup/memory${relative}"
+    while [[ "$directory" == /sys/fs/cgroup/memory* ]]; do
       for file in memory.usage_in_bytes memory.max_usage_in_bytes memory.limit_in_bytes memory.failcnt memory.oom_control; do
         if [[ -r "$directory/$file" ]]; then
           printf '[ui-memory] %s: ' "$directory/$file"
@@ -38,6 +39,8 @@ cgroup_memory() {
           printf '\n'
         fi
       done
+      [[ "$directory" == /sys/fs/cgroup/memory ]] && break
+      directory=${directory%/*}
     done
   fi
 }
@@ -47,7 +50,49 @@ snapshot() {
   free -m || true
   # RSS is KiB; comm avoids exposing secrets in process arguments.
   ps -eo pid,ppid,rss,%mem,comm --sort=-rss | head -n 16 || true
+  if [[ -r /proc/vmstat ]]; then
+    grep -E '^(oom_kill|pgmajfault|pswpin|pswpout) ' /proc/vmstat || true
+  fi
+  if [[ -r /proc/pressure/memory ]]; then
+    printf '[ui-memory] memory pressure: '
+    tr '\n' ' ' < /proc/pressure/memory
+    printf '\n'
+  fi
   cgroup_memory || true
+}
+
+pm2_summary() {
+  heading 'PM2 app names, memory, and actual executable paths (no app environment/arguments)'
+  node <<'JS' || true
+const fs = require("node:fs")
+const path = require("node:path")
+const os = require("node:os")
+const { execFileSync } = require("node:child_process")
+const socket = path.join(process.env.PM2_HOME || path.join(os.homedir(), ".pm2"), "rpc.sock")
+// Do not start a PM2 daemon just to gather diagnostics.
+if (!fs.existsSync(socket)) {
+  console.log("[ui-memory] No existing PM2 socket for this user; skipping app lookup")
+} else {
+  try {
+    const apps = JSON.parse(execFileSync("pm2", ["jlist"], {
+      timeout: 5000, maxBuffer: 4 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"],
+    }))
+    for (const app of apps) {
+      let executable = "unavailable"
+      try { executable = fs.readlinkSync(`/proc/${app.pid}/exe`) } catch {}
+      console.log(JSON.stringify({
+        name: app.name, pid: app.pid, status: app.pm2_env?.status,
+        rssMiB: Math.round((app.monit?.memory || 0) / 1048576), executable,
+        configuredInterpreter: app.pm2_env?.exec_interpreter,
+        reportedNodeVersion: app.pm2_env?.node_version,
+        restarts: app.pm2_env?.restart_time,
+      }))
+    }
+  } catch {
+    console.log("[ui-memory] PM2 app lookup unavailable; continuing without it")
+  }
+}
+JS
 }
 
 finish() {
@@ -59,6 +104,7 @@ finish() {
     wait "$monitor_pid" 2>/dev/null
   fi
   snapshot "finished stage=$stage exit=$status"
+  pm2_summary
   heading 'kernel memory-kill messages since this run started (if readable)'
   local kernel_log
   if kernel_log=$(journalctl -k --since "$started_at" --no-pager 2>/dev/null); then
@@ -72,16 +118,31 @@ finish() {
 trap finish EXIT
 
 heading 'runtime and install settings'
-command -v node npm
+printf 'SSH shell executable: '; readlink /proc/$$/exe || true
+printf 'Requested Node: '; cat .nvmrc
+command -v node npm pm2 || true
 node --version
 npm --version
-node -e 'console.log("Node heap limit MiB:", Math.round(require("node:v8").getHeapStatistics().heap_size_limit / 1024 / 1024))'
+node <<'JS'
+const fs = require("node:fs")
+console.log("Node executable:", process.execPath)
+console.log("Node heap limit MiB:", Math.round(require("node:v8").getHeapStatistics().heap_size_limit / 1048576))
+if (process.availableMemory) console.log("Node available memory MiB:", Math.round(process.availableMemory() / 1048576))
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"))
+console.log("Requested Nuxt:", pkg.dependencies?.nuxt || pkg.devDependencies?.nuxt)
+for (const name of ["nuxt", "typescript"]) {
+  try { console.log(`Installed ${name}:`, require(`${name}/package.json`).version) }
+  catch { console.log(`Installed ${name}: unavailable`) }
+}
+console.log("Existing package-lock.json:", fs.existsSync("package-lock.json"))
+JS
 printf 'npm omit: '; npm config get omit
 printf 'npm ignore-scripts: '; npm config get ignore-scripts
 printf 'npm foreground-scripts: '; npm config get foreground-scripts
 ulimit -a
 df -h . /tmp
 snapshot before-install
+pm2_summary
 
 # A separate process keeps recording while npm (and its prepare children) runs.
 (
@@ -108,7 +169,7 @@ timed() {
 
 stage=install
 heading 'npm install (lifecycle output enabled to identify the failing phase)'
-timed npm install --include=dev --foreground-scripts --timing
+timed npm install --include=dev --foreground-scripts
 snapshot after-install
 
 stage=build
