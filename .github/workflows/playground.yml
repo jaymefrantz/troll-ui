@@ -42,10 +42,7 @@ jobs:
             echo "Replacing package.json..."
             rm -f package.json
             cp package.prod.json package.json
-            echo "Installing dependencies..."
-            npm install --include=dev
-            echo "Building Nuxt app..."
-            npm run build
+            bash scripts/build-with-diagnostics.sh
   restart:
     runs-on: ubuntu-latest
     needs: [build]
