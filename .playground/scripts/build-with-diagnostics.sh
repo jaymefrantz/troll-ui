@@ -5,8 +5,25 @@ set -Eeuo pipefail
 started_at=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
 monitor_pid=
 stage=setup
+mkdir -p .deploy-logs
+log_dir=$(mktemp -d "$PWD/.deploy-logs/run-$(date -u '+%Y%m%dT%H%M%SZ')-XXXXXX")
+details="$log_dir/diagnostics.log"
 
-heading() { printf '\n[ui-memory] %s | %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*"; }
+heading() { printf '[ui-deploy] %s | %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*"; }
+
+memory_summary() {
+  if [[ -r /proc/meminfo ]]; then
+    awk -v elapsed="$SECONDS" '
+      /^MemAvailable:/ { available = int($2 / 1024) }
+      /^SwapTotal:/ { total = $2 }
+      /^SwapFree:/ { unused = $2 }
+      END { printf "[ui-deploy] %ss elapsed | available=%sMiB | swap=%s/%sMiB\n", elapsed, available, int((total-unused)/1024), int(total/1024) }
+    ' /proc/meminfo
+  fi
+  if [[ -r /proc/vmstat ]]; then
+    awk '$1 == "oom_kill" { printf "[ui-deploy] system OOM kills=%s\n", $2 }' /proc/vmstat
+  fi
+}
 
 cgroup_memory() {
   local relative directory file
@@ -103,20 +120,25 @@ finish() {
     kill "$monitor_pid" 2>/dev/null
     wait "$monitor_pid" 2>/dev/null
   fi
-  snapshot "finished stage=$stage exit=$status"
-  pm2_summary
-  heading 'kernel memory-kill messages since this run started (if readable)'
+  snapshot "finished stage=$stage exit=$status" >> "$details" 2>&1
+  memory_summary
+  heading "finished stage=$stage exit=$status | logs: $log_dir"
+  if [[ "$status" -eq 0 ]]; then exit 0; fi
+  pm2_summary >> "$details" 2>&1
+  heading 'kernel memory-kill messages since this run started (if readable)' >> "$details"
   local kernel_log
   if kernel_log=$(journalctl -k --since "$started_at" --no-pager 2>/dev/null); then
-    printf '%s\n' "$kernel_log" | grep -Ei 'out of memory|oom|killed process|memory cgroup' | tail -n 40 ||
-      printf '[ui-memory] No matching readable kernel messages; sudo may be needed.\n'
+    { printf '%s\n' "$kernel_log" | grep -Ei 'out of memory|oom|killed process|memory cgroup' | tail -n 40 ||
+      printf '[ui-memory] No matching readable kernel messages; sudo may be needed.\n'; } >> "$details"
   else
-    printf '[ui-memory] Kernel journal unavailable; check it manually with sudo.\n'
+    printf '[ui-memory] Kernel journal unavailable; check it manually with sudo.\n' >> "$details"
   fi
   exit "$status"
 }
 trap finish EXIT
 
+heading "Node $(node --version) | npm $(npm --version) | logs: $log_dir"
+{
 heading 'runtime and install settings'
 printf 'SSH shell executable: '; readlink /proc/$$/exe || true
 printf 'Requested Node: '; cat .nvmrc
@@ -143,36 +165,49 @@ ulimit -a
 df -h . /tmp
 snapshot before-install
 pm2_summary
+} >> "$details" 2>&1
+memory_summary
 
 # A separate process keeps recording while npm (and its prepare children) runs.
 (
   trap - EXIT
   sleep_pid=
   trap '[[ -z "$sleep_pid" ]] || kill "$sleep_pid" 2>/dev/null; exit 0' TERM INT
+  sample_count=0
   while true; do
     sleep 10 &
     sleep_pid=$!
     wait "$sleep_pid"
     sleep_pid=
-    snapshot sample
+    snapshot sample >> "$details" 2>&1
+    sample_count=$((sample_count + 1))
+    if (( sample_count % 3 == 0 )); then memory_summary; fi
   done
 ) &
 monitor_pid=$!
 
-timed() {
+run_stage() {
+  stage=$1
+  shift
+  heading "$stage started"
+  local status=0
   if [[ -x /usr/bin/time ]] && /usr/bin/time --version 2>&1 | grep -q GNU; then
-    /usr/bin/time -v "$@"
+    /usr/bin/time -f 'elapsed=%E peak_rss_KiB=%M exit=%x' -o "$log_dir/$stage.metrics" "$@" > "$log_dir/$stage.log" 2>&1 || status=$?
   else
-    "$@"
+    "$@" > "$log_dir/$stage.log" 2>&1 || status=$?
   fi
+  heading "$stage finished exit=$status"
+  if [[ -f "$log_dir/$stage.metrics" ]]; then cat "$log_dir/$stage.metrics"; fi
+  if [[ "$status" -ne 0 ]]; then
+    heading "error summary ($stage.log contains the full output)"
+    grep -nE 'ERROR|Error:|npm error|UNRESOLVED_IMPORT|Cannot find|Could not resolve|FATAL' "$log_dir/$stage.log" | head -n 15 || true
+    tail -n 40 "$log_dir/$stage.log"
+  fi
+  return "$status"
 }
 
-stage=install
-heading 'npm install (lifecycle output enabled to identify the failing phase)'
-timed npm install --include=dev --foreground-scripts
-snapshot after-install
+run_stage install npm install --include=dev --foreground-scripts
+snapshot after-install >> "$details" 2>&1
 
-stage=build
-heading 'Nuxt build'
-timed npm run build
+run_stage build npm run build
 stage=complete

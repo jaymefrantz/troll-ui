@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
   import { ref } from "vue"
-  import type { MapMarker } from "../../../../app/types/gmap"
+  import type { MapMarker } from "#troll-ui/types/gmap"
 
   withDefaults(defineProps<{
     map?: google.maps.Map | null

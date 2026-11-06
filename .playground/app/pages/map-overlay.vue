@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
-  import type { MapMarker } from "../../../../app/types/gmap"
+  import type { MapMarker } from "#troll-ui/types/gmap"
 
   const apiKey = useRuntimeConfig().public.GMAPS_KEY
   const mapConfig = useAppConfig().map

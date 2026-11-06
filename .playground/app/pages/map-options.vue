@@ -30,12 +30,12 @@
 </template>
 
 <script setup lang="ts">
-  import TrollMap from "../../../../app/components/Troll/Map.vue"
-  import PolaroidOverlay from "../../../../app/components/Troll/PolaroidOverlay.vue"
+  import TrollMap from "#troll-ui/components/Troll/Map.vue"
+  import PolaroidOverlay from "#troll-ui/components/Troll/PolaroidOverlay.vue"
   import DemoMapOverlay from "../components/DemoMapOverlay.vue"
   import icon from "../assets/svg/map-marker.svg?url"
   import image from "../assets/svg/troll-ui-logo.svg?url"
-  import type { MapMarker, MapMarkerEvent } from "../../../../app/types/gmap"
+  import type { MapMarker, MapMarkerEvent } from "#troll-ui/types/gmap"
 
   const map = ref<InstanceType<typeof TrollMap> | null>(null)
   const mode = ref<"none" | "polaroid" | "custom">("none")

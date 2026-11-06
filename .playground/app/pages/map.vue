@@ -10,7 +10,7 @@ p(v-else-if="status === 'pending'" role="status") Loading map locations…
 </template>
 
 <script setup lang="ts">
-  import PolaroidOverlay from "../../../app/components/Troll/PolaroidOverlay.vue"
+  import PolaroidOverlay from "#troll-ui/components/Troll/PolaroidOverlay.vue"
   import icon from "../assets/svg/map-marker.svg?url"
   const { data, error, status, refresh } = await useFetch(`${useRuntimeConfig().public.API}/polaroids/random`, {
     pick: ["markers"],

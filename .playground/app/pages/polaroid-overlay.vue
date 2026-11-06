@@ -52,9 +52,9 @@
 
 <script setup lang="ts">
   import { GoogleMap, Marker as GoogleMarker } from "vue3-google-map"
-  import PolaroidOverlay from "../../../../app/components/Troll/PolaroidOverlay.vue"
+  import PolaroidOverlay from "#troll-ui/components/Troll/PolaroidOverlay.vue"
   import previewImage from "../assets/svg/troll-ui-logo.svg?url"
-  import type { PolaroidOverlayItem } from "../../../../app/types/gmap"
+  import type { PolaroidOverlayItem } from "#troll-ui/types/gmap"
 
   const apiKey = useRuntimeConfig().public.GMAPS_KEY
   const mapConfig = useAppConfig().map

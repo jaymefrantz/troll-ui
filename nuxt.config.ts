@@ -53,7 +53,9 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
-  // alias: { "@": currentDir },
+  alias: {
+    "#troll-ui": join(currentDir, "app"),
+  },
   runtimeConfig: {
     public: {
       breakpoints,
