@@ -8,7 +8,7 @@ const layer: Layer[] =
   process.env.ENV === "PROD"
     ? [
         [
-          "github:jaymefrantz/troll-ui", // GitHub Remote Source
+          `github:jaymefrantz/troll-ui#${process.env.TROLL_UI_LAYER_REF || "main"}`,
           { install: true },
         ],
       ]

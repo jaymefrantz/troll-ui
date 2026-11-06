@@ -2,11 +2,16 @@ name: Deploy Playground
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, codex/debug-server-memory]
     # paths:
     # - "./.playground/**"
   pull_request:
     branches: [main]
+
+# Both branches deploy to the same server; don't overlap installs/builds.
+concurrency:
+  group: troll-ui-server-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -14,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Transfer backend files via SSH
         uses: appleboy/scp-action@master
         with:
@@ -43,6 +50,8 @@ jobs:
             . "$NVM_DIR/nvm.sh"
             nvm use
             test "$(node --version)" = "v$(cat .nvmrc)"
+            export TROLL_UI_LAYER_REF="${{ github.event.pull_request.head.sha || github.sha }}"
+            echo "Building troll-ui layer commit: $TROLL_UI_LAYER_REF"
             echo "Replacing package.json..."
             rm -f package.json
             cp package.prod.json package.json
