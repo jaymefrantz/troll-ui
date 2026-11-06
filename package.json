@@ -9,7 +9,7 @@
     "generate": "nuxt generate .playground",
     "preview": "nuxt preview .playground",
     "lint": "eslint .",
-    "postinstall": "nuxt prepare .playground",
+    "prepare:playground": "nuxt prepare .playground",
     "typecheck": "nuxt typecheck .playground"
   },
   "devDependencies": {
