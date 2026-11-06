@@ -14,6 +14,7 @@
   const isHome = computed(() => {
     return useRoute().path === "/"
   })
+  console.log("all the things are working")
 
   useHead({
     style: [
