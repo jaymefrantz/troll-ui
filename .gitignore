@@ -1,5 +1,4 @@
 node_modules
-.deploy-logs/
 *.log
 .nuxt
 nuxt.d.ts

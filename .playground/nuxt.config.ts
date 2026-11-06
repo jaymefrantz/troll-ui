@@ -8,7 +8,7 @@ const layer: Layer[] =
   process.env.ENV === "PROD"
     ? [
         [
-          `github:jaymefrantz/troll-ui#${process.env.TROLL_UI_LAYER_REF || "main"}`,
+          "github:jaymefrantz/troll-ui",
           { install: true },
         ],
       ]
