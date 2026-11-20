@@ -16,7 +16,7 @@
       api?: typeof google.maps | null
       position: MapPosition
       open?: boolean
-      anchor?: "top-left" | "center" | "bottom-center"
+      anchor?: "top-left" | "center-left" | "center" | "bottom-center"
       offsetX?: number
       offsetY?: number
       zIndex?: number
@@ -36,6 +36,7 @@
   const overlayTransform = computed(() => {
     const anchors = {
       "top-left": "0, 0",
+      "center-left": "0, -50%",
       center: "-50%, -50%",
       "bottom-center": "-50%, -100%",
     }
@@ -61,6 +62,8 @@
             this.element = document.createElement("div")
             this.element.className = "troll-map-overlay"
             this.element.style.position = "absolute"
+            // Percentage anchors must use the content's size, even near a pane edge.
+            this.element.style.width = "max-content"
             // Move the actual Maps element, so its hit area moves with the card.
             // Transforming only the child leaves an invisible box below the marker.
             this.element.style.transform = overlayTransform.value

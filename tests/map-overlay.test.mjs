@@ -10,7 +10,7 @@ test("Vue content is mounted on demand, reacts, follows redraws, and is cleaned 
   globalThis.document = { createElement: element }
   const { instances, api } = mapsApi()
   const map = createMap()
-  const state = reactive({ open: false, position: { lat: 2, lng: 3 }, count: 0, zIndex: 1, map, present: true })
+  const state = reactive({ open: false, position: { lat: 2, lng: 3 }, count: 0, zIndex: 1, anchor: "bottom-center", offsetX: 0, map, present: true })
   let mounted = 0
   let unmounted = 0
   const Probe = defineComponent({
@@ -22,7 +22,7 @@ test("Vue content is mounted on demand, reacts, follows redraws, and is cleaned 
   })
   const app = renderer.createApp({
     render: () => state.present ? h(MapOverlay, {
-      open: state.open, position: state.position, map: state.map, api, zIndex: state.zIndex,
+      open: state.open, position: state.position, map: state.map, api, zIndex: state.zIndex, anchor: state.anchor, offsetX: state.offsetX,
     }, { default: () => h(Probe) }) : null,
   })
 
@@ -43,6 +43,11 @@ test("Vue content is mounted on demand, reacts, follows redraws, and is cleaned 
     assert.equal(host.style.transform, "translate(0px, 0px) translate(-50%, -100%)",
       "the Maps element itself must move, so its hit area follows the visible content")
     assert.equal(host.blocksMapGestures, true)
+    assert.equal(host.style.width, "max-content", "the anchor's size must not shrink near a pane edge")
+    state.anchor = "center-left"
+    state.offsetX = 22
+    await nextTick()
+    assert.equal(host.style.transform, "translate(22px, 0px) translate(0, -50%)")
     const content = host.children.find(node => node.type === "div")
     assert.equal(content.props.style, undefined, "the child must not leave its host's hit area behind")
     const button = content.children.find(node => node.type === "button")
