@@ -1,13 +1,13 @@
 <template lang="pug">
 transition(name="dropdown-outer-wrap"
     @before-enter="isTransitioning = true"
-    @after-enter="isTransitioning = false"
+    @after-enter="() => { isTransitioning = false; emit('opened') }"
     @enter-cancelled="isTransitioning = false"
     @before-leave="isTransitioning = true"
     @after-leave="isTransitioning = false"
     @leave-cancelled="isTransitioning = false"
   )
-  div(v-if="expanded" :class="{ 'end': isEnd, expanded }" ref="outer"
+  div(v-if="expanded" :class="{ 'start': isStart, 'end': isEnd, expanded }" ref="outer"
     :data-open="expanded ? 'true' : null"
     :data-present="isPresent ? 'true' : null"
   ).dropdown-outer-wrap
@@ -21,10 +21,13 @@ transition(name="dropdown-outer-wrap"
   const { height } = useElementBounding(outer)
   const isTransitioning = ref(false)
 
-  const props = defineProps<{
+  const props = withDefaults(defineProps<{
     expanded: boolean
     isEnd: boolean
-  }>()
+    isStart?: boolean
+  }>(), { isStart: true })
+
+  const emit = defineEmits<{ (e: "opened"): void }>()
 
   const isPresent = computed(() => props.expanded || isTransitioning.value)
 
@@ -56,26 +59,25 @@ transition(name="dropdown-outer-wrap"
     overflow: hidden;
     opacity: 1;
     transform: translateY(0);
+  }
 
-    &:after {
-      content: "";
-      position: absolute;
-      bottom: 0.25em;
-      left: 0.5em;
-      width: calc(100% - 1.5em);
-      height: 2.875em;
-      background: var(
-        --dropdown-gradient,
-        linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)
-      );
-      transition: opacity 0.15s;
-      opacity: 1;
-      pointer-events: none;
-    }
+  .dropdown-outer-wrap {
+    --dropdown-top-fade: var(--dropdown-fade-height, 2.875em);
+    --dropdown-bottom-fade: var(--dropdown-fade-height, 2.875em);
 
-    &.end:after {
-      opacity: 0;
-    }
+    &.start { --dropdown-top-fade: 0px; }
+    &.end { --dropdown-bottom-fade: 0px; }
+  }
+
+  .dropdown-outer-wrap:not(.start.end) .dropdown-inner-wrap > ul {
+    /* The second mask keeps the scrollbar fully visible. */
+    mask-image:
+      linear-gradient(to bottom, transparent, #000 var(--dropdown-top-fade),
+        #000 calc(100% - var(--dropdown-bottom-fade)), transparent),
+      linear-gradient(#000, #000);
+    mask-size: calc(100% - var(--scollbar-width, 5px)) 100%, var(--scollbar-width, 5px) 100%;
+    mask-position: left top, right top;
+    mask-repeat: no-repeat;
   }
 
   .dropdown-outer-wrap-enter-active,
@@ -108,6 +110,8 @@ transition(name="dropdown-outer-wrap"
     & > ul {
       overflow-y: auto;
       max-height: var(--dropdown-height, 10rem);
+      scroll-padding-top: var(--dropdown-fade-height, 2.875em);
+      scroll-padding-bottom: var(--dropdown-fade-height, 2.875em);
 
       &::-webkit-scrollbar {
         width: var(--scollbar-width, 5px);

@@ -7,37 +7,36 @@ div(ref="container").custom-dropdown
 			select(v-model="selectedValue" ref="dropdownSelect" @mousedown="mobileMousedown = true" :aria-describedby="`${id}-label`").dropdown-select-input
 				option(v-for="(option, index) in dropdownOptions" :key="option.value" :value="option.value") {{option.label}}
 			<Icon v-if="icon?.name" :size="icon?.size?.toString() ?? 'none'" :name="icon?.name" v-bind="icon?.attrs" class="dropdown-arrow"/>
-		button(type="button" ref="dropdownTrigger" @mousedown="desktopMousedown = true" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="selectedValue" :aria-expanded="expanded ? 'true' : 'false'"
-			@keydown.down.exact.prevent="goDown" 
-			@keydown.up.exact.prevent="goUp" 
-			@keydown.home.prevent="selectFirst" 
-			@keydown.end.prevent="selectLast" 
-			@keydown.alt.down.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)" 
-			@keydown.alt.up.exact.prevent="!expanded ? openDropdown($event) : closeDropdown($event)"
-			@keydown.space.exact="() => { wasSpace = true }"
-			@click="!expanded ? openDropdown($event) : closeDropdown($event)"
-			@keydown.tab="() => { wasReservedKey = true }"
+		button(type="button" ref="dropdownTrigger" @mousedown="desktopMousedown = true" :aria-describedby="`${id}-label`" role="combobox" aria-haspopup="listbox" :aria-controls="id" :aria-activedescendant="expanded ? `${id}-${selectedValue}` : undefined" :aria-expanded="expanded ? 'true' : 'false'"
+			@keydown.down.exact.prevent="goDown"
+			@keydown.up.exact.prevent="goUp"
+			@keydown.home.prevent="selectFirst"
+			@keydown.end.prevent="selectLast"
+			@keydown.alt.down.exact.prevent="!expanded ? openDropdown() : closeDropdown()"
+			@keydown.alt.up.exact.prevent="!expanded ? openDropdown() : closeDropdown()"
+			@keydown.space.exact.prevent="spaceHit"
+			@click="!expanded ? openDropdown() : closeDropdown()"
 			@keydown="keydown"
 		).dropdown-trigger
 			span.dropdown-trigger-label {{selectedLabel}}
 			<Icon v-if="icon?.name" :name="icon?.name" :size="icon?.size?.toString() ?? 'none'" v-bind="icon?.attrs" class="dropdown-arrow"/>
-		<TrollDropdownWrap ref="dropdownWrap" :expanded="expanded" :isEnd="isEnd">
+		<TrollDropdownWrap ref="dropdownWrap" :expanded="expanded" :isEnd="isEnd" :isStart="isStart" @opened="focusSelectedOption">
 			ul(:id="id" role="listbox" ref="dropdownList").dropdown-list
-				li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="0" :id="`${id}-${option.value}`" 
-					:aria-posinset="index + 1" 
-					:aria-setsize="dropdownOptions.length + 1" 
+				li(v-for="(option, index) in dropdownOptions" ref="listItemOptions" class="dropdown-option" role="option" tabindex="-1" :id="`${id}-${option.value}`"
+					:aria-posinset="index + 1"
+					:aria-setsize="dropdownOptions.length"
 					:aria-selected="option.value == selectedValue ? 'true' : 'false'"
 					@keydown.space.exact.prevent="spaceHit"
 					@click="selectOption(option)"
 					@keydown.enter.exact.prevent="selectOption(option)"
 					@keydown.escape.exact.prevent="closeDropdown"
-					@keydown.alt.up.exact.prevent="closeDropdown" 
+					@keydown.alt.up.exact.prevent="closeDropdown"
 					@keydown.alt.down.exact.prevent="closeDropdown"
-					@keydown.tab.exact="closeDropdown"
-					@keydown.shift.tab.exact="closeDropdown" 
+					@keydown.tab.exact="closeDropdown(false)"
+					@keydown.shift.tab.exact="closeDropdown(false)"
 					@keydown.up.exact.prevent="goUp"
 					@keydown.down.exact.prevent="goDown"
-					@keydown.home.exact.prevent="selectFirst" 
+					@keydown.home.exact.prevent="selectFirst"
 					@keydown.end.exact.prevent="selectLast"
 					@keydown="keydown"
 				)
@@ -48,19 +47,15 @@ div(ref="container").custom-dropdown
 </template>
 
 <script setup lang="ts">
-  import { onClickOutside, useScroll } from "@vueuse/core"
-  import { vScroll } from "@vueuse/components"
+  import { onClickOutside } from "@vueuse/core"
   const isMobile = useTrollBreakpoints()?.smallerOrEqual("dropdown") ?? false
 
   const id = useId()
   const expanded = ref(false)
-  const previouslySelected = ref("")
   const typedText = ref("")
-  const lastTyped = ref<Date>(new Date())
-  const wasReservedKey = ref(false)
-  const wasSpace = ref(false)
-  const test = ref("") //needed
+  const lastTyped = ref(0)
   const isEnd = ref(false)
+  const isStart = ref(true)
   const container = ref<null | HTMLDivElement>(null)
   const dropdownSelect = ref<null | HTMLSelectElement>(null)
   const dropdownTrigger = ref<null | HTMLButtonElement>(null)
@@ -68,8 +63,7 @@ div(ref="container").custom-dropdown
   const listItemOptions = ref<null | HTMLLIElement[]>(null)
   const wrap = ref<null | HTMLDivElement>(null)
   const dropdownWrap = ref<null | HTMLDivElement>(null)
-  const { arrivedState, y } = useScroll(dropdownList, { throttle: 200 })
-  const { bottom } = toRefs(arrivedState)
+
   onClickOutside(container, () => (expanded.value = false))
   const { height } = useElementBounding(wrap)
   const mobileHover = useElementHover(dropdownSelect)
@@ -116,9 +110,8 @@ div(ref="container").custom-dropdown
     }
   )
 
-  watch(y, () => {
-    isEnd.value = bottom.value
-  })
+  useEventListener(dropdownList, "scroll", updateScrollEnd)
+  useResizeObserver(dropdownList, updateScrollEnd)
 
   const emit = defineEmits<{
     (e: "change", value: string): void
@@ -149,133 +142,117 @@ div(ref="container").custom-dropdown
   const iconSize = computed(() => props.icon.size)
 
   const { options: dropdownOptions, label } = toRefs(props)
+  watch(dropdownOptions, () => nextTick(updateScrollEnd), { deep: true })
   const selectedLabel = computed(() => {
     if (dropdownOptions.value === null) return ""
     return dropdownOptions.value.find(option => option.value == selectedValue.value)?.label ?? ""
   })
 
-  function openDropdown(event: Event) {
-    if (wasSpace.value) {
-      spaceHit(event)
-      return
-    }
+  function updateScrollEnd() {
+    const list = dropdownList.value
+    isStart.value = !list || list.scrollTop <= 1
+    isEnd.value = !!list && list.scrollHeight - list.scrollTop - list.clientHeight <= 1
+  }
 
+  function focusSelectedOption(index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)) {
+    if (!expanded.value) return
+    const option = listItemOptions.value?.[index]
+    const list = dropdownList.value
+    if (!option || !list) return
+
+    // Keep browser focus from scrolling the page or the animated wrappers.
+    option.focus({ preventScroll: true })
+    const listRect = list.getBoundingClientRect()
+    const optionRect = option.getBoundingClientRect()
+    const style = getComputedStyle(list)
+    const inset = 4
+    const availableInset = Math.max(0, (list.clientHeight - optionRect.height - inset * 2) / 2)
+    const topFade = Math.min(parseFloat(style.scrollPaddingTop) || 0, availableInset)
+    const bottomFade = Math.min(parseFloat(style.scrollPaddingBottom) || 0, availableInset)
+    const visibleTop = listRect.top + topFade + inset
+    const visibleBottom = listRect.bottom - bottomFade - inset
+    if (optionRect.bottom > visibleBottom) {
+      list.scrollTop += optionRect.bottom - visibleBottom
+    } else if (optionRect.top < visibleTop) {
+      list.scrollTop += optionRect.top - visibleTop
+    }
+    updateScrollEnd()
+  }
+
+  async function openDropdown() {
     expanded.value = true
-    previouslySelected.value = selectedValue.value
-
-    const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
-    setTimeout(() => {
-      listItemOptions.value[index].focus()
-    }, 10)
+    await nextTick()
+    focusSelectedOption()
   }
-  function closeDropdown() {
+
+  async function closeDropdown(restoreFocus = true) {
     expanded.value = false
-    wasReservedKey.value = false //this may not be great logic?
-
-    setTimeout(() => {
-      dropdownTrigger.value.focus()
-    }, 1)
+    typedText.value = ""
+    if (restoreFocus) {
+      await nextTick()
+      dropdownTrigger.value?.focus({ preventScroll: true })
+    }
   }
 
-  function spaceHit({ target }: Event) {
-    wasSpace.value = false
-    const typedTime = new Date()
-    const difference = typedTime - lastTyped.value
-
-    if (difference > 1000 || typedText.value.trim() === "") {
-      wasReservedKey.value = true
-      if (target.classList.contains("dropdown-trigger")) {
-        !expanded.value ? openDropdown() : closeDropdown()
-      } else {
-        closeDropdown()
-      }
-    } else {
-      wasReservedKey.value = false
-    }
+  function spaceHit() {
+    if (Date.now() - lastTyped.value < 1000 && typedText.value.trim() !== "") return
+    if (!expanded.value) openDropdown()
+    else closeDropdown()
   }
 
   function focusDropdown() {
-    if (isMobile) {
-      dropdownSelect.value?.focus()
-    } else {
-      dropdownTrigger.value?.focus()
-    }
+    if (isMobile.value) dropdownSelect.value?.focus()
+    else dropdownTrigger.value?.focus()
   }
 
-  function selectOption({ label, value }: Option) {
+  function selectOption({ value }: Option) {
     selectedValue.value = value
     closeDropdown()
   }
 
-  function setSelected(target: HTMLElement, index: number) {
-    //event.preventDefault()
-    selectedValue.value = dropdownOptions.value[index].value
-
-    if (!target.classList.contains("dropdown-trigger")) {
-      listItemOptions.value[index].focus()
-    }
+  function setSelected(index: number) {
+    const option = dropdownOptions.value[index]
+    if (!option) return
+    selectedValue.value = option.value
+    focusSelectedOption(index)
   }
 
-  function goDown({ target }: Event) {
-    wasReservedKey.value = true
+  function goDown() {
+    typedText.value = ""
     const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
-    if (index + 1 >= dropdownOptions.value.length) return
-    setSelected(target, index + 1)
+    setSelected(index + 1)
   }
 
-  function goUp({ target }: Event) {
-    wasReservedKey.value = true
+  function goUp() {
+    typedText.value = ""
     const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
-    if (index <= 0) return
-    setSelected(target, index - 1)
+    setSelected(index - 1)
   }
 
-  function selectFirst({ target }: Event) {
-    wasReservedKey.value = true
-    setSelected(target, 0)
+  function selectFirst() {
+    typedText.value = ""
+    setSelected(0)
   }
 
-  function selectLast({ target }: Event) {
-    wasReservedKey.value = true
-    setSelected(target, dropdownOptions.value.length - 1)
+  function selectLast() {
+    typedText.value = ""
+    setSelected(dropdownOptions.value.length - 1)
   }
 
-  async function keydown(event: Event) {
-    //this.test = event.key
-    await wait(1)
-    if (!wasReservedKey.value) {
-      const key = event.key.toLowerCase()
-      let duplicate = JSON.parse(JSON.stringify(dropdownOptions.value))
-      const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
-      let searchable = []
-      const typedTime = new Date()
-      const difference = typedTime - lastTyped.value
+  function keydown(event: KeyboardEvent) {
+    if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
+    const now = Date.now()
+    const continuing = now - lastTyped.value < 1000 && typedText.value !== ""
+    if (event.key === " " && !continuing) return
+    event.preventDefault()
+    typedText.value = continuing ? typedText.value + event.key.toLowerCase() : event.key.toLowerCase()
+    lastTyped.value = now
 
-      if (difference < 1000) {
-        typedText.value += key
-        test.value = typedText.value
-        searchable = [...duplicate.splice(index), ...duplicate]
-      } else {
-        typedText.value = key
-        test.value = typedText.value
-        searchable = [...duplicate.splice(index + 1), ...duplicate]
-      }
-
-      const foundItem = searchable.find(({ label }) => label.toLowerCase().startsWith(typedText.value))
-
-      if (typeof foundItem !== "undefined") {
-        selectedValue.value = foundItem.value
-        const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
-        listItemOptions.value[index].focus()
-      }
-
-      lastTyped.value = typedTime
-    } else {
-      typedText.value = ""
-    }
-
-    await wait(10)
-    wasReservedKey.value = false
+    const index = dropdownOptions.value.findIndex(option => option.value == selectedValue.value)
+    const start = continuing ? Math.max(index, 0) : index + 1
+    const searchable = [...dropdownOptions.value.slice(start), ...dropdownOptions.value.slice(0, start)]
+    const foundItem = searchable.find(option => option.label.toLowerCase().startsWith(typedText.value))
+    if (foundItem) setSelected(dropdownOptions.value.indexOf(foundItem))
   }
 
   const isHovered = computed(() => {
@@ -296,10 +273,19 @@ div(ref="container").custom-dropdown
 
 <style scoped>
   .custom-dropdown {
+    --dropdown-fade-height: 2.25em;
     position: relative;
     display: inline-block;
     width: 100%;
   }
+  /* Raise this dropdown only while its popup is present, including the closing transition. */
+  .custom-dropdown:has(.dropdown-outer-wrap[data-present=true]) {
+    z-index: var(--dropdown-wrap-z-index, 20);
+  }
+  .custom-dropdown :deep(.dropdown-outer-wrap) {
+    box-shadow: var(--dropdown-shadow, 0 4px 12px rgb(0 0 0 / 0.18));
+  }
+
   .custom-dropdown:has(.dropdown-trigger:hover:not(:focus)) :deep(.dropdown-outer-wrap) {
     --dropdown-border: var(--trigger-hover-border) !important;
   }
